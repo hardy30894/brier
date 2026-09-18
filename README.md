@@ -27,7 +27,9 @@ structural, not learned.
 
 Named after the Brier score, the scoring rule that defines whether a probability is honest.
 
-**Contents**: [How it works](#how-it-works) · [What it is not](#what-it-is-not) · [Benchmarks](#benchmarks) · [Run it](#run-it) · [On a GPU pod](#on-a-gpu-pod) · [Roadmap](#roadmap) · [Layout](#layout)
+New to all of this? [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) walks from what a language model computes to how Brier decides, how the probabilities are measured, and how the model is trained, assuming nothing.
+
+**Contents**: [Architecture, from zero](docs/ARCHITECTURE.md) · [How it works](#how-it-works) · [What it is not](#what-it-is-not) · [Benchmarks](#benchmarks) · [Run it](#run-it) · [On a GPU pod](#on-a-gpu-pod) · [Roadmap](#roadmap) · [Layout](#layout)
 
 ## How it works
 

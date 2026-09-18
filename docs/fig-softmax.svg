@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="260" viewBox="0 0 900 260" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
+<defs><marker id="ar" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5B6B7C"/></marker></defs>
+<rect width="900" height="260" rx="14" fill="#FFFFFF" stroke="#D8DEE6"/>
+<text x="450" y="34" font-size="15" font-weight="700" fill="#1B1F24" text-anchor="middle">Softmax per field turns scores into a distribution that sums to one</text>
+<text x="60" y="70" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="start">score (log p)</text>
+<text x="330" y="70" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="start">exp(score − max), normalised</text>
+<text x="620" y="70" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="start">probability</text>
+<text x="60" y="102" font-size="12" font-weight="400" fill="#1B1F24" text-anchor="start">billing</text>
+<text x="180" y="102" font-size="12" font-weight="400" fill="#1B1F24" text-anchor="end">-3.10</text>
+<line x1="200" y1="98" x2="240" y2="98" stroke="#5B6B7C" stroke-width="1.5" marker-end="url(#ar)"/>
+<rect x="330" y="90" width="240" height="16" rx="3" fill="#E3E8EF"/>
+<rect x="330" y="90" width="17" height="16" rx="3" fill="#3557C4"/>
+<text x="620" y="102" font-size="12" font-weight="400" fill="#1B1F24" text-anchor="start">0.07</text>
+<text x="60" y="128" font-size="12" font-weight="400" fill="#1B1F24" text-anchor="start">bug</text>
+<text x="180" y="128" font-size="12" font-weight="400" fill="#1B1F24" text-anchor="end">-1.05</text>
+<line x1="200" y1="124" x2="240" y2="124" stroke="#5B6B7C" stroke-width="1.5" marker-end="url(#ar)"/>
+<rect x="330" y="116" width="240" height="16" rx="3" fill="#E3E8EF"/>
+<rect x="330" y="116" width="82" height="16" rx="3" fill="#3557C4"/>
+<text x="620" y="128" font-size="12" font-weight="400" fill="#1B1F24" text-anchor="start">0.34</text>
+<text x="60" y="154" font-size="12" font-weight="400" fill="#1B1F24" text-anchor="start">feature</text>
+<text x="180" y="154" font-size="12" font-weight="400" fill="#1B1F24" text-anchor="end">-6.40</text>
+<line x1="200" y1="150" x2="240" y2="150" stroke="#5B6B7C" stroke-width="1.5" marker-end="url(#ar)"/>
+<rect x="330" y="142" width="240" height="16" rx="3" fill="#E3E8EF"/>
+<rect x="330" y="142" width="0" height="16" rx="3" fill="#3557C4"/>
+<text x="620" y="154" font-size="12" font-weight="400" fill="#1B1F24" text-anchor="start">0.00</text>
+<text x="60" y="180" font-size="12" font-weight="700" fill="#1B1F24" text-anchor="start">account</text>
+<text x="180" y="180" font-size="12" font-weight="400" fill="#1B1F24" text-anchor="end">-0.62</text>
+<line x1="200" y1="176" x2="240" y2="176" stroke="#5B6B7C" stroke-width="1.5" marker-end="url(#ar)"/>
+<rect x="330" y="168" width="240" height="16" rx="3" fill="#E3E8EF"/>
+<rect x="330" y="168" width="125" height="16" rx="3" fill="#3557C4"/>
+<text x="620" y="180" font-size="12" font-weight="700" fill="#1B1F24" text-anchor="start">0.52</text>
+<text x="60" y="206" font-size="12" font-weight="400" fill="#1B1F24" text-anchor="start">other</text>
+<text x="180" y="206" font-size="12" font-weight="400" fill="#1B1F24" text-anchor="end">-4.20</text>
+<line x1="200" y1="202" x2="240" y2="202" stroke="#5B6B7C" stroke-width="1.5" marker-end="url(#ar)"/>
+<rect x="330" y="194" width="240" height="16" rx="3" fill="#E3E8EF"/>
+<rect x="330" y="194" width="5" height="16" rx="3" fill="#3557C4"/>
+<text x="620" y="206" font-size="12" font-weight="400" fill="#1B1F24" text-anchor="start">0.02</text>
+<text x="700" y="102" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="start">The top value is decoded to</text>
+<text x="700" y="117" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="start">its Python type (str or bool).</text>
+<text x="700" y="141" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="start">The whole distribution is kept,</text>
+<text x="700" y="156" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="start">so code can act on 0.52 rather</text>
+<text x="700" y="171" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="start">than on 'account' alone.</text>
+<text x="60" y="240" font-size="11" font-weight="400" fill="#8A94A0" text-anchor="start">It is impossible for the answer to be anything other than one of the five names on the left. That is the type guarantee.</text>
+</svg>

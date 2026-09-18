@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="320" viewBox="0 0 900 320" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
+<defs><marker id="ar" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5B6B7C"/></marker></defs>
+<rect width="900" height="320" rx="14" fill="#FFFFFF" stroke="#D8DEE6"/>
+<text x="450" y="34" font-size="15" font-weight="700" fill="#1B1F24" text-anchor="middle">Scoring a candidate: the log-probability the model gives to its tokens, in context</text>
+<text x="40" y="76" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="start">prompt (input + schema + instructions)</text>
+<rect x="40" y="84" width="330" height="30" rx="5" fill="#F6F8FB" stroke="#D8DEE6"/>
+<text x="50" y="104" font-size="12" font-weight="400" fill="#1B1F24" text-anchor="start">…Fields: category: one of billing, bug, … </text>
+<text x="380" y="76" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="start">field header</text>
+<rect x="380" y="84" width="130" height="30" rx="5" fill="#F6F8FB" stroke="#D8DEE6"/>
+<text x="445" y="104" font-size="12" font-weight="400" fill="#1B1F24" text-anchor="middle">{"category": "</text>
+<text x="520" y="76" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="start">candidate tokens</text>
+<rect x="520" y="84" width="90" height="30" rx="5" fill="#EEF3FF" stroke="#3557C4"/>
+<text x="565" y="104" font-size="12" font-weight="700" fill="#3557C4" text-anchor="middle">account</text>
+<text x="620" y="104" font-size="12" font-weight="700" fill="#1B1F24" text-anchor="start">log p = −0.62</text>
+<text x="40" y="150" font-size="12" font-weight="400" fill="#5B6B7C" text-anchor="start">Each field's candidates share the same prompt and header; only the tail differs:</text>
+<rect x="40" y="172" width="470" height="18" rx="3" fill="#F6F8FB" stroke="#D8DEE6"/>
+<text x="48" y="185" font-size="11" font-weight="400" fill="#8A94A0" text-anchor="start">…{"category": "</text>
+<rect x="520" y="172" width="90" height="18" rx="3" fill="#EEF3FF" stroke="#3557C4"/>
+<text x="565" y="185" font-size="11" font-weight="700" fill="#3557C4" text-anchor="middle">billing</text>
+<text x="630" y="185" font-size="12" font-weight="400" fill="#1B1F24" text-anchor="start">-3.10</text>
+<rect x="40" y="198" width="470" height="18" rx="3" fill="#F6F8FB" stroke="#D8DEE6"/>
+<text x="48" y="211" font-size="11" font-weight="400" fill="#8A94A0" text-anchor="start">…{"category": "</text>
+<rect x="520" y="198" width="90" height="18" rx="3" fill="#EEF3FF" stroke="#3557C4"/>
+<text x="565" y="211" font-size="11" font-weight="700" fill="#3557C4" text-anchor="middle">bug</text>
+<text x="630" y="211" font-size="12" font-weight="400" fill="#1B1F24" text-anchor="start">-1.05</text>
+<rect x="40" y="224" width="470" height="18" rx="3" fill="#F6F8FB" stroke="#D8DEE6"/>
+<text x="48" y="237" font-size="11" font-weight="400" fill="#8A94A0" text-anchor="start">…{"category": "</text>
+<rect x="520" y="224" width="90" height="18" rx="3" fill="#EEF3FF" stroke="#3557C4"/>
+<text x="565" y="237" font-size="11" font-weight="700" fill="#3557C4" text-anchor="middle">feature</text>
+<text x="630" y="237" font-size="12" font-weight="400" fill="#1B1F24" text-anchor="start">-6.40</text>
+<rect x="40" y="250" width="470" height="18" rx="3" fill="#F6F8FB" stroke="#D8DEE6"/>
+<text x="48" y="263" font-size="11" font-weight="400" fill="#8A94A0" text-anchor="start">…{"category": "</text>
+<rect x="520" y="250" width="90" height="18" rx="3" fill="#EEF3FF" stroke="#3557C4"/>
+<text x="565" y="263" font-size="11" font-weight="700" fill="#3557C4" text-anchor="middle">account</text>
+<text x="630" y="263" font-size="12" font-weight="700" fill="#1B1F24" text-anchor="start">-0.62</text>
+<text x="690" y="263" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="start">← highest score wins</text>
+<rect x="40" y="276" width="470" height="18" rx="3" fill="#F6F8FB" stroke="#D8DEE6"/>
+<text x="48" y="289" font-size="11" font-weight="400" fill="#8A94A0" text-anchor="start">…{"category": "</text>
+<rect x="520" y="276" width="90" height="18" rx="3" fill="#EEF3FF" stroke="#3557C4"/>
+<text x="565" y="289" font-size="11" font-weight="700" fill="#3557C4" text-anchor="middle">other</text>
+<text x="630" y="289" font-size="12" font-weight="400" fill="#1B1F24" text-anchor="start">-4.20</text>
+<text x="40" y="306" font-size="11" font-weight="400" fill="#8A94A0" text-anchor="start">A multi-token candidate is scored by summing its tokens' log-probabilities. Nothing is ever generated.</text>
+</svg>
