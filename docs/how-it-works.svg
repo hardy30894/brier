@@ -1,61 +1,123 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="420" viewBox="0 0 900 420" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
-  <defs>
-    <marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5B6B7C"/></marker>
-  </defs>
-  <rect width="900" height="420" rx="14" fill="#FFFFFF" stroke="#D8DEE6"/>
-
-  <text x="450" y="34" text-anchor="middle" font-size="15" fill="#5B6B7C">How a decision is made</text>
-
-  <rect x="30" y="60" width="230" height="200" rx="10" fill="#F4F7FB" stroke="#C9D3E0"/>
-  <text x="145" y="86" text-anchor="middle" font-size="14" font-weight="700" fill="#1B1F24">input + schema</text>
-  <text x="46" y="114" font-size="12" fill="#3A4652">"Webhooks fire twice since</text>
-  <text x="46" y="130" font-size="12" fill="#3A4652">3am. Need this today."</text>
-  <text x="46" y="162" font-size="12" font-weight="700" fill="#3557C4">category</text>
-  <text x="46" y="178" font-size="11" fill="#5B6B7C">billing · bug · feature · account · other</text>
-  <text x="46" y="202" font-size="12" font-weight="700" fill="#3557C4">priority</text>
-  <text x="46" y="218" font-size="11" fill="#5B6B7C">low · medium · high · urgent</text>
-  <text x="46" y="242" font-size="12" font-weight="700" fill="#3557C4">needs_human</text>
-  <text x="46" y="258" font-size="11" fill="#5B6B7C">yes · no</text>
-
-  <line x1="262" y1="160" x2="318" y2="160" stroke="#5B6B7C" stroke-width="2" marker-end="url(#a)"/>
-
-  <rect x="322" y="60" width="256" height="200" rx="10" fill="#EEF3FF" stroke="#9DB9F5"/>
-  <text x="450" y="86" text-anchor="middle" font-size="14" font-weight="700" fill="#1B1F24">one batched forward pass</text>
-  <text x="450" y="106" text-anchor="middle" font-size="11" fill="#5B6B7C">every allowed value of every field, scored at once</text>
-  <g font-size="11" fill="#3A4652">
-    <rect x="340" y="120" width="220" height="16" rx="3" fill="#FFFFFF" stroke="#C9D3E0"/><text x="348" y="132">…{"category": "billing</text>
-    <rect x="340" y="140" width="220" height="16" rx="3" fill="#FFFFFF" stroke="#C9D3E0"/><text x="348" y="152">…{"category": "bug</text>
-    <rect x="340" y="160" width="220" height="16" rx="3" fill="#FFFFFF" stroke="#C9D3E0"/><text x="348" y="172">…{"category": "feature</text>
-    <text x="450" y="192" text-anchor="middle" fill="#5B6B7C">⋮</text>
-    <rect x="340" y="200" width="220" height="16" rx="3" fill="#FFFFFF" stroke="#C9D3E0"/><text x="348" y="212">…{"needs_human": "yes</text>
-    <rect x="340" y="220" width="220" height="16" rx="3" fill="#FFFFFF" stroke="#C9D3E0"/><text x="348" y="232">…{"needs_human": "no</text>
-  </g>
-  <text x="450" y="252" text-anchor="middle" font-size="11" fill="#5B6B7C">log-probability of each value → softmax per field</text>
-
-  <line x1="580" y1="160" x2="636" y2="160" stroke="#5B6B7C" stroke-width="2" marker-end="url(#a)"/>
-
-  <rect x="640" y="60" width="230" height="200" rx="10" fill="#F4F7FB" stroke="#C9D3E0"/>
-  <text x="755" y="86" text-anchor="middle" font-size="14" font-weight="700" fill="#1B1F24">typed decision</text>
-  <g font-size="12">
-    <text x="656" y="118" font-weight="700" fill="#1B1F24">category</text>
-    <rect x="656" y="124" width="200" height="8" rx="4" fill="#E3E8EF"/><rect x="656" y="124" width="172" height="8" rx="4" fill="#3557C4"/>
-    <text x="656" y="146" fill="#3A4652">bug</text><text x="856" y="146" text-anchor="end" fill="#3557C4" font-weight="700">0.86</text>
-    <text x="656" y="172" font-weight="700" fill="#1B1F24">priority</text>
-    <rect x="656" y="178" width="200" height="8" rx="4" fill="#E3E8EF"/><rect x="656" y="178" width="118" height="8" rx="4" fill="#3557C4"/>
-    <text x="656" y="200" fill="#3A4652">high</text><text x="856" y="200" text-anchor="end" fill="#3557C4" font-weight="700">0.59</text>
-    <text x="656" y="226" font-weight="700" fill="#1B1F24">needs_human</text>
-    <rect x="656" y="232" width="200" height="8" rx="4" fill="#E3E8EF"/><rect x="656" y="232" width="188" height="8" rx="4" fill="#3557C4"/>
-    <text x="656" y="254" fill="#3A4652">no</text><text x="856" y="254" text-anchor="end" fill="#3557C4" font-weight="700">0.94</text>
-  </g>
-
-  <line x1="30" y1="290" x2="870" y2="290" stroke="#E3E8EF"/>
-  <text x="46" y="318" font-size="12" font-weight="700" fill="#8A2BE2">generate JSON</text>
-  <g font-size="11" fill="#5B6B7C">
-    <text x="160" y="318">token → token → token → … → token → parse → validate → maybe a type error → maybe a retry</text>
-  </g>
-  <text x="46" y="352" font-size="12" font-weight="700" fill="#3557C4">Brier</text>
-  <g font-size="11" fill="#3A4652">
-    <text x="160" y="352">one pass → every field with a probability → cannot be malformed, because the model only chooses among allowed values</text>
-  </g>
-  <text x="450" y="392" text-anchor="middle" font-size="11" fill="#8A94A0">Fields are scored independently in the same pass. The backbone is any open causal LM; nothing is trained yet.</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
+<defs><marker id="ar" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5B6B7C"/></marker></defs>
+<rect width="900" height="520" rx="14" fill="#FFFFFF" stroke="#D8DEE6"/>
+<text x="450" y="36" text-anchor="middle" font-size="16" font-weight="700" fill="#1B1F24">Every field, every allowed value, one forward pass</text>
+<rect x="36" y="64" width="222" height="216" rx="10" fill="#F6F8FB" stroke="#D8DEE6"/>
+<text x="52" y="90" font-size="12" font-weight="700" fill="#5B6B7C" letter-spacing="1">INPUT</text>
+<text x="52" y="112" font-size="12.5" fill="#1B1F24">“Webhooks fire twice since</text>
+<text x="52" y="129" font-size="12.5" fill="#1B1F24">3am. Need this today.”</text>
+<text x="52" y="164" font-size="12" font-weight="700" fill="#5B6B7C" letter-spacing="1">SCHEMA</text>
+<text x="52" y="186" font-size="12.5" font-weight="700" fill="#3557C4">category</text>
+<text x="52" y="201" font-size="11" fill="#5B6B7C">billing · bug · feature · account · other</text>
+<text x="52" y="218" font-size="12.5" font-weight="700" fill="#3557C4">priority</text>
+<text x="52" y="233" font-size="11" fill="#5B6B7C">low · medium · high · urgent</text>
+<text x="52" y="250" font-size="12.5" font-weight="700" fill="#3557C4">needs_human</text>
+<text x="52" y="265" font-size="11" fill="#5B6B7C">yes · no</text>
+<line x1="260" y1="172" x2="292" y2="172" stroke="#5B6B7C" stroke-width="2" marker-end="url(#ar)"/>
+<rect x="300" y="78" width="92" height="9" rx="2" fill="#3557C4" opacity="0.9"/>
+<line x1="392" y1="82.5" x2="420" y2="172" stroke="#3557C4" stroke-width="1" opacity="0.5"/>
+<rect x="300" y="91" width="92" height="9" rx="2" fill="#3557C4" opacity="0.9"/>
+<line x1="392" y1="95.5" x2="420" y2="172" stroke="#3557C4" stroke-width="1" opacity="0.5"/>
+<rect x="300" y="104" width="92" height="9" rx="2" fill="#3557C4" opacity="0.9"/>
+<line x1="392" y1="108.5" x2="420" y2="172" stroke="#3557C4" stroke-width="1" opacity="0.5"/>
+<rect x="300" y="117" width="92" height="9" rx="2" fill="#3557C4" opacity="0.9"/>
+<line x1="392" y1="121.5" x2="420" y2="172" stroke="#3557C4" stroke-width="1" opacity="0.5"/>
+<rect x="300" y="130" width="92" height="9" rx="2" fill="#3557C4" opacity="0.9"/>
+<line x1="392" y1="134.5" x2="420" y2="172" stroke="#3557C4" stroke-width="1" opacity="0.5"/>
+<rect x="300" y="149" width="92" height="9" rx="2" fill="#5B8DEF" opacity="0.9"/>
+<line x1="392" y1="153.5" x2="420" y2="172" stroke="#5B8DEF" stroke-width="1" opacity="0.5"/>
+<rect x="300" y="162" width="92" height="9" rx="2" fill="#5B8DEF" opacity="0.9"/>
+<line x1="392" y1="166.5" x2="420" y2="172" stroke="#5B8DEF" stroke-width="1" opacity="0.5"/>
+<rect x="300" y="175" width="92" height="9" rx="2" fill="#5B8DEF" opacity="0.9"/>
+<line x1="392" y1="179.5" x2="420" y2="172" stroke="#5B8DEF" stroke-width="1" opacity="0.5"/>
+<rect x="300" y="188" width="92" height="9" rx="2" fill="#5B8DEF" opacity="0.9"/>
+<line x1="392" y1="192.5" x2="420" y2="172" stroke="#5B8DEF" stroke-width="1" opacity="0.5"/>
+<rect x="300" y="207" width="92" height="9" rx="2" fill="#9DB9F5" opacity="0.9"/>
+<line x1="392" y1="211.5" x2="420" y2="172" stroke="#9DB9F5" stroke-width="1" opacity="0.5"/>
+<rect x="300" y="220" width="92" height="9" rx="2" fill="#9DB9F5" opacity="0.9"/>
+<line x1="392" y1="224.5" x2="420" y2="172" stroke="#9DB9F5" stroke-width="1" opacity="0.5"/>
+<text x="346" y="247" text-anchor="middle" font-size="11" fill="#5B6B7C">11 candidates</text>
+<text x="346" y="261" text-anchor="middle" font-size="11" fill="#5B6B7C">= 5 + 4 + 2</text>
+<rect x="422" y="120" width="150" height="104" rx="12" fill="#EEF3FF" stroke="#3557C4" stroke-width="1.5"/>
+<text x="497" y="160" text-anchor="middle" font-size="13" font-weight="700" fill="#1B1F24">any open LM</text>
+<text x="497" y="180" text-anchor="middle" font-size="12" fill="#3557C4" font-weight="700">1 batched pass</text>
+<text x="497" y="198" text-anchor="middle" font-size="11" fill="#5B6B7C">log-prob of each value</text>
+<line x1="574" y1="172" x2="618" y2="172" stroke="#5B6B7C" stroke-width="2" marker-end="url(#ar)"/>
+<rect x="642" y="64" width="222" height="216" rx="10" fill="#F6F8FB" stroke="#D8DEE6"/>
+<text x="658" y="90" font-size="12" font-weight="700" fill="#5B6B7C" letter-spacing="1">TYPED DECISION</text>
+<text x="658" y="116" font-size="12.5" font-weight="700" fill="#1B1F24">category</text>
+<text x="848" y="116" text-anchor="end" font-size="12.5" font-weight="700" fill="#3557C4">0.86</text>
+<rect x="658" y="124" width="190" height="9" rx="4.5" fill="#E3E8EF"/>
+<rect x="658" y="124" width="163" height="9" rx="4.5" fill="#3557C4"/>
+<text x="658" y="148" font-size="12" fill="#5B6B7C">bug</text>
+<text x="658" y="172" font-size="12.5" font-weight="700" fill="#1B1F24">priority</text>
+<text x="848" y="172" text-anchor="end" font-size="12.5" font-weight="700" fill="#3557C4">0.59</text>
+<rect x="658" y="180" width="190" height="9" rx="4.5" fill="#E3E8EF"/>
+<rect x="658" y="180" width="112" height="9" rx="4.5" fill="#3557C4"/>
+<text x="658" y="204" font-size="12" fill="#5B6B7C">high</text>
+<text x="658" y="228" font-size="12.5" font-weight="700" fill="#1B1F24">needs_human</text>
+<text x="848" y="228" text-anchor="end" font-size="12.5" font-weight="700" fill="#3557C4">0.94</text>
+<rect x="658" y="236" width="190" height="9" rx="4.5" fill="#E3E8EF"/>
+<rect x="658" y="236" width="179" height="9" rx="4.5" fill="#3557C4"/>
+<text x="658" y="260" font-size="12" fill="#5B6B7C">no</text>
+<line x1="36" y1="308" x2="864" y2="308" stroke="#D8DEE6"/>
+<text x="36" y="336" font-size="12" font-weight="700" fill="#5B6B7C" letter-spacing="1">MEASURED</text>
+<text x="864" y="336" text-anchor="end" font-size="11" fill="#8A94A0">Qwen3-4B · RTX 4090 · 200 tickets · 3 fields per decision</text>
+<text x="36" y="372" font-size="12.5" font-weight="700" fill="#8A2BE2">generate JSON</text>
+<text x="36" y="388" font-size="11" fill="#5B6B7C">token by token, then parse</text>
+<rect x="200" y="360" width="620" height="22" rx="4" fill="#EFE6FB" stroke="#8A2BE2" stroke-width="1"/>
+<rect x="204" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="217" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="230" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="243" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="256" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="269" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="282" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="295" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="308" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="321" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="334" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="347" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="360" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="373" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="386" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="399" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="412" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="425" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="438" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="451" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="464" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="477" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="490" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="503" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="516" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="529" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="542" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="555" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="568" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="581" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="594" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="607" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="620" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="633" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="646" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="659" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="672" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="685" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="698" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="711" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="724" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="737" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="750" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="763" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="776" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="789" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<rect x="802" y="364" width="9" height="14" rx="1.5" fill="#8A2BE2" opacity="0.55"/>
+<text x="828" y="376" font-size="12.5" font-weight="700" fill="#8A2BE2">1268 ms</text>
+<text x="36" y="420" font-size="12.5" font-weight="700" fill="#3557C4">Brier</text>
+<text x="36" y="436" font-size="11" fill="#5B6B7C">one pass, typed</text>
+<rect x="200" y="408" width="54" height="22" rx="4" fill="#3557C4"/>
+<text x="262" y="424" font-size="12.5" font-weight="700" fill="#3557C4">111 ms</text>
+<text x="324" y="424" font-size="12" fill="#1B1F24">11× faster · same accuracy (0.59 vs 0.59) · 0 type errors, by construction</text>
+<text x="450" y="484" text-anchor="middle" font-size="11" fill="#8A94A0">Fields are scored independently in the same pass. No training yet: probabilities are the model’s own log-likelihoods, softmaxed per field.</text>
 </svg>
