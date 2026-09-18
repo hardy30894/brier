@@ -1,0 +1,9 @@
+[project]
+name = "brier"
+version = "0.0.1"
+description = "Single-pass typed decisions with calibrated probabilities from any open causal LM"
+requires-python = ">=3.11"
+dependencies = ["torch", "transformers>=4.51", "numpy"]
+
+[tool.setuptools]
+packages = ["brier", "tasks"]

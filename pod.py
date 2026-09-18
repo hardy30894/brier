@@ -1,0 +1,181 @@
+"""RunPod lifecycle with a hard time-to-live. Every pod created here is terminated by a
+detached watchdog at its deadline even if this session dies; `down --all` is the panic button."""
+import argparse
+import json
+import os
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+import runpod
+
+ROOT = Path(__file__).resolve().parent
+STATE = ROOT / ".pod.json"
+IMAGE = "runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04"
+REMOTE = "/workspace/brier"
+MAX_TTL_MIN = 240
+
+
+def load_key():
+    env = ROOT / ".env"
+    if env.exists():
+        for line in env.read_text().splitlines():
+            if line.startswith("RUNPOD_API_KEY="):
+                os.environ["RUNPOD_API_KEY"] = line.split("=", 1)[1].strip().strip('"').strip("'")
+    key = os.environ.get("RUNPOD_API_KEY")
+    if not key:
+        sys.exit("RUNPOD_API_KEY missing: put it in .env")
+    runpod.api_key = key
+
+
+def state():
+    return json.loads(STATE.read_text()) if STATE.exists() else None
+
+
+def ssh_endpoint(pod):
+    for p in (pod.get("runtime") or {}).get("ports") or []:
+        if p.get("privatePort") == 22 and p.get("isIpPublic"):
+            return p["ip"], p["publicPort"]
+    return None
+
+
+def cmd_up(a):
+    ttl = min(a.ttl, MAX_TTL_MIN)
+    if state():
+        sys.exit(f"pod {state()['id']} already recorded in .pod.json; run `pod.py down` first")
+    pubkey = Path.home().joinpath(".ssh/id_ed25519.pub").read_text().strip()
+    pod = runpod.create_pod(
+        name=f"brier-{int(time.time())}", image_name=IMAGE, gpu_type_id=a.gpu, cloud_type=a.cloud,
+        container_disk_in_gb=40, volume_in_gb=0, ports="22/tcp", env={"PUBLIC_KEY": pubkey},
+        min_memory_in_gb=16,
+    )
+    deadline = time.time() + ttl * 60
+    STATE.write_text(json.dumps({"id": pod["id"], "created": time.time(), "deadline": deadline, "gpu": a.gpu}))
+    log = ROOT / ".watchdog.log"
+    subprocess.Popen(
+        [sys.executable, str(ROOT / "pod.py"), "watchdog", pod["id"], str(deadline)],
+        stdout=open(log, "a"), stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL, start_new_session=True,
+    )
+    print(f"created {pod['id']} ({a.gpu}); hard TTL {ttl} min, watchdog armed")
+    for _ in range(60):
+        time.sleep(5)
+        p = runpod.get_pod(pod["id"])
+        ep = ssh_endpoint(p)
+        if ep:
+            print(f"ssh ready: ssh -p {ep[1]} root@{ep[0]}")
+            return
+    print("pod created but ssh not up after 5 min; check `pod.py status`")
+
+
+def cmd_watchdog(a):
+    deadline = float(a.deadline)
+    while time.time() < deadline:
+        time.sleep(min(60, max(1, deadline - time.time())))
+    try:
+        runpod.terminate_pod(a.pod_id)
+        print(f"{time.ctime()} watchdog terminated {a.pod_id}")
+    except Exception as e:
+        print(f"{time.ctime()} watchdog: {a.pod_id} already gone ({e})")
+    if state() and state()["id"] == a.pod_id:
+        STATE.unlink()
+
+
+def cmd_status(a):
+    pods = runpod.get_pods()
+    mine = state()
+    if not pods:
+        print("no pods on account")
+    for p in pods:
+        up = p.get("runtime") or {}
+        mins = up.get("uptimeInSeconds", 0) / 60
+        tag = "(this repo)" if mine and mine["id"] == p["id"] else "(UNTRACKED)"
+        print(f"{p['id']} {p['name']} {p.get('desiredStatus')} gpu={p.get('machine', {}).get('gpuDisplayName')} "
+              f"up={mins:.0f}min ${p.get('costPerHr', 0):.2f}/hr {tag}")
+    if mine:
+        left = (mine["deadline"] - time.time()) / 60
+        print(f"tracked pod {mine['id']}: {left:.0f} min until watchdog terminates it")
+
+
+def cmd_down(a):
+    ids = [p["id"] for p in runpod.get_pods() if p["name"].startswith("brier-")] if a.all else ([state()["id"]] if state() else [])
+    if not ids:
+        print("nothing to terminate")
+    for pid in ids:
+        try:
+            runpod.terminate_pod(pid)
+            print(f"terminated {pid}")
+        except Exception as e:
+            print(f"{pid}: {e}")
+    if STATE.exists():
+        STATE.unlink()
+    time.sleep(3)
+    left = runpod.get_pods()
+    print(f"pods remaining on account: {len(left)}")
+    for p in left:
+        print(f"  {p.get('desiredStatus')}: {p['id']} {p['name']} ${p.get('costPerHr', 0):.2f}/hr (not created by this repo)")
+
+
+def _endpoint_or_die():
+    s = state()
+    if not s:
+        sys.exit("no tracked pod")
+    ep = ssh_endpoint(runpod.get_pod(s["id"]))
+    if not ep:
+        sys.exit("pod has no public ssh port yet")
+    return ep
+
+
+def cmd_ssh(a):
+    ip, port = _endpoint_or_die()
+    print(f"ssh -o StrictHostKeyChecking=no -p {port} root@{ip}")
+
+
+def cmd_sync(a):
+    ip, port = _endpoint_or_die()
+    ssh = ["ssh", "-o", "StrictHostKeyChecking=no", "-p", str(port), f"root@{ip}"]
+    tar = subprocess.Popen(["tar", "-C", str(ROOT), "-czf", "-", "--exclude", ".git", "--exclude", "results",
+                            "--exclude", ".env", "--exclude", ".pod.json", "--exclude", "__pycache__",
+                            "--exclude", ".watchdog.log", "."], stdout=subprocess.PIPE)
+    subprocess.run(ssh + [f"mkdir -p {REMOTE} && tar -C {REMOTE} -xzf -"], stdin=tar.stdout, check=True)
+    tar.wait()
+    print("synced")
+
+
+def cmd_exec(a):
+    ip, port = _endpoint_or_die()
+    r = subprocess.run(["ssh", "-o", "StrictHostKeyChecking=no", "-p", str(port), f"root@{ip}",
+                        f"cd {REMOTE} && {a.command}"])
+    sys.exit(r.returncode)
+
+
+def cmd_pull(a):
+    ip, port = _endpoint_or_die()
+    ssh = ["ssh", "-o", "StrictHostKeyChecking=no", "-p", str(port), f"root@{ip}"]
+    remote = subprocess.Popen(ssh + [f"tar -C {REMOTE} -czf - results"], stdout=subprocess.PIPE)
+    subprocess.run(["tar", "-C", str(ROOT), "-xzf", "-"], stdin=remote.stdout, check=True)
+    remote.wait()
+    print("pulled results/")
+
+
+if __name__ == "__main__":
+    ap = argparse.ArgumentParser()
+    sub = ap.add_subparsers(dest="cmd", required=True)
+    u = sub.add_parser("up")
+    u.add_argument("--gpu", default="NVIDIA GeForce RTX 4090")
+    u.add_argument("--cloud", default="ALL")
+    u.add_argument("--ttl", type=int, default=90, help="minutes until forced termination")
+    w = sub.add_parser("watchdog")
+    w.add_argument("pod_id")
+    w.add_argument("deadline")
+    sub.add_parser("status")
+    d = sub.add_parser("down")
+    d.add_argument("--all", action="store_true")
+    sub.add_parser("ssh")
+    sub.add_parser("sync")
+    e = sub.add_parser("exec")
+    e.add_argument("command")
+    sub.add_parser("pull")
+    a = ap.parse_args()
+    load_key()
+    globals()[f"cmd_{a.cmd}"](a)

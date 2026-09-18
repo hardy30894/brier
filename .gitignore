@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+.pod.json
+.watchdog.log

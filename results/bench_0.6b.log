@@ -1,0 +1,59 @@
+device=cuda model=Qwen/Qwen3-0.6B
+  scored: 25/200 (2s)
+  scored: 50/200 (3s)
+  scored: 75/200 (4s)
+  scored: 100/200 (5s)
+  scored: 125/200 (6s)
+  scored: 150/200 (8s)
+  scored: 175/200 (9s)
+  scored: 200/200 (10s)
+The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+  json: 25/200 (28s)
+  json: 50/200 (55s)
+  json: 75/200 (83s)
+  json: 100/200 (111s)
+  json: 125/200 (139s)
+  json: 150/200 (167s)
+  json: 175/200 (195s)
+  json: 200/200 (223s)
+  scored: 25/200 (1s)
+  scored: 50/200 (2s)
+  scored: 75/200 (3s)
+  scored: 100/200 (4s)
+  scored: 125/200 (5s)
+  scored: 150/200 (6s)
+  scored: 175/200 (7s)
+  scored: 200/200 (8s)
+  json: 25/200 (21s)
+  json: 50/200 (43s)
+  json: 75/200 (65s)
+  json: 100/200 (86s)
+  json: 125/200 (107s)
+  json: 150/200 (128s)
+  json: 175/200 (150s)
+  json: 200/200 (172s)
+
+== tickets ==
+method   field           acc    ECE  Brier   conf   p50ms   p95ms typeErr
+scored   category      0.270  0.657  0.636  0.922    44.1    50.3       0
+           +temp       0.280  0.075  0.203  0.347                  T=9.15
+scored   priority      0.670  0.124  0.222  0.661    44.1    50.3       0
+           +temp       0.680  0.122  0.215  0.658                  T=1.13
+scored   needs_human   0.555  0.182  0.243  0.737    44.1    50.3       0
+           +temp       0.590  0.107  0.211  0.616                  T=2.63
+scored   ALL           0.498  0.313  0.367  0.773    44.1    50.3       0
+json     category      0.370  0.530  0.514  0.900  1108.1  1225.8       0
+json     priority      0.365  0.535  0.518  0.900  1108.1  1225.8       0
+json     needs_human   0.370  0.530  0.514  0.900  1108.1  1225.8       0
+json     ALL           0.368  0.532  0.515  0.900  1108.1  1225.8       0
+
+== gridworld ==
+method   field           acc    ECE  Brier   conf   p50ms   p95ms typeErr
+scored   move          0.365  0.421  0.374  0.786    41.1    45.6       0
+           +temp       0.430  0.094  0.240  0.341                  T=6.13
+scored   danger        0.840  0.043  0.130  0.827    41.1    45.6       0
+           +temp       0.860  0.046  0.117  0.817                  T=1.03
+scored   ALL           0.603  0.204  0.252  0.806    41.1    45.6       0
+json     move          0.410  0.490  0.482  0.900   849.0   943.6       0
+json     danger        0.840  0.060  0.138  0.900   849.0   943.6       0
+json     ALL           0.625  0.275  0.310  0.900   849.0   943.6       0

@@ -1,0 +1,61 @@
+Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]Fetching 2 files:  50%|█████     | 1/2 [00:06<00:06,  6.65s/it]Fetching 2 files: 100%|██████████| 2/2 [00:08<00:00,  4.34s/it]Fetching 2 files: 100%|██████████| 2/2 [00:08<00:00,  4.34s/it]
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00, 53.69it/s]
+device=cuda model=Qwen/Qwen3-1.7B
+  scored: 25/200 (2s)
+  scored: 50/200 (3s)
+  scored: 75/200 (4s)
+  scored: 100/200 (6s)
+  scored: 125/200 (7s)
+  scored: 150/200 (8s)
+  scored: 175/200 (10s)
+  scored: 200/200 (11s)
+The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+  json: 25/200 (24s)
+  json: 50/200 (47s)
+  json: 75/200 (69s)
+  json: 100/200 (92s)
+  json: 125/200 (115s)
+  json: 150/200 (138s)
+  json: 175/200 (160s)
+  json: 200/200 (183s)
+  scored: 25/200 (1s)
+  scored: 50/200 (2s)
+  scored: 75/200 (3s)
+  scored: 100/200 (4s)
+  scored: 125/200 (5s)
+  scored: 150/200 (6s)
+  scored: 175/200 (7s)
+  scored: 200/200 (8s)
+  json: 25/200 (17s)
+  json: 50/200 (34s)
+  json: 75/200 (52s)
+  json: 100/200 (69s)
+  json: 125/200 (86s)
+  json: 150/200 (104s)
+  json: 175/200 (121s)
+  json: 200/200 (139s)
+
+== tickets ==
+method   field           acc    ECE  Brier   conf   p50ms   p95ms typeErr
+scored   category      0.340  0.655  0.647  0.981    51.3    55.8       0
+           +temp       0.370  0.375  0.364  0.683                 T=10.00
+scored   priority      0.585  0.259  0.300  0.844    51.3    55.8       0
+           +temp       0.600  0.070  0.219  0.587                  T=4.90
+scored   needs_human   0.560  0.419  0.417  0.973    51.3    55.8       0
+           +temp       0.590  0.196  0.232  0.748                 T=10.00
+scored   ALL           0.495  0.438  0.454  0.933    51.3    55.8       0
+json     category      0.405  0.451  0.433  0.856   912.2   952.7       0
+json     priority      0.500  0.356  0.381  0.856   912.2   952.7       0
+json     needs_human   0.550  0.306  0.340  0.856   912.2   952.7       0
+json     ALL           0.485  0.371  0.384  0.856   912.2   952.7       0
+
+== gridworld ==
+method   field           acc    ECE  Brier   conf   p50ms   p95ms typeErr
+scored   move          0.530  0.382  0.394  0.883    39.9    42.7       0
+           +temp       0.590  0.173  0.263  0.417                  T=8.75
+scored   danger        0.550  0.136  0.248  0.626    39.9    42.7       0
+           +temp       0.530  0.052  0.245  0.578                  T=1.76
+scored   ALL           0.540  0.252  0.321  0.754    39.9    42.7       0
+json     move          0.455  0.445  0.446  0.900   692.4   723.1       0
+json     danger        0.840  0.060  0.138  0.900   692.4   723.1       0
+json     ALL           0.647  0.253  0.292  0.900   692.4   723.1       0
