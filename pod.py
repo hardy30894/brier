@@ -145,7 +145,12 @@ def cmd_status(a):
 
 
 def cmd_down(a):
-    ids = [p["id"] for p in runpod.get_pods() if p["name"].startswith("brier-")] if a.all else ([state()["id"]] if state() else [])
+    s = state()
+    if s and not a.all and not a.force:
+        marker = ROOT / f".pulled-{s['id']}"
+        if not marker.exists():
+            sys.exit(f"refusing: results of {s['id']} were never pulled; run `pod.py --name {NAME} pull` first, or down --force")
+    ids = [p["id"] for p in runpod.get_pods() if p["name"].startswith("brier-")] if a.all else ([s["id"]] if s else [])
     if not ids:
         print("nothing to terminate")
     for pid in ids:
@@ -165,11 +170,21 @@ def cmd_down(a):
         print(f"  {p.get('desiredStatus')}: {p['id']} {p['name']} ${p.get('costPerHr', 0):.2f}/hr (not created by this repo)")
 
 
+def _get_pod_retry(pod_id, tries=6):
+    for i in range(tries):
+        try:
+            return runpod.get_pod(pod_id)
+        except Exception as e:
+            if i == tries - 1:
+                raise
+            time.sleep(3 * (i + 1))
+
+
 def _endpoint_or_die():
     s = state()
     if not s:
         sys.exit("no tracked pod")
-    ep = ssh_endpoint(runpod.get_pod(s["id"]))
+    ep = ssh_endpoint(_get_pod_retry(s["id"]))
     if not ep:
         sys.exit("pod has no public ssh port yet")
     return ep
@@ -205,6 +220,7 @@ def cmd_pull(a):
     remote = subprocess.Popen(ssh + [f"cd {REMOTE} && tar -czf - $(ls -d {dirs} 2>/dev/null)"], stdout=subprocess.PIPE)
     subprocess.run(["tar", "-C", str(ROOT), "-xzf", "-"], stdin=remote.stdout, check=True)
     remote.wait()
+    (ROOT / f".pulled-{state()['id']}").write_text(str(time.time()))
     print(f"pulled {dirs}")
 
 
@@ -225,6 +241,7 @@ if __name__ == "__main__":
     x.add_argument("minutes", type=int)
     d = sub.add_parser("down")
     d.add_argument("--all", action="store_true")
+    d.add_argument("--force", action="store_true", help="terminate even if results were never pulled")
     sub.add_parser("ssh")
     sub.add_parser("sync")
     e = sub.add_parser("exec")

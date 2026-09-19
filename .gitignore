@@ -6,3 +6,4 @@ __pycache__/
 .watchdog.log
 adapters/
 results/cascade_*
+.pulled-*
