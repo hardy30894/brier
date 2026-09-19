@@ -120,7 +120,9 @@ visible?
 **Delivered.** [demo.html](demo.html) replays recorded gridworld games: the grid, the
 four move probabilities, the chosen move, whether it was optimal, and the latency of
 each decision, with play, step and reset, for a trained and an untrained model.
-`record.py` produces the trajectories from any model or adapter.
+`record.py` produces the trajectories from any model or adapter. The recorded set is
+twelve games each: the outcome-reward 0.6B, trained with no labels, reaches the exit
+in seven and walks into the monster in two; the untrained 0.6B reaches it in one.
 
 **Limit.** It is a replay of recorded games, because the page is static and the model
 needs a GPU. A live version, the page asking a local scorer each tick, is the first item

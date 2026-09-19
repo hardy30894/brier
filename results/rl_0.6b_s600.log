@@ -18,3 +18,12 @@ step 350/600 reward 0.815 brier 0.184 conf 0.991 (712s)
 step 375/600 reward 0.800 brier 0.191 conf 0.991 (763s)
 step 400/600 reward 0.770 brier 0.221 conf 0.976 (814s)
 step 425/600 reward 0.795 brier 0.174 conf 0.786 (865s)
+step 450/600 reward 0.785 brier 0.213 conf 0.835 (916s)
+step 475/600 reward 0.785 brier 0.209 conf 0.840 (967s)
+step 500/600 reward 0.745 brier 0.219 conf 0.801 (1017s)
+step 525/600 reward 0.800 brier 0.214 conf 0.867 (1068s)
+step 550/600 reward 0.765 brier 0.200 conf 0.842 (1119s)
+step 575/600 reward 0.765 brier 0.195 conf 0.905 (1170s)
+step 600/600 reward 0.785 brier 0.205 conf 0.989 (1221s)
+trainable params: 10,092,544 || all params: 606,142,464 || trainable%: 1.6650
+saved adapters/Qwen3-0.6B-brier-rl-s600

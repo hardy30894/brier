@@ -1,5 +1,13 @@
-Traceback (most recent call last):
-  File "/workspace/brier/record.py", line 28, in <module>
-    steps.append({"grid": state.split("\n")[1:], "player": player, "probs": ans.probabilities, "move": move, "confidence": round(ans.confidence, 3), "optimal": bool(good), "latency_ms": round(ans.latency_ms, 1)})
-                                                                                                                                                                                                ^^^^^^^^^^^^^^
-AttributeError: 'Answer' object has no attribute 'latency_ms'
+episode 0: 5 steps -> exit
+episode 1: 1 steps -> exit
+episode 2: 2 steps -> dead
+episode 3: 5 steps -> exit
+episode 4: 3 steps -> exit
+episode 5: 1 steps -> dead
+episode 6: 10 steps -> blocked
+episode 7: 10 steps -> blocked
+episode 8: 10 steps -> blocked
+episode 9: 2 steps -> exit
+episode 10: 5 steps -> exit
+episode 11: 2 steps -> exit
+wrote results/trajectories_trained.json
