@@ -49,7 +49,7 @@ task. Full tables and protocol in [TRAINING.md](docs/TRAINING.md).
 | | untrained | trained | |
 |---|---|---|---|
 | Latency per three-question decision, 4B, RTX 4090 | 1268 ms generating JSON | **111 ms** one pass | 11× |
-| Frustration (never trained on), Qwen3-4B | 0.44 acc · 0.54 ECE | **0.63 acc · 0.25 ECE** | raw, no correction |
+| Frustration (never trained on), Qwen3-4B | 0.44 acc · 0.54 ECE | **0.83 acc · 0.20 ECE** | raw, no correction |
 | Duplicates (never trained on), Qwen3-4B | 0.73 acc · 0.26 ECE | **0.997 acc · 0.04 ECE** | raw |
 | Banking77 (real, never trained on), Qwen3-0.6B | 0.85 acc · 0.10 ECE | **0.90 acc · 0.02 ECE** | raw |
 | Ticket category, Phi-4-mini | 0.71 acc | **0.96 acc** | held-out templates |

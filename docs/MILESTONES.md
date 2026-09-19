@@ -105,9 +105,10 @@ in parallel.
 
 **Found.** Contrastive data cured the negative transfer: 0.6B duplicates 0.64 to 0.97
 with nothing else changed. Phi-4-mini trained is the strongest model in the project
-(0.96 on ticket category, 0.99 on duplicates, 0.92 on real banking). The typed head
-costs accuracy at 0.6B and is pure gain at 4B (passages 0.88 to 0.93 with raw ECE 0.09
-to 0.01), so it is kept from about 4B up.
+(0.96 on ticket category, 0.99 on duplicates, 0.92 on real banking). The same data lifts the
+4B on the never-trained frustration task from 0.63 to 0.83. The typed head improves
+calibration on trained tasks and hurts the unseen ordinal task at both sizes, so it is
+optional, on by evaluation.
 
 ## Milestone 3, the demo
 

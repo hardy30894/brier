@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/workspace/brier/record.py", line 28, in <module>
+    steps.append({"grid": state.split("\n")[1:], "player": player, "probs": ans.probabilities, "move": move, "confidence": round(ans.confidence, 3), "optimal": bool(good), "latency_ms": round(ans.latency_ms, 1)})
+                                                                                                                                                                                                ^^^^^^^^^^^^^^
+AttributeError: 'Answer' object has no attribute 'latency_ms'

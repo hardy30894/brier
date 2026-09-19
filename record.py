@@ -22,10 +22,11 @@ for k, ex in enumerate(gridworld.generate_q(a.episodes, seed=4242)):
     steps, status = [], "ok"
     for t in range(a.max_steps):
         state = render_state(grid, player, goal, monster)
-        ans = ask(sc, state, [q])["move"]
+        answers = ask(sc, state, [q])
+        ans = answers["move"]
         move = ans.value
         good = outcome(grid, player, goal, monster, move)
-        steps.append({"grid": state.split("\n")[1:], "player": player, "probs": ans.probabilities, "move": move, "confidence": round(ans.confidence, 3), "optimal": bool(good), "latency_ms": round(ans.latency_ms, 1)})
+        steps.append({"grid": state.split("\n")[1:], "player": player, "probs": ans.probabilities, "move": move, "confidence": round(ans.confidence, 3), "optimal": bool(good), "latency_ms": round(answers.latency_ms, 1)})
         player, status = step(grid, player, monster, move)
         if status in ("exit", "dead"):
             break

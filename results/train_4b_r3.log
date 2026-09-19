@@ -4,3 +4,29 @@
 `use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`.
 /usr/local/lib/python3.11/dist-packages/torch/utils/checkpoint.py:295: FutureWarning: `torch.cpu.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cpu', args...)` instead.
   with torch.enable_grad(), device_autocast_ctx, torch.cpu.amp.autocast(**ctx.cpu_autocast_kwargs):  # type: ignore[attr-defined]
+step 50/1200 loss 1.2185 lr 9.58e-05 (80s)
+step 100/1200 loss 0.4422 lr 9.17e-05 (161s)
+step 150/1200 loss 0.3580 lr 8.75e-05 (244s)
+step 200/1200 loss 0.3801 lr 8.33e-05 (326s)
+step 250/1200 loss 0.3041 lr 7.92e-05 (408s)
+step 300/1200 loss 0.2238 lr 7.50e-05 (489s)
+step 350/1200 loss 0.2358 lr 7.08e-05 (570s)
+step 400/1200 loss 0.2246 lr 6.67e-05 (650s)
+step 450/1200 loss 0.2323 lr 6.25e-05 (729s)
+step 500/1200 loss 0.2024 lr 5.83e-05 (811s)
+step 550/1200 loss 0.1685 lr 5.42e-05 (895s)
+step 600/1200 loss 0.2041 lr 5.00e-05 (976s)
+step 650/1200 loss 0.1765 lr 4.58e-05 (1057s)
+step 700/1200 loss 0.2162 lr 4.17e-05 (1141s)
+step 750/1200 loss 0.1993 lr 3.75e-05 (1223s)
+step 800/1200 loss 0.1700 lr 3.33e-05 (1301s)
+step 850/1200 loss 0.2073 lr 2.92e-05 (1383s)
+step 900/1200 loss 0.1684 lr 2.50e-05 (1466s)
+step 950/1200 loss 0.1760 lr 2.08e-05 (1548s)
+step 1000/1200 loss 0.2056 lr 1.67e-05 (1630s)
+step 1050/1200 loss 0.1764 lr 1.25e-05 (1710s)
+step 1100/1200 loss 0.1798 lr 8.33e-06 (1791s)
+step 1150/1200 loss 0.1901 lr 5.00e-06 (1872s)
+step 1200/1200 loss 0.2020 lr 5.00e-06 (1951s)
+trainable params: 33,030,144 || all params: 4,055,498,240 || trainable%: 0.8145
+saved adapters/Qwen3-4B-brier-r16-s1200-u0.3-train

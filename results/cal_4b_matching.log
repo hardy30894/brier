@@ -1,0 +1,18 @@
+Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 3/3 [00:00<00:00, 67.07it/s]
+  collected 50/300 (3s)
+  collected 100/300 (5s)
+  collected 150/300 (7s)
+  collected 200/300 (9s)
+  collected 250/300 (11s)
+  collected 300/300 (14s)
+
+== matching ==
+calibration report  model=Qwen3-4B@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+matches            300  0.763    0.235    0.112     0.233     0.151    0.994    0.813  10.54
+
+decision policy (calibrated confidence cutoffs, held-out):
+  matches          auto    target 0.95: act when confidence >= 0.813  -> precision 0.951, covers 61% of decisions
+  matches          review  target 0.80: act when confidence >= 0.639  -> precision 0.801, covers 92% of decisions
+  matches          human   everything below

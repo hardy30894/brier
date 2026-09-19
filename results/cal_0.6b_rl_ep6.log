@@ -1,0 +1,38 @@
+  collected 50/300 (4s)
+  collected 100/300 (7s)
+  collected 150/300 (10s)
+  collected 200/300 (14s)
+  collected 250/300 (17s)
+  collected 300/300 (20s)
+
+== gridworld ==
+calibration report  model=Qwen3-0.6B-rl-ep6@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+move               300  0.813    0.280    0.174     0.235     0.194    0.533    0.645   0.62
+danger             300  0.870    0.177    0.034     0.145     0.116    0.693    0.862   0.43
+
+decision policy (calibrated confidence cutoffs, held-out):
+  move             auto    target 0.95: act when confidence >= 0.783  -> precision 0.956, covers 23% of decisions
+  move             review  target 0.80: act when confidence >= 0.310  -> precision 0.813, covers 100% of decisions
+  move             human   everything below
+  danger           auto    target 0.95: act when confidence >= 0.925  -> precision 0.955, covers 7% of decisions
+  danger           review  target 0.80: act when confidence >= 0.567  -> precision 0.870, covers 100% of decisions
+  danger           human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (7s)
+  collected 150/300 (10s)
+  collected 200/300 (13s)
+  collected 250/300 (16s)
+  collected 300/300 (20s)
+
+== frustration ==
+calibration report  model=Qwen3-0.6B-rl-ep6@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+frustration        300  0.330    0.506    0.190     0.472     0.231    0.836    0.442   4.60
+
+decision policy (calibrated confidence cutoffs, held-out):
+  frustration      auto    target 0.95: unreachable on this data
+  frustration      review  target 0.80: unreachable on this data
+  frustration      human   everything below
