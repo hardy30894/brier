@@ -5,3 +5,4 @@ __pycache__/
 .pod.json
 .watchdog.log
 adapters/
+results/cascade_*
