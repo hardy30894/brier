@@ -1,0 +1,26 @@
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00, 71.64it/s]
+  collected 50/300 (8s)
+  collected 100/300 (16s)
+  collected 150/300 (23s)
+  collected 200/300 (31s)
+  collected 250/300 (38s)
+  collected 300/300 (46s)
+
+== tickets ==
+calibration report  model=Phi-4-mini-r3@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+category           300  0.957    0.032    0.023     0.036     0.034    0.929    0.954   0.78
+priority           300  0.813    0.172    0.171     0.173     0.174    0.744    0.748   0.98
+needs_human        300  1.000    0.000    0.000     0.000     0.000    1.000    1.000   0.05
+
+decision policy (calibrated confidence cutoffs, held-out):
+  category         auto    target 0.95: act when confidence >= 0.503  -> precision 0.957, covers 100% of decisions
+  category         review  target 0.80: act when confidence >= 0.503  -> precision 0.957, covers 100% of decisions
+  category         human   everything below
+  priority         auto    target 0.95: act when confidence >= 0.982  -> precision 0.966, covers 19% of decisions
+  priority         review  target 0.80: act when confidence >= 0.456  -> precision 0.813, covers 100% of decisions
+  priority         human   everything below
+  needs_human      auto    target 0.95: act when confidence >= 1.000  -> precision 1.000, covers 100% of decisions
+  needs_human      review  target 0.80: act when confidence >= 1.000  -> precision 1.000, covers 100% of decisions
+  needs_human      human   everything below
