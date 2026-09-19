@@ -118,14 +118,33 @@ def decoder(model):
     raise RuntimeError("no decoder body found")
 
 
+BUCKETS = (128, 256, 512, 1024, 2048)
+
+
+def compiled_body(scorer):
+    """The transformer body compiled with CUDA graphs; inputs are padded to fixed buckets so
+    shapes stay static. Removes most per-layer launch overhead at batch size one."""
+    if getattr(scorer, "_compiled_body", None) is None:
+        scorer._compiled_body = torch.compile(decoder(scorer.model), mode="reduce-overhead", dynamic=False)
+    return scorer._compiled_body
+
+
 def pointer_scores(scorer, head, state, questions, grad=False):
     """One forward pass over the prompt, through the transformer body only (no vocabulary
     projection); returns a list (per question) of score tensors (per option)."""
     ids, qpos, opos = encode(scorer, state, questions)
-    x = torch.tensor([ids], device=scorer.device)
     ctx = torch.enable_grad() if grad else torch.no_grad()
     with ctx:
-        h = decoder(scorer.model)(input_ids=x).last_hidden_state[0]
+        if getattr(scorer, "compile", False) and not grad:
+            n = len(ids)
+            L = next((b for b in BUCKETS if b >= n), n)
+            pad = scorer.tok.pad_token_id
+            x = torch.tensor([ids + [pad] * (L - n)], device=scorer.device)
+            m = torch.tensor([[1] * n + [0] * (L - n)], device=scorer.device)
+            h = compiled_body(scorer)(input_ids=x, attention_mask=m).last_hidden_state[0]
+        else:
+            x = torch.tensor([ids], device=scorer.device)
+            h = decoder(scorer.model)(input_ids=x).last_hidden_state[0]
         return [head(h[qp], h[torch.tensor(op, device=scorer.device)], ordinal=isinstance(q, Grade)) for q, qp, op in zip(questions, qpos, opos)]
 
 

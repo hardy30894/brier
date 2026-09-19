@@ -57,7 +57,8 @@ task. Full tables and protocol in [TRAINING.md](docs/TRAINING.md).
 | MNLI (never trained on), Qwen3-0.6B, mixed corpus | 0.38 acc | **0.77 acc** | real, held-out dataset |
 | Civil Comments toxicity, Phi-4-mini, mixed corpus | 0.49 acc · 0.33 ECE | **0.94 acc · 0.02 ECE** | real, raw |
 | Gridworld from outcomes only, no labels, Qwen3-0.6B | 0.35 acc | **0.81 acc** | vs 0.84 supervised |
-| Ten questions per request, Phi-4-mini, pointer head | 1,230 ms row scorer | **50 ms** one row | 25× |
+| Ten questions per request, Phi-4-mini, pointer head, compiled | 852 ms row scorer | **32 ms** one row | 27× |
+| Three questions, Qwen3-0.6B, pointer head, compiled | 40 ms | **13 ms** | 3× |
 | Type errors, every model, every task | 0 | 0 | by construction |
 
 Three findings shape the method. Clean labels alone teach overconfidence: a model
@@ -154,6 +155,17 @@ category           300  0.680    0.295    0.054   6.46
   review  target 0.80: act when confidence >= 0.721  -> precision 0.800, covers 48% of decisions
   human   everything below
 ```
+
+Load a released adapter instead of training one (needs the GitHub CLI, signed in):
+
+```sh
+python3 -m brier fetch phi-4-mini-pointer          # or qwen3-0.6b-pointer, phi-4-mini-mixed, qwen3-0.6b-mixed
+python3 -m brier.serve --model microsoft/Phi-4-mini-instruct --adapter adapters/Phi-4-mini-instruct-brier-r16-s1000-u0.3-train-pointer
+```
+
+With a pointer adapter loaded, Pick and Claim questions go through the head in one row
+and Grade questions through the row scorer; set `scorer.compile = True` on a GPU for the
+compiled body.
 
 Train, and evaluate the adapter with the same kit:
 

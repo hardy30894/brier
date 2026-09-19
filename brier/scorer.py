@@ -51,6 +51,7 @@ class Scorer:
         self.head = None
         self.pointer = None
         self.pointer_grade = False   # True routes Grade questions through the pointer head too
+        self.compile = False         # True compiles the body with CUDA graphs for the pointer path (GPU only)
         self._enc_cache: dict[str, list[int]] = {}
 
     def _enc(self, s: str) -> list[int]:

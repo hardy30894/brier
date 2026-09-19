@@ -658,13 +658,22 @@ options by their distance from it, since the option words carry no order of thei
 | Phi-4-mini | 3 | 11 | 145 ms | 48 ms | 3× |
 | Phi-4-mini | 10 | 38 | 1,230 ms | 50 ms | 25× |
 | Phi-4-mini | 30 | 110 | out of memory | fits | |
-| Qwen3-0.6B | 3 | 11 | 67 ms | 62 ms | 1.1× |
-| Qwen3-0.6B | 10 | 38 | 389 ms | 63 ms | 6× |
+| Qwen3-0.6B | 3 | 11 | 40 ms | 34 ms | 1.2× |
+| Qwen3-0.6B | 10 | 38 | 228 ms | 36 ms | 6× |
+| Qwen3-0.6B, compiled | 3 | 11 | 40 ms | **13 ms** | 3× |
+| Qwen3-0.6B, compiled | 10 | 38 | 228 ms | **17 ms** | 14× |
+| Phi-4-mini, compiled | 3 | 11 | 105 ms | **18 ms** | 6× |
+| Phi-4-mini, compiled | 10 | 38 | 852 ms | **32 ms** | 27× |
 
 The pointer's latency is flat in the number of questions; the row scorer's grows with
-every candidate and at thirty questions no longer fits on the card. On the 0.6B the
-single-row cost is dominated by fixed overhead (tokenisation with offsets, Python), which
-is the next thing to trim.
+every candidate and at thirty questions no longer fits on the card. Profiling the single
+row showed that everything outside the forward pass, rendering, tokenising with offsets,
+position lookup, the head, costs under two milliseconds; the forward pass itself was 30
+ms for 136 tokens on the 0.6B, which is per-layer launch overhead at batch size one, not
+compute. Compiling the transformer body with CUDA graphs (`scorer.compile = True`, inputs
+padded to fixed buckets) cuts that to 11 ms, and the whole request to 13 ms. A decision
+on a laptop-class GPU is now in the tens of milliseconds, independent of how many
+questions it carries.
 
 **Accuracy.** Five runs on the mixed corpus, evaluated on the same held-out examples as
 round four. Cells are accuracy / raw ECE.

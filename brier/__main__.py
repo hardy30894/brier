@@ -66,9 +66,26 @@ def cmd_calibrate(a):
             f.write(reliability_svg(cal, f"{task} · {tag}"))
 
 
+def cmd_fetch(a):
+    """Download a released adapter (or calibration file) into adapters/ with the GitHub CLI."""
+    import subprocess
+    os.makedirs("adapters", exist_ok=True)
+    asset = a.name if a.name.endswith(".json") else f"{a.name}.tar.gz"
+    subprocess.run(["gh", "release", "download", a.tag, "--repo", "hardy30894/brier", "--pattern", asset, "--dir", "adapters", "--clobber"], check=True)
+    if asset.endswith(".tar.gz"):
+        subprocess.run(["tar", "-xzf", os.path.join("adapters", asset), "-C", "adapters"], check=True)
+        os.remove(os.path.join("adapters", asset))
+        print(f"adapters/ now holds {a.name}; pass its directory as --adapter")
+    else:
+        print(f"adapters/{asset}")
+
+
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
+    f = sub.add_parser("fetch")
+    f.add_argument("name", help="qwen3-0.6b-mixed | phi-4-mini-mixed | qwen3-0.6b-pointer | phi-4-mini-pointer | qwen3-0.6b-gridworld-outcome | phi-4-mini-tickets-calibration.json")
+    f.add_argument("--tag", default="adapters-v1")
     c = sub.add_parser("calibrate")
     c.add_argument("--task", default="tickets,gridworld,toolcall,passages,frustration")
     c.add_argument("--model", default="Qwen/Qwen3-4B")
@@ -79,4 +96,4 @@ if __name__ == "__main__":
     c.add_argument("--tag", default=None, help="override the results tag")
     c.add_argument("--out", default="results")
     a = ap.parse_args()
-    cmd_calibrate(a)
+    {"calibrate": cmd_calibrate, "fetch": cmd_fetch}[a.cmd](a)

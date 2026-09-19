@@ -169,11 +169,11 @@ distillation are the fixes, measured in the tables.
 
 ## Next
 
-- Trim the pointer head's fixed overhead so the 0.6B's single row is as fast as its forward pass.
+- Serve the compiled pointer path by default and batch concurrent requests.
 - Conformal prediction sets: a distribution-free coverage guarantee per question, from the same held-out data.
 - Distilled labels on real tickets and tool-call logs, with disagreements kept.
 - Multi-step credit assignment: discounting or a value estimate for longer episodes.
-- Phi-4-mini as the working backbone throughout.
+- Phi-4-mini as the working backbone throughout; adapters are published as a GitHub release (`python3 -m brier fetch`).
 
 ## Principles that held
 

@@ -593,6 +593,23 @@ single temperature cannot provide. The second is a per-candidate **residual** th
 the head re-rank answers using information the vocabulary distribution compresses away.
 Both are trained jointly with the LoRA adapters by the same loss as section 15.
 
+**The pointer head.** A second head removes the per-candidate rows altogether. Let
+$h_{q}$ be the hidden state at the end of question $q$'s line in the prompt and
+$h_{o_i}$ the hidden state at the last token of its $i$-th listed option. With learned
+$W_q, W_k \in \mathbb{R}^{d_h \times d}$,
+
+```math
+s_i \;=\; \frac{(W_k h_{o_i})^{\top} (W_q h_{q})}{\sqrt{d_h}}
+\;-\; \lambda\,n\,\big(\tfrac{i}{n-1} - \mu(h_q)\big)^2 \ [\text{Grade only}],
+\qquad \mu(h_q) = \sigma(w^{\top} h_q + b)
+```
+
+the second term letting an ordered scale be scored by distance from a predicted
+position. Every option of every question in a request is scored from one forward pass
+of the transformer body; the vocabulary projection is never computed. Trained with the
+loss of section 15 on the same data, it matches the row scorer on Pick and Claim
+questions (TRAINING.md, round five).
+
 ## 18. Outcome rewards: the policy-gradient form
 
 Section 15 needs the correct answer. Environments provide something weaker and more

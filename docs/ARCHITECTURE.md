@@ -280,7 +280,26 @@ pass costs more than it saves. From about 1.7B up, the shared prefix wins, and i
 advantage grows with prompt length and option count. The default is the full-row path;
 switch per scorer for larger models or long states.
 
-### 2.9 Where the speed comes from
+### 2.9 The pointer head: one row per request
+
+Sections 2.3 to 2.5 pay one row per allowed answer. The pointer head pays one row per
+request. The prompt already lists every option of every question; the head reads the
+hidden state at the place each option is written, compares it with the hidden state at
+the end of that question's line, and the comparison is the option's score. The
+transformer body runs once and the vocabulary projection is skipped entirely, because
+the head never needs the next-token distribution. It can only score options that were
+listed, so the type guarantee is unchanged, and the calibration kit and the training
+objective apply to its scores exactly as to the row scorer's.
+
+Measured on Phi-4-mini on an RTX 4090 with the compiled body: 18 ms for three
+questions and 32 ms for ten, against 105 and 852 ms for the row scorer, which cannot fit
+thirty questions on the card at all. The head trains from scratch in ten to forty
+minutes and matches the row scorer on Pick and Claim questions across the real datasets;
+on Grade questions it trails, because the option words carry no order of their own, so
+`ask()` sends Grade questions through the row scorer and everything else through the
+head. [TRAINING.md](TRAINING.md) has the tables and the [primer](PRIMER.md) the equation.
+
+### 2.10 Where the speed comes from
 
 Putting it together: JSON generation is about 25 sequential forward passes, each one
 waiting for the last. Brier is one forward pass over a small batch. On the tickets task
