@@ -3,384 +3,288 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Brier · live</title>
+<title>Brier</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root { --ink:#0B0F1D; --ink-2:#2A3142; --muted:#5C6473; --faint:#8E95A3; --line:#E6E8EE; --bg:#FFFFFF; --panel:#F6F7FB; --panel-2:#EEF0F6; --accent:#4F46E5; --accent-2:#8B7BFF; --accent-soft:#EEF0FF; --grad:linear-gradient(135deg,#3F39B8 0%,#5B52EA 45%,#A9A6FA 100%); --base:#B45309; --base-soft:#FDF1E4; --good:#0E7C3A; --bad:#B42318; --shadow:0 1px 2px rgba(11,15,29,.04), 0 12px 32px -16px rgba(11,15,29,.16); }
-  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ink:#F2F3F8; --ink-2:#C9CEDA; --muted:#A6ADBD; --faint:#6E7686; --line:#1E2433; --bg:#0B0F1D; --panel:#10152A; --panel-2:#171D33; --accent:#8B85F5; --accent-2:#B8B3FF; --accent-soft:#1A1F3F; --grad:linear-gradient(135deg,#4F46E5 0%,#8B7BFF 50%,#C9C5FF 100%); --base:#E0912E; --base-soft:#2A2113; --good:#3DBB6B; --bad:#F0655B; --shadow:none; } }
-  :root[data-theme="dark"] { --ink:#F2F3F8; --ink-2:#C9CEDA; --muted:#A6ADBD; --faint:#6E7686; --line:#1E2433; --bg:#0B0F1D; --panel:#10152A; --panel-2:#171D33; --accent:#8B85F5; --accent-2:#B8B3FF; --accent-soft:#1A1F3F; --grad:linear-gradient(135deg,#4F46E5 0%,#8B7BFF 50%,#C9C5FF 100%); --base:#E0912E; --base-soft:#2A2113; --good:#3DBB6B; --bad:#F0655B; --shadow:none; }
+  :root {
+    --bg:#F7F6F2; --bg-2:#F1F0EB; --bg-3:#E9E7E1; --line:#DAD8D0; --line-2:#C3C0B6;
+    --fg:#111111; --fg-2:#4A4A46; --fg-3:#8A8983; --accent:#3F39B8; --accent-2:#3F39B8; --warn:#9A5B12; --ok:#1F6F3F; --bad:#A3261B;
+    --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace; --sans:'IBM Plex Sans',-apple-system,Helvetica,Arial,sans-serif;
+  }
+  :root[data-theme="dark"] { --bg:#111111; --bg-2:#161616; --bg-3:#1F1F1F; --line:#262626; --line-2:#383838; --fg:#EDECE8; --fg-2:#B5B3AC; --fg-3:#6F6E69; --accent:#8F88F0; --accent-2:#6C64E8; --warn:#D59A3F; --ok:#4CB877; --bad:#E36B5F; }
   * { box-sizing:border-box; }
-  html { scroll-behavior:smooth; }
-  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.55 Inter,'Helvetica Neue',Helvetica,Arial,sans-serif; -webkit-font-smoothing:antialiased; font-feature-settings:"cv11","ss01"; }
-  .mono { font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace; }
-  a { color:inherit; }
-  /* top bar */
-  .topbar { position:sticky; top:0; z-index:5; display:flex; align-items:center; gap:14px; padding:14px 32px; background:color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); }
-  .topbar::after { content:""; position:absolute; left:0; right:0; bottom:-1px; height:2px; background:var(--grad); }
-  .topbar img { height:24px; }
-  .topbar .name { font-weight:600; letter-spacing:-0.2px; }
-  .topbar nav { display:flex; gap:18px; margin-left:22px; font-size:13px; color:var(--muted); }
-  .topbar nav a { text-decoration:none; } .top nav a:hover { color:var(--ink); }
-  .topbar .status { margin-left:auto; font-size:12px; color:var(--muted); display:flex; align-items:center; gap:8px; font-variant-numeric:tabular-nums; }
-  .dot { width:8px; height:8px; border-radius:50%; background:var(--faint); box-shadow:0 0 0 3px color-mix(in srgb, var(--faint) 18%, transparent); }
-  .dot.on { background:var(--good); box-shadow:0 0 0 3px color-mix(in srgb, var(--good) 22%, transparent); }
-  .theme { border:1px solid var(--line); background:var(--panel); color:var(--muted); border-radius:8px; padding:4px 8px; font-size:12px; cursor:pointer; }
-  /* layout */
-  .wrap { max-width:1240px; margin:0 auto; padding:0 32px; }
-  section.wrap { padding:76px 32px 28px; }
-  .caps { font-size:11px; font-weight:600; letter-spacing:1.8px; text-transform:uppercase; color:var(--accent); margin:0 0 12px; }
-  h1 { font-size:clamp(34px, 5vw, 56px); line-height:1.05; letter-spacing:-1.6px; font-weight:700; margin:0 0 16px; }
-  h1 em { font-style:normal; background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; }
-  h2 { font-size:26px; letter-spacing:-0.6px; font-weight:600; margin:0 0 8px; }
-  .lead { font-size:17px; color:var(--muted); max-width:62ch; margin:0 0 22px; }
-  .sub { font-size:14px; color:var(--muted); max-width:64ch; margin:0 0 18px; }
-  .stats { display:flex; gap:36px; flex-wrap:wrap; margin-top:26px; }
-  .stat b { display:block; font-size:34px; font-weight:600; letter-spacing:-1px; font-variant-numeric:tabular-nums; line-height:1.1; }
-  .stat span { font-size:12.5px; color:var(--muted); }
-  /* cards & controls */
-  .card { background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:22px 24px; box-shadow:var(--shadow); }
-  textarea, input, select { width:100%; font:inherit; color:var(--ink); background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:10px 12px; transition:border-color .15s, box-shadow .15s; }
-  textarea { resize:vertical; font-family:'JetBrains Mono',ui-monospace,Menlo,monospace; font-size:12.5px; line-height:1.55; }
-  textarea:focus, input:focus, select:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
-  .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-  .chips { display:flex; gap:6px; flex-wrap:wrap; }
-  .chip { font-size:12.5px; font-weight:500; padding:5px 12px; border:1px solid var(--line); border-radius:999px; background:var(--bg); color:var(--muted); cursor:pointer; transition:all .15s; }
-  .chip:hover { color:var(--ink); border-color:var(--faint); }
-  .chip.on { color:#fff; border-color:transparent; background:var(--grad); }
-  button { font:inherit; font-weight:500; padding:9px 16px; border-radius:10px; border:1px solid var(--line); background:var(--bg); color:var(--ink); cursor:pointer; transition:all .15s; }
-  button:hover { border-color:var(--faint); }
-  button.primary { background:var(--grad); border-color:transparent; color:#fff; box-shadow:0 8px 20px -10px rgba(79,70,229,.7); }
-  button.primary:hover { filter:brightness(1.06); }
-  button:disabled { opacity:.5; cursor:default; box-shadow:none; }
-  .kbd { font-size:11px; color:var(--faint); border:1px solid var(--line); border-radius:6px; padding:2px 6px; }
-  .toggle { display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--muted); cursor:pointer; user-select:none; }
-  .toggle input { width:auto; margin:0; accent-color:var(--accent); }
-  /* hero */
-  .hero { display:grid; grid-template-columns:1.05fr 1fr; gap:20px; margin-top:8px; align-items:start; }
-  @media (max-width: 960px) { .hero { grid-template-columns:1fr; } }
-  .hint { font-size:12.5px; color:var(--faint); margin-top:10px; }
-  .hero-out { display:flex; flex-direction:column; }
-  .hero-lat { display:flex; align-items:baseline; gap:12px; margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid var(--line); }
-  .hero-lat b { font-size:40px; font-weight:700; letter-spacing:-1.4px; font-variant-numeric:tabular-nums; line-height:1; background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; }
-  .hero-lat span { font-size:13px; color:var(--muted); }
-  .hero-lat b.pulse { animation:pulse .45s ease; }
-  @keyframes pulse { 0% { opacity:.3 } 100% { opacity:1 } }
-  .hero-out .foot { font-size:12.5px; color:var(--muted); margin-top:auto; padding-top:12px; border-top:1px solid var(--line); }
-  .hero-out .foot b { color:var(--ink); font-weight:600; }
-  /* race (unused) */
-  .race { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:16px; }
-  @media (max-width: 900px) { .race { grid-template-columns:1fr; } }
-  .lane { background:var(--bg); border:1px solid var(--line); border-radius:14px; padding:18px 20px; min-height:300px; display:flex; flex-direction:column; position:relative; overflow:hidden; }
-  .lane .head { display:flex; align-items:baseline; gap:10px; margin-bottom:12px; }
-  .lane .head .t { font-weight:600; }
-  .lane .head .m { font-size:12px; color:var(--muted); }
-  .lane .clock { margin-left:auto; font-size:24px; font-weight:600; letter-spacing:-0.6px; font-variant-numeric:tabular-nums; }
-  .lane.brier .clock { background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; }
-  .lane.gen .clock { color:var(--base); }
-  .lane .body { flex:1; }
-  .lane .foot { font-size:12.5px; color:var(--muted); margin-top:12px; padding-top:10px; border-top:1px solid var(--line); min-height:34px; }
-  .lane .foot b { color:var(--ink); font-weight:600; }
-  .lane.gen .stream { white-space:pre-wrap; word-break:break-word; font-size:14px; line-height:1.7; color:var(--ink-2); min-height:120px; padding:6px 0; }
-  .lane.gen .stream .cursor { display:inline-block; width:8px; height:15px; background:var(--base); vertical-align:-2px; margin-left:1px; animation:blink 1s steps(2) infinite; }
-  @keyframes blink { 50% { opacity:0 } }
-  .lane.gen.done .stream .cursor { display:none; }
-  .lane .band { position:absolute; left:0; right:0; top:0; height:3px; background:var(--grad); transform:scaleX(0); transform-origin:left; }
-  .lane.brier.running .band { animation:sweep .6s ease-out forwards; }
-  @keyframes sweep { to { transform:scaleX(1) } }
-  .lane.gen .band { background:var(--base); transition:transform linear; }
-  .qa { padding:8px 0; border-top:1px solid var(--line); }
-  .qa:first-child { border-top:0; padding-top:0; }
-  .qa .h { display:flex; align-items:baseline; gap:10px; margin-bottom:4px; font-size:13.5px; }
-  .qa .h .id { font-weight:600; }
-  .qa .h .val { color:var(--accent); font-weight:600; font-variant-numeric:tabular-nums; }
-  .qa .h .tier { margin-left:auto; font-size:10.5px; font-weight:600; letter-spacing:.4px; padding:2px 8px; border-radius:999px; background:var(--accent-soft); color:var(--accent); text-transform:uppercase; }
-  .qa .h .tier.review { background:var(--base-soft); color:var(--base); }
-  .qa .h .tier.human, .qa .h .tier.uncalibrated { background:transparent; color:var(--faint); border:1px solid var(--line); }
-  .bar { display:grid; grid-template-columns:104px 1fr 42px; gap:10px; align-items:center; font-size:12.5px; margin:3px 0; }
-  .bar .lab { color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .bar .track { height:8px; background:var(--panel-2); border-radius:4px; overflow:hidden; }
-  .bar .fill { height:100%; background:var(--accent); opacity:.35; border-radius:4px; width:0; transition:width .45s cubic-bezier(.2,.8,.2,1), opacity .2s; }
-  .bar.top .fill { background:var(--grad); opacity:1; }
-  .bar.top .lab { color:var(--ink); font-weight:500; }
-  .bar .pct { text-align:right; font-variant-numeric:tabular-nums; color:var(--faint); }
-  .bar.top .pct { color:var(--ink); font-weight:600; }
-  .verdict { margin-top:14px; font-size:14px; color:var(--muted); }
-  .verdict b { color:var(--ink); font-weight:600; }
-  /* builder */
-  .builder { display:grid; grid-template-columns:1.1fr 1fr; gap:22px; }
-  @media (max-width: 960px) { .builder { grid-template-columns:1fr; } }
-  .q { border-top:1px solid var(--line); padding:9px 0; display:grid; grid-template-columns:92px 1fr 1fr auto; gap:8px; align-items:start; }
-  .q input, .q select { padding:7px 10px; font-size:13px; border-radius:8px; }
-  .q .x { color:var(--faint); cursor:pointer; padding:6px 4px; } .q .x:hover { color:var(--bad); }
-  .err { color:var(--bad); font-size:13px; margin-top:8px; }
-  .meta { font-size:12px; color:var(--faint); margin-top:10px; font-variant-numeric:tabular-nums; }
+  html, body { height:100%; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:13px/1.5 var(--sans); -webkit-font-smoothing:antialiased; }
+  .mono { font-family:var(--mono); }
+  .app { display:grid; grid-template-rows:44px 1fr; height:100vh; }
+  /* bar */
+  .bar { display:flex; align-items:center; gap:18px; padding:0 16px; border-bottom:1px solid var(--line); background:var(--bg-2); font-size:12.5px; }
+  .bar img { height:18px; }
+  .bar .name { font-weight:600; letter-spacing:.2px; }
+  .bar .modes { display:flex; gap:2px; margin-left:8px; }
+  .bar .modes button { padding:5px 10px; border-radius:6px; }
+  .bar .modes button.on { background:var(--bg-3); color:var(--fg); }
+  .bar .r { margin-left:auto; display:flex; align-items:center; gap:16px; color:var(--fg-2); font-family:var(--mono); font-size:12px; }
+  .bar .r .lat { color:var(--fg); }
+  .dot { width:7px; height:7px; border-radius:50%; background:var(--fg-3); display:inline-block; margin-right:6px; }
+  .dot.on { background:var(--ok); }
+  button { font:inherit; color:var(--fg-2); background:transparent; border:1px solid transparent; border-radius:6px; padding:5px 10px; cursor:pointer; }
+  button:hover { color:var(--fg); background:var(--bg-3); }
+  button.solid { background:var(--fg); color:var(--bg); }
+  button.solid:hover { background:var(--fg-2); }
+  button.ghost { border-color:var(--line-2); }
+  button:disabled { opacity:.45; cursor:default; }
+  /* workspace */
+  .ws { display:grid; grid-template-columns:minmax(380px, 46%) 1fr; min-height:0; }
+  .pane { min-width:0; min-height:0; display:flex; flex-direction:column; overflow:auto; }
+  .pane + .pane { border-left:1px solid var(--line); }
+  .ph { display:flex; align-items:center; gap:10px; padding:10px 16px; border-bottom:1px solid var(--line); color:var(--fg-3); font-size:11px; letter-spacing:1.2px; text-transform:uppercase; font-weight:500; position:sticky; top:0; background:var(--bg); z-index:1; }
+  .ph .sp { flex:1; }
+  .ph .examples { display:flex; gap:2px; text-transform:none; letter-spacing:0; font-size:12px; }
+  .ph .examples button { padding:3px 8px; }
+  .ph .examples button.on { color:var(--fg); background:var(--bg-3); }
+  textarea { width:100%; border:0; outline:0; resize:none; background:transparent; color:var(--fg); font:12.5px/1.65 var(--mono); padding:14px 16px; display:block; caret-color:var(--fg); }
+  textarea::placeholder { color:var(--fg-3); }
+  .ed { border-bottom:1px solid var(--line); }
+  .ed.state textarea { min-height:190px; }
+  .ed.questions textarea { min-height:150px; }
+  .help { padding:6px 16px 12px; color:var(--fg-3); font-size:11.5px; font-family:var(--mono); border-bottom:1px solid var(--line); }
+  .help b { color:var(--fg-2); font-weight:500; }
+  .err { color:var(--bad); padding:8px 16px; font-family:var(--mono); font-size:12px; white-space:pre-wrap; }
+  /* results */
+  .res { padding:6px 0 0; }
+  .q { padding:12px 16px 10px; border-bottom:1px solid var(--line); }
+  .q .h { display:flex; align-items:baseline; gap:12px; margin-bottom:8px; font-family:var(--mono); font-size:12.5px; }
+  .q .h .id { color:var(--fg); font-weight:500; }
+  .q .h .kind { color:var(--fg-3); }
+  .q .h .val { color:var(--fg); font-weight:500; }
+  .q .h .tier { margin-left:auto; font-size:11px; letter-spacing:.6px; text-transform:uppercase; }
+  .q .h .tier.auto { color:var(--ok); } .q .h .tier.review { color:var(--warn); } .q .h .tier.human { color:var(--fg-3); } .q .h .tier.none { color:var(--fg-3); }
+  .row { display:grid; grid-template-columns:120px 1fr 52px; gap:12px; align-items:center; height:20px; font-family:var(--mono); font-size:12px; }
+  .row .lab { color:var(--fg-2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .row .tr { height:6px; background:var(--bg-3); border-radius:2px; overflow:hidden; }
+  .row .fl { height:100%; width:0; background:var(--line-2); border-radius:2px; transition:width .35s cubic-bezier(.2,.8,.2,1), background .2s; }
+  .row.top .fl { background:var(--accent); }
+  .row.top .lab { color:var(--fg); }
+  .row .pc { text-align:right; color:var(--fg-3); font-variant-numeric:tabular-nums; }
+  .row.top .pc { color:var(--fg); }
+  .log { font-family:var(--mono); font-size:11.5px; color:var(--fg-3); }
+  .log .ln { display:grid; grid-template-columns:58px 64px 1fr 70px; gap:10px; padding:5px 16px; border-bottom:1px solid var(--line); white-space:nowrap; overflow:hidden; }
+  .log .ln .t { color:var(--fg-3); } .log .ln .ms { color:var(--fg-2); text-align:right; } .log .ln .a { color:var(--fg-2); overflow:hidden; text-overflow:ellipsis; }
+  .log .ln.new { animation:fade .5s ease; } @keyframes fade { from { background:var(--bg-3) } to { background:transparent } }
   /* gridworld */
-  .gw { display:grid; grid-template-columns:auto 1fr; gap:36px; align-items:start; }
-  @media (max-width: 1000px) { .gw { grid-template-columns:1fr; } }
-  .grid { display:grid; grid-template-columns:repeat(5,64px); gap:6px; padding:10px; background:var(--bg); border:1px solid var(--line); border-radius:16px; }
-  .cell { width:64px; height:64px; border-radius:11px; background:var(--panel); display:flex; align-items:center; justify-content:center; font-weight:600; font-size:16px; position:relative; transition:background .2s, box-shadow .2s, transform .25s cubic-bezier(.2,.8,.2,1); }
-  .cell.wall { background:var(--line); }
-  .cell.exit { color:var(--good); box-shadow:inset 0 0 0 2px var(--good); }
-  .cell.monster { color:var(--bad); box-shadow:inset 0 0 0 2px var(--bad); }
-  .cell.trail { box-shadow:inset 0 0 0 2px color-mix(in srgb, var(--accent) 30%, transparent); }
-  .cell.player { background:var(--grad); color:#fff; transform:scale(1.05); box-shadow:0 10px 22px -10px rgba(79,70,229,.8); }
-  .cell.player.dead { background:var(--bad); } .cell.player.won { background:var(--good); }
-  .cell .txt { position:relative; z-index:1; }
-  .cell .arrow { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-weight:600; color:var(--accent); opacity:0; transition:opacity .25s; pointer-events:none; font-variant-numeric:tabular-nums; }
+  .gw { display:grid; grid-template-columns:auto 1fr; gap:0; min-height:0; }
+  .board { padding:24px; border-right:1px solid var(--line); }
+  .grid { display:grid; grid-template-columns:repeat(5,58px); gap:4px; }
+  .cell { width:58px; height:58px; border-radius:4px; background:var(--bg-3); position:relative; display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:13px; color:var(--fg-2); transition:background .2s; }
+  .cell.wall { background:var(--line-2); }
+  .cell.exit { box-shadow:inset 0 0 0 1px var(--ok); color:var(--ok); }
+  .cell.monster { box-shadow:inset 0 0 0 1px var(--bad); color:var(--bad); }
+  .cell.trail { box-shadow:inset 0 0 0 1px var(--line-2); }
+  .cell.player { background:var(--fg); color:var(--bg); }
+  .cell.player.dead { background:var(--bad); } .cell.player.won { background:var(--ok); }
+  .cell .arrow { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:11px; color:var(--fg); opacity:0; transition:opacity .2s; }
   .cell .arrow.show { opacity:1; }
-  .legend { font-size:12px; color:var(--faint); margin-top:10px; }
-  .gstats { display:grid; grid-template-columns:repeat(3,auto); gap:26px; margin-top:18px; font-size:12px; color:var(--muted); }
-  .gstats b { display:block; font-size:24px; font-weight:600; color:var(--ink); font-variant-numeric:tabular-nums; letter-spacing:-0.5px; }
-  .speed { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted); }
-  input[type=range] { width:120px; padding:0; accent-color:var(--accent); }
-  footer { padding:40px 0 60px; color:var(--faint); font-size:12.5px; border-top:1px solid var(--line); margin-top:40px; }
-  footer a { color:var(--muted); }
+  .gctl { display:flex; gap:4px; align-items:center; padding:12px 16px; border-bottom:1px solid var(--line); }
+  .gctl .sp { flex:1; }
+  .gctl label { color:var(--fg-3); font-size:12px; display:flex; align-items:center; gap:8px; }
+  input[type=range] { width:100px; accent-color:var(--accent); }
+  .gstat { display:grid; grid-template-columns:repeat(4, 1fr); border-bottom:1px solid var(--line); }
+  .gstat div { padding:10px 16px; border-right:1px solid var(--line); font-family:var(--mono); font-size:11.5px; color:var(--fg-3); }
+  .gstat div:last-child { border-right:0; }
+  .gstat b { display:block; font-size:18px; font-weight:500; color:var(--fg); }
+  .gbars { padding:12px 16px; border-bottom:1px solid var(--line); }
+  .hidden { display:none !important; }
+  @media (max-width: 860px) { .ws { grid-template-columns:1fr; } .pane + .pane { border-left:0; border-top:1px solid var(--line); } .gw { grid-template-columns:1fr; } .board { border-right:0; border-bottom:1px solid var(--line); } }
 </style>
 </head>
 <body>
-<div class="topbar">
-  <picture><source media="(prefers-color-scheme: dark)" srcset="/static/brier-mark-dark.png"><img src="/static/brier-mark.png" alt=""></picture>
-  <span class="name">Brier</span>
-  <nav><a href="#hero">Live</a><a href="#ask">Ask</a><a href="#grid">Gridworld</a></nav>
-  <span class="status"><span class="dot" id="dot"></span><span id="status">connecting…</span><button class="theme" id="themeb" title="toggle theme">◐</button></span>
+<div class="app">
+  <div class="bar">
+    <img id="mark" src="/static/brier-mark.png" alt="">
+    <span class="name">Brier</span>
+    <div class="modes"><button id="m-decide" class="on">Decide</button><button id="m-play">Gridworld</button></div>
+    <div class="r"><span><span class="dot" id="dot"></span><span id="model">connecting</span></span><span id="cal"></span><span class="lat" id="lat">–</span><button id="theme" title="theme">◐</button></div>
+  </div>
+
+  <div class="ws" id="decide">
+    <div class="pane">
+      <div class="ph">State<span class="sp"></span><div class="examples" id="examples"></div></div>
+      <div class="ed state"><textarea id="state" spellcheck="false" placeholder="text, or JSON"></textarea></div>
+      <div class="ph">Questions<span class="sp"></span><label style="text-transform:none;letter-spacing:0;font-size:12px;display:flex;gap:6px;align-items:center"><input type="checkbox" id="live" checked style="accent-color:var(--accent);margin:0"> live</label><button id="run" class="solid">Decide ⌘↩</button></div>
+      <div class="ed questions"><textarea id="questions" spellcheck="false"></textarea></div>
+      <div class="help">one per line · <b>id: choice</b> instructions <b>= a | b | c</b> · <b>id: score</b> instructions <b>= low &lt; high</b> · <b>id: claim</b> statement</div>
+      <div class="err" id="err"></div>
+    </div>
+    <div class="pane">
+      <div class="ph">Distributions<span class="sp"></span><span id="meta" style="text-transform:none;letter-spacing:0;font-family:var(--mono)"></span></div>
+      <div class="res" id="res"></div>
+      <div class="ph">Log</div>
+      <div class="log" id="log"></div>
+    </div>
+  </div>
+
+  <div class="ws gw hidden" id="play">
+    <div class="board"><div class="grid" id="grid"></div></div>
+    <div class="pane">
+      <div class="gctl"><button id="newg" class="solid">New game</button><button id="stepg" class="ghost">Step</button><button id="playg" class="ghost">Auto</button><span class="sp"></span><label>speed <input type="range" id="speed" min="120" max="1200" value="650"></label></div>
+      <div class="gstat"><div>won<b id="won">0</b></div><div>lost<b id="lost">0</b></div><div>moves<b id="moves">0</b></div><div>p50 ms<b id="glat">–</b></div></div>
+      <div class="gbars" id="gbars"></div>
+      <div class="ph">Moves</div>
+      <div class="log" id="glog"></div>
+    </div>
+  </div>
 </div>
-
-<section class="wrap" id="hero" style="padding-top:64px">
-  <p class="caps">Live · one forward pass</p>
-  <h1>Decisions, <em>not text.</em></h1>
-  <p class="lead">Every allowed answer to every question, scored at once in a single pass of an open model. Edit the ticket and watch the model change its mind.</p>
-  <div class="hero">
-    <div class="card">
-      <div class="chips" id="racechips" style="margin-bottom:12px"></div>
-      <textarea id="racestate" rows="5" spellcheck="false"></textarea>
-      <div class="hint">Try: change “today” to “whenever”, add “I want to talk to a person”, or describe a different problem.</div>
-    </div>
-    <div class="card hero-out">
-      <div class="hero-lat"><b id="clk-b">–</b><span>for <span id="hero-n">3 questions, 11 candidates</span> in one pass</span></div>
-      <div id="race-answers"></div>
-      <div class="foot" id="foot-b"></div>
-    </div>
-  </div>
-  <div class="stats">
-    <div class="stat"><b id="s-lat">–</b><span>last decision, ms</span></div>
-    <div class="stat"><b id="s-cand">–</b><span>candidates scored in that pass</span></div>
-    <div class="stat"><b id="s-n">–</b><span>decisions this session</span></div>
-    <div class="stat"><b id="s-won">0</b><span>gridworld games won</span></div>
-  </div>
-</section>
-
-<section class="wrap" id="ask">
-  <p class="caps">Ask</p>
-  <h2>Any state, any typed questions</h2>
-  <p class="sub">Write a state, define Choice, Score and Claim questions, and watch the distributions move as you type. Tiers come from a calibration file when the server has one.</p>
-  <div class="card builder">
-    <div>
-      <div class="chips" id="presets" style="margin-bottom:12px"></div>
-      <textarea id="state" rows="6" spellcheck="false"></textarea>
-      <div id="qs" style="margin-top:8px"></div>
-      <div class="row" style="margin-top:10px">
-        <button id="addq">+ question</button>
-        <label class="toggle"><input type="checkbox" id="live" checked> decide as I type</label>
-        <span style="flex:1"></span><span class="kbd">⌘↩</span>
-        <button id="askb" class="primary">Decide</button>
-      </div>
-      <div class="err" id="askerr"></div>
-    </div>
-    <div>
-      <div id="results"></div>
-      <div class="meta" id="askmeta"></div>
-    </div>
-  </div>
-</section>
-
-<section class="wrap" id="grid">
-  <p class="caps">Gridworld · live</p>
-  <h2>The model plays. One pass per move.</h2>
-  <p class="sub">Trained from the environment's own outcomes with no labels. Before each move, the four probabilities appear on the board; then it moves.</p>
-  <div class="card">
-    <div class="row" style="margin-bottom:16px">
-      <button id="newg" class="primary">New game</button><button id="stepg">Step</button><button id="playg">Auto-play</button>
-      <span class="speed">speed <input type="range" id="speed" min="120" max="1200" value="650"></span>
-    </div>
-    <div class="gw">
-      <div><div class="grid" id="gridel"></div><div class="legend">P player · E exit · M monster · # wall · arrows: the distribution before the move</div></div>
-      <div>
-        <div id="gbars"></div>
-        <div class="meta" id="gmeta"></div>
-        <div class="gstats"><div>games won<b id="won">0</b></div><div>games lost<b id="lost">0</b></div><div>latency p50<b id="lat">–</b></div></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<footer class="wrap">Brier · every number on this page is measured on the model named in the top bar. <a href="https://github.com/hardy30894/brier">Repository</a></footer>
-
 <script>
 const $ = id => document.getElementById(id);
 const api = async (path, body) => { const r = await fetch(path, { method: body ? "POST" : "GET", headers: { "Content-Type": "application/json" }, body: body ? JSON.stringify(body) : undefined }); const j = await r.json(); if (!r.ok) throw new Error(j.error || r.statusText); return j; };
-const fmt = ms => ms >= 1000 ? (ms / 1000).toFixed(2) + " s" : ms.toFixed(0) + " ms";
-$("themeb").onclick = () => { const r = document.documentElement; const cur = r.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"); r.dataset.theme = cur === "dark" ? "light" : "dark"; };
+const ms = x => x >= 1000 ? (x / 1000).toFixed(2) + " s" : x.toFixed(0) + " ms";
+const now = () => new Date().toTimeString().slice(0, 8);
 
-// ---------- shared: render a list of answers into a container, morphing in place ----------
-function renderAnswers(root, answers, compact) {
+// theme
+function setTheme(t) { document.documentElement.dataset.theme = t; $("mark").src = t === "light" ? "/static/brier-mark.png" : "/static/brier-mark-dark.png"; try { localStorage.setItem("brier-theme", t); } catch (e) {} }
+let theme = "light"; try { theme = localStorage.getItem("brier-theme") || "light"; } catch (e) {} setTheme(theme);
+$("theme").onclick = () => setTheme(document.documentElement.dataset.theme === "light" ? "dark" : "light");
+
+// modes
+$("m-decide").onclick = () => { $("decide").classList.remove("hidden"); $("play").classList.add("hidden"); $("m-decide").classList.add("on"); $("m-play").classList.remove("on"); };
+$("m-play").onclick = () => { $("play").classList.remove("hidden"); $("decide").classList.add("hidden"); $("m-play").classList.add("on"); $("m-decide").classList.remove("on"); if (!game) newGame(); };
+
+// ---- questions DSL ----
+function parseQuestions(text) {
+  const out = [], errs = [];
+  text.split("\n").forEach((line, i) => {
+    const l = line.trim(); if (!l || l.startsWith("#")) return;
+    const m = l.match(/^([A-Za-z_][\w-]*)\s*:\s*(choice|score|claim)\b\s*(.*)$/);
+    if (!m) { errs.push(`line ${i + 1}: expected "id: choice|score|claim …"`); return; }
+    const [, id, kind, rest] = m;
+    if (kind === "claim") { out.push({ kind, id, instructions: rest.trim() }); return; }
+    const eq = rest.lastIndexOf("="); if (eq < 0) { errs.push(`line ${i + 1}: ${kind} needs "= options"`); return; }
+    const instructions = rest.slice(0, eq).trim(); const optsRaw = rest.slice(eq + 1);
+    const sep = kind === "score" ? /<|\|/ : /\|/;
+    const opts = optsRaw.split(sep).map(s => s.trim()).filter(Boolean);
+    if (opts.length < 2) { errs.push(`line ${i + 1}: need at least two options`); return; }
+    out.push(kind === "score" ? { kind, id, instructions, levels: opts } : { kind, id, instructions, options: opts });
+  });
+  return { questions: out, errs };
+}
+const EX = {
+  "ticket": { state: "Webhooks are firing twice for every event since around 3am UTC. I need this sorted today if at all possible. We're on the Team plan.",
+    questions: "category: choice which team should handle this ticket = billing | bug | feature | account | other\npriority: score how fast this must be handled = low < medium < high < urgent\nneeds_human: claim the customer is asking for a human agent rather than an automated reply" },
+  "tool": { state: JSON.stringify({ request: "send me the invoice for September and then cancel my plan", tools: { get_invoice: "Fetch a billing invoice by month", cancel_subscription: "Cancel the current subscription", reset_password: "Send a password reset email", schedule_call: "Book a call with a human agent", none: "No tool applies" } }, null, 2),
+    questions: "tool: choice which tool should be called first = get_invoice | cancel_subscription | reset_password | schedule_call | none\ntwo_tools: claim the request needs more than one tool" },
+  "records": { state: JSON.stringify({ record_a: { name: "Priya Raman", email: "priya.raman@northwind.io", phone: "+1 415 555 0142", company: "Northwind" }, record_b: { name: "P. Raman", email: "praman@northwind.io", company: "Northwind" } }, null, 2),
+    questions: "same: claim the two records describe the same person" },
+  "passage": { state: JSON.stringify({ question: "What is the refund window?", passage: "Customers may request a full refund within 30 days of purchase. The support team works in two shifts." }, null, 2),
+    questions: "answers: claim the passage contains the information needed to answer the question\nrelevance: score how related the passage is to the question = unrelated < tangential < related < answers it" },
+  "frustration": { state: "Third outage this month and nobody has replied to my two emails about the SSO settings you deleted. What exactly are we paying for?",
+    questions: "frustration: score how frustrated the customer is = calm < annoyed < angry < furious\nchurn_risk: claim the customer is threatening to leave" },
+};
+Object.keys(EX).forEach((k, i) => { const b = document.createElement("button"); b.textContent = k; b.className = i === 0 ? "on" : ""; b.onclick = () => { $("state").value = EX[k].state; $("questions").value = EX[k].questions; [...$("examples").children].forEach(x => x.classList.toggle("on", x === b)); decide(); }; $("examples").appendChild(b); });
+$("state").value = EX.ticket.state; $("questions").value = EX.ticket.questions;
+
+// ---- results ----
+function render(root, answers) {
   const seen = new Set();
   for (const a of answers) {
     seen.add(a.id);
     let el = root.querySelector(`[data-id="${CSS.escape(a.id)}"]`);
-    if (!el) { el = document.createElement("div"); el.className = "qa"; el.dataset.id = a.id; el.innerHTML = `<div class="h"><span class="id"></span><span class="val"></span><span class="tier"></span></div><div class="bars"></div>`; root.appendChild(el); }
-    el.querySelector(".id").textContent = a.id;
-    el.querySelector(".val").textContent = a.kind === "claim" ? `p(true) ${a.value.toFixed(2)}` : (a.kind === "score" && a.expected != null ? `${a.value} · E ${a.expected.toFixed(2)}` : a.value);
-    const t = el.querySelector(".tier"); t.textContent = a.tier || "uncalibrated"; t.className = "tier " + (a.tier || "uncalibrated");
-    const bars = el.querySelector(".bars"); const order = Object.entries(a.probabilities).sort((x, y) => y[1] - x[1]); const top = order[0][0];
-    const shown = compact ? order.slice(0, 3) : order;
-    for (const [lab, p] of shown) {
-      let b = bars.querySelector(`[data-lab="${CSS.escape(lab)}"]`);
-      if (!b) { b = document.createElement("div"); b.className = "bar"; b.dataset.lab = lab; b.innerHTML = `<span class="lab"></span><div class="track"><div class="fill"></div></div><span class="pct"></span>`; bars.appendChild(b); }
-      b.classList.toggle("top", lab === top); b.querySelector(".lab").textContent = lab; b.querySelector(".fill").style.width = (p * 100).toFixed(1) + "%"; b.querySelector(".pct").textContent = (p * 100).toFixed(0) + "%";
-      bars.appendChild(b);
+    if (!el) { el = document.createElement("div"); el.className = "q"; el.dataset.id = a.id; el.innerHTML = `<div class="h"><span class="id"></span><span class="kind"></span><span class="val"></span><span class="tier"></span></div><div class="rows"></div>`; root.appendChild(el); }
+    el.querySelector(".id").textContent = a.id; el.querySelector(".kind").textContent = a.kind;
+    el.querySelector(".val").textContent = a.kind === "claim" ? `p = ${a.value.toFixed(3)}` : (a.kind === "score" && a.expected != null ? `${a.value}  E[level] ${a.expected.toFixed(2)}` : a.value);
+    const t = el.querySelector(".tier"); t.textContent = a.tier || "uncalibrated"; t.className = "tier " + (a.tier || "none");
+    const rows = el.querySelector(".rows"); const order = Object.entries(a.probabilities).sort((x, y) => y[1] - x[1]); const top = order[0][0];
+    for (const [lab, p] of order) {
+      let r = rows.querySelector(`[data-lab="${CSS.escape(lab)}"]`);
+      if (!r) { r = document.createElement("div"); r.className = "row"; r.dataset.lab = lab; r.innerHTML = `<span class="lab"></span><div class="tr"><div class="fl"></div></div><span class="pc"></span>`; rows.appendChild(r); }
+      r.classList.toggle("top", lab === top); r.querySelector(".lab").textContent = lab; r.querySelector(".fl").style.width = (p * 100).toFixed(1) + "%"; r.querySelector(".pc").textContent = (p * 100).toFixed(1);
+      rows.appendChild(r);
     }
-    const keep = new Set(shown.map(x => x[0])); [...bars.children].forEach(b => { if (!keep.has(b.dataset.lab)) b.remove(); });
+    const keep = new Set(order.map(x => x[0])); [...rows.children].forEach(r => { if (!keep.has(r.dataset.lab)) r.remove(); });
   }
   [...root.children].forEach(el => { if (!seen.has(el.dataset.id)) el.remove(); });
 }
-const TICKET_QS = [ { kind: "choice", id: "category", instructions: "which team should handle this ticket", options: ["billing", "bug", "feature", "account", "other"] },
-                    { kind: "score", id: "priority", instructions: "how fast this must be handled", levels: ["low", "medium", "high", "urgent"] },
-                    { kind: "claim", id: "needs_human", instructions: "the customer is asking for a human agent rather than an automated reply" } ];
-
-// ---------- the race ----------
-const RACE_PRESETS = {
-  "Webhooks bug": "Webhooks are firing twice for every event since around 3am UTC. I need this sorted today if at all possible. We're on the Team plan.",
-  "Double charge": "I was charged twice for my Pro subscription this month. Not an emergency but it's getting annoying. I'd like to speak to an actual person about this.",
-  "Feature ask": "Any plans to add a Slack integration for report notifications? No rush at all, just flagging it.",
-  "Locked out": "I lost my phone and can't get past two-factor authentication. Production is down for us because of this.",
-};
-let heroSeq = 0, heroTimer = null, decisions = 0;
-async function runHero() {
-  const seq = ++heroSeq; const state = $("racestate").value;
-  try {
-    const r = await api("/ask", { state, questions: TICKET_QS });
-    if (seq !== heroSeq) return;
-    renderAnswers($("race-answers"), r.answers, false);
-    const nc = r.answers.reduce((n, a) => n + Object.keys(a.probabilities).length, 0);
-    const clk = $("clk-b"); clk.textContent = fmt(r.latency_ms); clk.classList.remove("pulse"); void clk.offsetWidth; clk.classList.add("pulse");
-    $("hero-n").textContent = `${r.answers.length} questions, ${nc} candidates`;
-    $("foot-b").innerHTML = `<b>${r.model}</b> · every answer is one of the allowed values, by construction`;
-    decisions++; $("s-lat").textContent = r.latency_ms.toFixed(0); $("s-cand").textContent = nc; $("s-n").textContent = decisions;
-  } catch (e) { $("foot-b").textContent = e.message; }
+function logLine(root, cols, max = 40) {
+  const d = document.createElement("div"); d.className = "ln new"; d.innerHTML = cols.map(([c, cls]) => `<span class="${cls}"></span>`).join("");
+  [...d.children].forEach((s, i) => s.textContent = cols[i][0]);
+  root.insertBefore(d, root.firstChild); while (root.children.length > max) root.lastChild.remove();
 }
-function scheduleHero() { clearTimeout(heroTimer); heroTimer = setTimeout(runHero, 300); }
-$("racestate").addEventListener("input", scheduleHero);
-Object.keys(RACE_PRESETS).forEach((n, i) => { const c = document.createElement("span"); c.className = "chip" + (i === 0 ? " on" : ""); c.textContent = n; c.onclick = () => { $("racestate").value = RACE_PRESETS[n]; [...$("racechips").children].forEach(x => x.classList.toggle("on", x === c)); runHero(); }; $("racechips").appendChild(c); });
-$("racestate").value = RACE_PRESETS["Webhooks bug"];
-
-// ---------- ask: builder ----------
-const PRESETS = {
-  "Support ticket": { state: RACE_PRESETS["Webhooks bug"], questions: TICKET_QS.map(q => ({ ...q, options: (q.options || q.levels || []).join(", ") })) },
-  "Tool call": { state: JSON.stringify({ request: "send me the invoice for September and then cancel my plan", tools: { get_invoice: "Fetch a billing invoice by month", cancel_subscription: "Cancel the current subscription", reset_password: "Send a password reset email", schedule_call: "Book a call with a human agent", none: "No tool applies" } }, null, 1),
-    questions: [ { kind: "choice", id: "tool", instructions: "which tool should be called first", options: "get_invoice, cancel_subscription, reset_password, schedule_call, none" }, { kind: "claim", id: "two_tools", instructions: "the request needs more than one tool", options: "" } ] },
-  "Same person?": { state: JSON.stringify({ record_a: { name: "Priya Raman", email: "priya.raman@northwind.io", phone: "+1 415 555 0142", company: "Northwind" }, record_b: { name: "P. Raman", email: "praman@northwind.io", company: "Northwind" } }, null, 1),
-    questions: [ { kind: "claim", id: "same", instructions: "the two records describe the same person", options: "" } ] },
-  "Passage relevance": { state: JSON.stringify({ question: "What is the refund window?", passage: "Customers receive a 15% discount when paying annually. The support team works in two shifts." }, null, 1),
-    questions: [ { kind: "claim", id: "answers", instructions: "the passage contains the information needed to answer the question", options: "" }, { kind: "score", id: "relevance", instructions: "how related the passage is to the question", options: "unrelated, tangential, related, answers it" } ] },
-};
-function qRow(q) {
-  const d = document.createElement("div"); d.className = "q";
-  d.innerHTML = `<select><option value="choice">Choice</option><option value="score">Score</option><option value="claim">Claim</option></select><input placeholder="id · instructions"><input placeholder="options, comma separated (levels low → high for Score)"><span class="x" title="remove">✕</span>`;
-  const [sel, idin, optin] = d.querySelectorAll("select, input");
-  sel.value = q.kind; idin.value = q.id + (q.instructions ? " · " + q.instructions : ""); optin.value = q.options || ""; optin.style.visibility = q.kind === "claim" ? "hidden" : "visible";
-  sel.onchange = () => { optin.style.visibility = sel.value === "claim" ? "hidden" : "visible"; scheduleDecide(); };
-  d.querySelector(".x").onclick = () => { d.remove(); scheduleDecide(); };
-  return d;
-}
-function readQuestions() {
-  return [...$("qs").children].map(d => {
-    const [sel, idin, optin] = d.querySelectorAll("select, input");
-    const [id, ...rest] = idin.value.split("·"); const instructions = rest.join("·").trim();
-    const opts = optin.value.split(",").map(s => s.trim()).filter(Boolean);
-    const q = { kind: sel.value, id: id.trim() || "q", instructions };
-    if (sel.value === "choice") q.options = opts; if (sel.value === "score") q.levels = opts;
-    return q;
-  }).filter(q => q.kind === "claim" || (q.options || q.levels || []).length >= 2);
-}
-function loadPreset(name) {
-  const p = PRESETS[name]; $("state").value = p.state; $("qs").innerHTML = ""; p.questions.forEach(q => $("qs").appendChild(qRow(q)));
-  [...$("presets").children].forEach(c => c.classList.toggle("on", c.textContent === name));
-  $("results").innerHTML = ""; $("askmeta").textContent = ""; decide();
-}
-Object.keys(PRESETS).forEach(n => { const c = document.createElement("span"); c.className = "chip"; c.textContent = n; c.onclick = () => loadPreset(n); $("presets").appendChild(c); });
-$("addq").onclick = () => $("qs").appendChild(qRow({ kind: "choice", id: "q", instructions: "", options: "" }));
-let askTimer = null, askSeq = 0;
+let seq = 0, timer = null, modelName = "";
 async function decide() {
-  const seq = ++askSeq; $("askerr").textContent = "";
-  try { let state = $("state").value; try { state = JSON.parse(state); } catch (e) {} const res = await api("/ask", { state, questions: readQuestions() });
-    if (seq !== askSeq) return; renderAnswers($("results"), res.answers, false);
-    const nc = res.answers.reduce((n, a) => n + Object.keys(a.probabilities).length, 0);
-    $("askmeta").textContent = `${fmt(res.latency_ms)} · ${res.answers.length} question${res.answers.length === 1 ? "" : "s"}, ${nc} candidates, one pass · ${res.model}`;
-    decisions++; $("s-lat").textContent = res.latency_ms.toFixed(0); $("s-cand").textContent = nc; $("s-n").textContent = decisions; }
-  catch (e) { if (seq === askSeq) $("askerr").textContent = e.message; }
+  const { questions, errs } = parseQuestions($("questions").value);
+  $("err").textContent = errs.join("\n"); if (!questions.length) return;
+  const my = ++seq; let state = $("state").value; try { state = JSON.parse(state); } catch (e) {}
+  try {
+    const r = await api("/ask", { state, questions });
+    if (my !== seq) return;
+    render($("res"), r.answers);
+    const nc = r.answers.reduce((n, a) => n + Object.keys(a.probabilities).length, 0);
+    $("lat").textContent = ms(r.latency_ms); $("meta").textContent = `${r.answers.length} q · ${nc} candidates · 1 pass · ${ms(r.latency_ms)}`;
+    logLine($("log"), [[now(), "t"], [ms(r.latency_ms), "ms"], [r.answers.map(a => `${a.id}=${a.kind === "claim" ? a.value.toFixed(2) : a.value}`).join("  "), "a"], [`${nc} cand`, "ms"]]);
+  } catch (e) { if (my === seq) $("err").textContent = e.message; }
 }
-function scheduleDecide() { if (!$("live").checked) return; clearTimeout(askTimer); askTimer = setTimeout(decide, 350); }
-$("state").addEventListener("input", scheduleDecide); $("qs").addEventListener("input", scheduleDecide);
+function schedule() { if (!$("live").checked) return; clearTimeout(timer); timer = setTimeout(decide, 320); }
+$("state").addEventListener("input", schedule); $("questions").addEventListener("input", schedule);
+$("run").onclick = decide;
 document.addEventListener("keydown", e => { if ((e.metaKey || e.ctrlKey) && e.key === "Enter") { e.preventDefault(); decide(); } });
-$("askb").onclick = decide;
 
-// ---------- gridworld ----------
-let game = null, timer = null, lats = [], won = 0, lost = 0, busy = false, trail = [];
-const MOVES = ["up", "down", "left", "right"], DIRV = { up: [-1, 0], down: [1, 0], left: [0, -1], right: [0, 1] }, GLYPH = { up: "↑", down: "↓", left: "←", right: "→" };
+// ---- gridworld ----
+let game = null, gtimer = null, glats = [], won = 0, lost = 0, moves = 0, busy = false, trail = [];
+const MOVES = ["up", "down", "left", "right"], DIRV = { up: [-1, 0], down: [1, 0], left: [0, -1], right: [0, 1] }, GL = { up: "↑", down: "↓", left: "←", right: "→" };
 function drawGrid(probs) {
-  const g = $("gridel");
-  if (g.children.length !== 25) { g.innerHTML = ""; for (let i = 0; i < 25; i++) { const d = document.createElement("div"); d.className = "cell"; d.innerHTML = `<span class="txt"></span><span class="arrow"></span>`; g.appendChild(d); } }
+  const g = $("grid");
+  if (g.children.length !== 25) { g.innerHTML = ""; for (let i = 0; i < 25; i++) { const d = document.createElement("div"); d.className = "cell"; d.innerHTML = `<span class="t"></span><span class="arrow"></span>`; g.appendChild(d); } }
   if (!game) return;
   const [pr, pc] = game.player;
   for (let r = 0; r < 5; r++) for (let c = 0; c < 5; c++) {
-    const ch = game.grid[r][c]; const d = g.children[r * 5 + c]; let cls = "cell", txt = "";
+    const ch = game.grid[r][c], d = g.children[r * 5 + c]; let cls = "cell", txt = "";
     if (ch === "#") cls += " wall";
     if (r === game.exit[0] && c === game.exit[1]) { cls += " exit"; txt = "E"; }
     if (r === game.monster[0] && c === game.monster[1]) { cls += " monster"; txt = "M"; }
-    if (trail.some(([tr, tc]) => tr === r && tc === c) && !(r === pr && c === pc)) cls += " trail";
+    if (trail.some(([a, b]) => a === r && b === c) && !(r === pr && c === pc)) cls += " trail";
     if (r === pr && c === pc) { cls += " player" + (game.status === "dead" ? " dead" : game.status === "exit" ? " won" : ""); txt = "P"; }
-    d.className = cls; d.querySelector(".txt").textContent = txt;
-    const ar = d.querySelector(".arrow"); ar.className = "arrow"; ar.textContent = "";
+    d.className = cls; d.querySelector(".t").textContent = txt; const ar = d.querySelector(".arrow"); ar.className = "arrow"; ar.textContent = "";
   }
   if (probs && game.status === "ok") for (const [m, [dr, dc]] of Object.entries(DIRV)) {
     const r = pr + dr, c = pc + dc; if (r < 0 || r > 4 || c < 0 || c > 4) continue;
-    const ar = g.children[r * 5 + c].querySelector(".arrow"); const p = probs[m];
-    ar.textContent = `${GLYPH[m]} ${(p * 100).toFixed(0)}`; ar.style.fontSize = (10 + 12 * p).toFixed(1) + "px"; ar.style.opacity = 0.3 + 0.7 * p; ar.classList.add("show");
+    const ar = g.children[r * 5 + c].querySelector(".arrow"); ar.textContent = `${GL[m]}${(probs[m] * 100).toFixed(0)}`; ar.style.opacity = 0.35 + 0.65 * probs[m]; ar.classList.add("show");
   }
 }
 function drawBars(probs, move) {
   const b = $("gbars");
-  if (b.children.length !== 4) { b.innerHTML = ""; for (const m of MOVES) { const row = document.createElement("div"); row.className = "bar"; row.dataset.lab = m; row.innerHTML = `<span class="lab">${m}</span><div class="track"><div class="fill"></div></div><span class="pct"></span>`; b.appendChild(row); } }
-  for (const row of b.children) { const m = row.dataset.lab; const p = probs ? probs[m] : 0; row.classList.toggle("top", m === move); row.querySelector(".fill").style.width = (p * 100).toFixed(1) + "%"; row.querySelector(".pct").textContent = probs ? (p * 100).toFixed(0) + "%" : ""; }
+  if (b.children.length !== 4) { b.innerHTML = ""; for (const m of MOVES) { const r = document.createElement("div"); r.className = "row"; r.dataset.lab = m; r.innerHTML = `<span class="lab">${m}</span><div class="tr"><div class="fl"></div></div><span class="pc"></span>`; b.appendChild(r); } }
+  for (const r of b.children) { const m = r.dataset.lab, p = probs ? probs[m] : 0; r.classList.toggle("top", m === move); r.querySelector(".fl").style.width = (p * 100).toFixed(1) + "%"; r.querySelector(".pc").textContent = probs ? (p * 100).toFixed(1) : ""; }
 }
-function p50() { if (!lats.length) return "–"; const s = [...lats].sort((a, b) => a - b); return s[Math.floor(s.length / 2)].toFixed(0) + " ms"; }
-async function newGame() { stop(); game = await api("/grid/new", {}); trail = []; drawGrid(); drawBars(null); $("gmeta").textContent = "new game"; }
-async function step() {
+const p50 = () => { if (!glats.length) return "–"; const s = [...glats].sort((a, b) => a - b); return s[Math.floor(s.length / 2)].toFixed(0); };
+async function newGame() { stopG(); game = await api("/grid/new", {}); trail = []; drawGrid(); drawBars(null); }
+async function stepG() {
   if (!game || busy || game.status !== "ok") return; busy = true;
   try {
     const r = await api("/grid/step", { game });
-    lats.push(r.latency_ms); if (lats.length > 200) lats.shift();
+    glats.push(r.latency_ms); if (glats.length > 200) glats.shift();
     drawBars(r.probabilities, r.move); drawGrid(r.probabilities);
-    await new Promise(res => setTimeout(res, 320));
-    trail.push(game.player); game = r.game; drawGrid();
-    $("gmeta").textContent = `chose ${r.move} at ${(r.probabilities[r.move] * 100).toFixed(0)}% · ${r.optimal ? "optimal" : "not optimal"} · ${fmt(r.latency_ms)} · ${r.model}`;
-    $("lat").textContent = p50();
-    if (game.status === "exit") { won++; $("won").textContent = won; $("s-won").textContent = won; $("gmeta").textContent += " · reached the exit"; stop(); }
-    else if (game.status === "dead") { lost++; $("lost").textContent = lost; $("gmeta").textContent += " · walked into the monster"; stop(); }
-    else if (game.steps >= 12) { lost++; $("lost").textContent = lost; $("gmeta").textContent += " · out of moves"; game.status = "dead"; stop(); }
-  } catch (e) { $("gmeta").textContent = e.message; stop(); } finally { busy = false; }
+    await new Promise(res => setTimeout(res, 300));
+    trail.push(game.player); game = r.game; drawGrid(); moves++;
+    $("moves").textContent = moves; $("glat").textContent = p50(); $("lat").textContent = ms(r.latency_ms);
+    let note = r.optimal ? "optimal" : "not optimal";
+    if (game.status === "exit") { won++; $("won").textContent = won; note += " · exit"; stopG(); }
+    else if (game.status === "dead") { lost++; $("lost").textContent = lost; note += " · monster"; stopG(); }
+    else if (game.steps >= 12) { lost++; $("lost").textContent = lost; note += " · out of moves"; game.status = "dead"; stopG(); }
+    logLine($("glog"), [[now(), "t"], [ms(r.latency_ms), "ms"], [`${r.move} ${(r.probabilities[r.move] * 100).toFixed(0)}% · ${note}`, "a"], [`step ${game.steps}`, "ms"]]);
+  } catch (e) { logLine($("glog"), [[now(), "t"], ["", "ms"], [e.message, "a"], ["", "ms"]]); stopG(); } finally { busy = false; }
 }
-function play() { stop(); $("playg").textContent = "Pause"; timer = setInterval(async () => { if (!game || game.status !== "ok") { game = await api("/grid/new", {}); trail = []; drawGrid(); } await step(); }, 1320 - +$("speed").value); }
-function stop() { if (timer) clearInterval(timer); timer = null; $("playg").textContent = "Auto-play"; }
-$("newg").onclick = newGame; $("stepg").onclick = () => { stop(); step(); }; $("playg").onclick = () => timer ? stop() : play(); $("speed").oninput = () => { if (timer) play(); };
+function playG() { stopG(); $("playg").textContent = "Pause"; gtimer = setInterval(async () => { if (!game || game.status !== "ok") { game = await api("/grid/new", {}); trail = []; drawGrid(); } await stepG(); }, 1320 - +$("speed").value); }
+function stopG() { if (gtimer) clearInterval(gtimer); gtimer = null; $("playg").textContent = "Auto"; }
+$("newg").onclick = newGame; $("stepg").onclick = () => { stopG(); stepG(); }; $("playg").onclick = () => gtimer ? stopG() : playG(); $("speed").oninput = () => { if (gtimer) playG(); };
 
-// ---------- boot ----------
+// ---- boot ----
 (async () => {
   drawGrid(); drawBars(null);
-  try { const h = await api("/health"); $("dot").classList.add("on"); $("status").textContent = (h.mock ? "mock server" : h.models.questions) + (h.calibrated ? " · calibrated" : ""); }
-  catch (e) { $("status").textContent = "server not reachable"; return; }
-  runHero(); loadPreset("Support ticket"); await newGame(); await step();
+  try { const h = await api("/health"); $("dot").classList.add("on"); modelName = h.mock ? "mock" : h.models.questions; $("model").textContent = modelName; $("cal").textContent = h.calibrated ? "calibrated" : "no calibration file"; }
+  catch (e) { $("model").textContent = "server not reachable"; return; }
+  decide();
+  if (location.hash === "#gridworld") $("m-play").click();
 })();
 </script>
 </body>
