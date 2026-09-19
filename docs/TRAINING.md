@@ -411,7 +411,13 @@ residual term has more capacity to overfit the training tasks than the LoRA adap
 do. The natural next configuration is the temperature term alone, or the residual with
 a much smaller learning rate. HEAD_4B_SENTENCE
 
-**Phi-4-mini trained.** PHI_SENTENCE
+**Phi-4-mini trained is the strongest model in the project.** The best untrained
+backbone, put through the round-three recipe, reaches 0.96 on ticket category (the
+0.6B reaches 0.82 and the 4B 0.87 in round two), 0.79 on priority, 0.85 on gridworld
+moves, and on the never-trained tasks 0.99 on duplicates, 0.58 on frustration with raw
+calibration error down from 0.34 to 0.23, and 0.92 on banking. Nothing in the pipeline
+changed for it except the automatic detection of its fused projection matrices for
+LoRA. It should be the working backbone from here.
 
 **Six-step episodes.** RL_SENTENCE
 

@@ -1,0 +1,19 @@
+Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]Fetching 2 files:  50%|█████     | 1/2 [00:09<00:09,  9.71s/it]Fetching 2 files: 100%|██████████| 2/2 [00:28<00:00, 14.00s/it]Fetching 2 files: 100%|██████████| 2/2 [00:28<00:00, 14.00s/it]
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00, 68.56it/s]
+  collected 50/300 (2s)
+  collected 100/300 (4s)
+  collected 150/300 (6s)
+  collected 200/300 (8s)
+  collected 250/300 (9s)
+  collected 300/300 (11s)
+
+== matching ==
+calibration report  model=Phi-4-mini-instruct@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+matches            300  0.817    0.097    0.092     0.116     0.104    0.910    0.863   1.66
+
+decision policy (calibrated confidence cutoffs, held-out):
+  matches          auto    target 0.95: act when confidence >= 0.803  -> precision 0.953, covers 71% of decisions
+  matches          review  target 0.80: act when confidence >= 0.500  -> precision 0.817, covers 100% of decisions
+  matches          human   everything below

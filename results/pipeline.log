@@ -3,8 +3,7 @@
 + pip install -q 'transformers>=4.51,<4.57' accelerate numpy huggingface_hub peft
 + ALL=tickets,gridworld,toolcall,passages,matching,frustration,duplicates,banking
 + TR=tickets,gridworld,toolcall,passages,matching
-+ python3 dbg_head.py
-+ python3 train.py --model Qwen/Qwen3-0.6B --tasks tickets,gridworld,toolcall,passages,matching --steps 1500 --split train --uncertain 0.3 --batch 2 --accum 2
-+ python3 -m brier calibrate --model Qwen/Qwen3-0.6B --adapter adapters/Qwen3-0.6B-brier-r16-s1500-u0.3-train --tag Qwen3-0.6B-r3 --split eval --task tickets,gridworld,toolcall,passages,matching,frustration,duplicates,banking --n 300
-+ python3 -m brier calibrate --model Qwen/Qwen3-0.6B --split eval --task matching --n 300
-+ python3 train.py --model Qwen/Qwen3-4B --tasks tickets,gridworld,toolcall,passages,matching --steps 1200 --split train --uncertain 0.3
++ python3 -m brier calibrate --model microsoft/Phi-4-mini-instruct --split eval --task matching --n 300
++ python3 train.py --model microsoft/Phi-4-mini-instruct --tasks tickets,gridworld,toolcall,passages,matching --steps 1200 --split train --uncertain 0.3
++ python3 -m brier calibrate --model microsoft/Phi-4-mini-instruct --adapter adapters/Phi-4-mini-instruct-brier-r16-s1200-u0.3-train --tag Phi-4-mini-r3 --split eval --task tickets,gridworld,toolcall,passages,matching,frustration,duplicates,banking --n 300
++ echo DONE

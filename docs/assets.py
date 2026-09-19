@@ -1,4 +1,5 @@
 """Regenerates the logo and figure. Text in the logo is outlined so it renders the same everywhere."""
+import json
 from pathlib import Path
 
 from fontTools.pens.boundsPen import BoundsPen
@@ -31,95 +32,183 @@ def outline(text, face="AvenirNext-DemiBold", size=48, tracking=-0.5):
 # The logo is a supplied image (docs/brier.png, docs/brier-dark.png); it is not generated here.
 
 FONT = "'Helvetica Neue', Helvetica, Arial, sans-serif"
-INK, MUTED, FAINT, BLUE, PALE, VIOLET, LINE = "#1B1F24", "#5B6B7C", "#8A94A0", "#3557C4", "#EEF3FF", "#8A2BE2", "#D8DEE6"
+# Ink and hairlines carry structure; exactly two chromatic series, validated for colour-vision separation:
+# indigo = Brier / trained, amber = baseline / untrained.
+INK, MUTED, FAINT, LINE, SURFACE = "#0F172A", "#5B6472", "#8B93A1", "#E4E7EC", "#FFFFFF"
+BLUE, VIOLET = "#4F46E5", "#B45309"
+PALE = "#FFFFFF"
+ACCENT, BASE = BLUE, VIOLET
 
 
 def figure():
-    o = []
-    a = o.append
-    a(f'<svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520" font-family="{FONT}">')
-    a('<defs><marker id="ar" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5B6B7C"/></marker></defs>')
-    a(f'<rect width="900" height="520" rx="14" fill="#FFFFFF" stroke="{LINE}"/>')
+    """Method schematic: state and questions in, one forward pass, a distribution per question out."""
+    o = _svg(900, 400)
+    _caps(o, 40, 34, "Method")
+    _t(o, 40, 58, "One forward pass scores every allowed answer to every question", 16, INK, "700")
+    _t(o, 40, 78, "No text is generated. A value outside the allowed set cannot occur.", 12, MUTED)
 
-    a(f'<text x="450" y="36" text-anchor="middle" font-size="16" font-weight="700" fill="{INK}">Every field, every allowed value, one forward pass</text>')
-
-    # input card
-    a(f'<rect x="36" y="64" width="222" height="216" rx="10" fill="#F6F8FB" stroke="{LINE}"/>')
-    a(f'<text x="52" y="90" font-size="12" font-weight="700" fill="{MUTED}" letter-spacing="1">INPUT</text>')
-    a(f'<text x="52" y="112" font-size="12.5" fill="{INK}">“Webhooks fire twice since</text>')
-    a(f'<text x="52" y="129" font-size="12.5" fill="{INK}">3am. Need this today.”</text>')
-    a(f'<text x="52" y="164" font-size="12" font-weight="700" fill="{MUTED}" letter-spacing="1">SCHEMA</text>')
-    for i, (name, vals) in enumerate((("category", "billing · bug · feature · account · other"), ("priority", "low · medium · high · urgent"), ("needs_human", "yes · no"))):
-        y = 186 + i * 32
-        a(f'<text x="52" y="{y}" font-size="12.5" font-weight="700" fill="{BLUE}">{name}</text>')
-        a(f'<text x="52" y="{y + 15}" font-size="11" fill="{MUTED}">{vals}</text>')
-
-    a('<line x1="260" y1="172" x2="292" y2="172" stroke="#5B6B7C" stroke-width="2" marker-end="url(#ar)"/>')
-    cx0 = 300
-    groups = ((5, "#3557C4"), (4, "#5B8DEF"), (2, "#9DB9F5"))
-    y = 78
-    for n, c in groups:
-        for _ in range(n):
-            a(f'<rect x="{cx0}" y="{y}" width="92" height="9" rx="2" fill="{c}" opacity="0.9"/>')
-            a(f'<line x1="{cx0 + 92}" y1="{y + 4.5}" x2="{cx0 + 120}" y2="172" stroke="{c}" stroke-width="1" opacity="0.5"/>')
+    # column 1: input
+    _caps(o, 40, 120, "State + questions")
+    _t(o, 40, 142, "“Webhooks fire twice since 3am.", 12.5, INK)
+    _t(o, 40, 160, "Need this today.”", 12.5, INK)
+    qs = (("category", "billing · bug · feature · account · other"), ("priority", "low · medium · high · urgent"), ("needs_human", "yes · no"))
+    for i, (n, v) in enumerate(qs):
+        y = 196 + i * 40
+        _t(o, 40, y, n, 12, INK, "700")
+        _t(o, 40, y + 15, v, 10.5, MUTED)
+    # column 2: candidate rows into one pass
+    x2 = 330
+    _caps(o, x2, 120, "Batched candidates")
+    rows = [("category", 5), ("priority", 4), ("needs_human", 2)]
+    y = 138
+    for name, n in rows:
+        for k in range(n):
+            _hair(o, x2, y, x2 + 130, y)
+            o.append(f'<rect x="{x2 + 96}" y="{y - 5}" width="34" height="10" rx="2" fill="{ACCENT}" opacity="{0.35 + 0.65 * (k == 0)}"/>')
             y += 13
-        y += 6
-    a(f'<text x="{cx0 + 46}" y="{y + 8}" text-anchor="middle" font-size="11" fill="{MUTED}">11 candidates</text>')
-    a(f'<text x="{cx0 + 46}" y="{y + 22}" text-anchor="middle" font-size="11" fill="{MUTED}">= 5 + 4 + 2</text>')
-
-    # model block
-    a(f'<rect x="{cx0 + 122}" y="120" width="150" height="104" rx="12" fill="{PALE}" stroke="{BLUE}" stroke-width="1.5"/>')
-    a(f'<text x="{cx0 + 197}" y="160" text-anchor="middle" font-size="13" font-weight="700" fill="{INK}">any open LM</text>')
-    a(f'<text x="{cx0 + 197}" y="180" text-anchor="middle" font-size="12" fill="{BLUE}" font-weight="700">1 batched pass</text>')
-    a(f'<text x="{cx0 + 197}" y="198" text-anchor="middle" font-size="11" fill="{MUTED}">log-prob of each value</text>')
-    a(f'<line x1="{cx0 + 274}" y1="172" x2="{cx0 + 318}" y2="172" stroke="#5B6B7C" stroke-width="2" marker-end="url(#ar)"/>')
-
-    # decision card
-    dx = 642
-    a(f'<rect x="{dx}" y="64" width="222" height="216" rx="10" fill="#F6F8FB" stroke="{LINE}"/>')
-    a(f'<text x="{dx + 16}" y="90" font-size="12" font-weight="700" fill="{MUTED}" letter-spacing="1">TYPED DECISION</text>')
-    for i, (name, val, p) in enumerate((("category", "bug", 0.86), ("priority", "high", 0.59), ("needs_human", "no", 0.94))):
-        y = 116 + i * 56
-        a(f'<text x="{dx + 16}" y="{y}" font-size="12.5" font-weight="700" fill="{INK}">{name}</text>')
-        a(f'<text x="{dx + 206}" y="{y}" text-anchor="end" font-size="12.5" font-weight="700" fill="{BLUE}">{p:.2f}</text>')
-        a(f'<rect x="{dx + 16}" y="{y + 8}" width="190" height="9" rx="4.5" fill="#E3E8EF"/>')
-        a(f'<rect x="{dx + 16}" y="{y + 8}" width="{190 * p:.0f}" height="9" rx="4.5" fill="{BLUE}"/>')
-        a(f'<text x="{dx + 16}" y="{y + 32}" font-size="12" fill="{MUTED}">{val}</text>')
-
-    # measured strip
-    a(f'<line x1="36" y1="308" x2="864" y2="308" stroke="{LINE}"/>')
-    a(f'<text x="36" y="336" font-size="12" font-weight="700" fill="{MUTED}" letter-spacing="1">MEASURED</text>')
-    a(f'<text x="864" y="336" text-anchor="end" font-size="11" fill="{FAINT}">Qwen3-4B · RTX 4090 · 200 tickets · 3 fields per decision</text>')
-    scale = 620 / 1268
-    x0, w_json, w_brier = 200, 1268 * scale, 111 * scale
-    a(f'<text x="36" y="372" font-size="12.5" font-weight="700" fill="{VIOLET}">generate JSON</text>')
-    a(f'<text x="36" y="388" font-size="11" fill="{MUTED}">token by token, then parse</text>')
-    a(f'<rect x="{x0}" y="360" width="{w_json:.0f}" height="22" rx="4" fill="#EFE6FB" stroke="{VIOLET}" stroke-width="1"/>')
-    tx = x0 + 4
-    while tx < x0 + w_json - 8:
-        a(f'<rect x="{tx:.0f}" y="364" width="9" height="14" rx="1.5" fill="{VIOLET}" opacity="0.55"/>')
-        tx += 13
-    a(f'<text x="{x0 + w_json + 8:.0f}" y="376" font-size="12.5" font-weight="700" fill="{VIOLET}">1268 ms</text>')
-    a(f'<text x="36" y="420" font-size="12.5" font-weight="700" fill="{BLUE}">Brier</text>')
-    a(f'<text x="36" y="436" font-size="11" fill="{MUTED}">one pass, typed</text>')
-    a(f'<rect x="{x0}" y="408" width="{w_brier:.0f}" height="22" rx="4" fill="{BLUE}"/>')
-    a(f'<text x="{x0 + w_brier + 8:.0f}" y="424" font-size="12.5" font-weight="700" fill="{BLUE}">111 ms</text>')
-    a(f'<text x="{x0 + w_brier + 70:.0f}" y="424" font-size="12" fill="{INK}">11× faster · same accuracy (0.59 vs 0.59) · 0 type errors, by construction</text>')
-
-    a(f'<text x="450" y="484" text-anchor="middle" font-size="11" fill="{FAINT}">Fields are scored independently in the same pass. No training yet: probabilities are the model’s own log-likelihoods, softmaxed per field.</text>')
-    a('</svg>')
+        y += 8
+    _t(o, x2, y + 6, "11 rows · identical prompt · one candidate tail each", 10.5, MUTED)
+    o.append(f'<line x1="{x2 + 140}" y1="{(138 + y) / 2 - 8}" x2="{x2 + 186}" y2="{(138 + y) / 2 - 8}" stroke="{MUTED}" stroke-width="1.2" marker-end="url(#ar)"/>')
+    # the pass
+    x3 = 526
+    o.append(f'<rect x="{x3}" y="150" width="112" height="110" fill="none" stroke="{INK}" stroke-width="1.4"/>')
+    _t(o, x3 + 56, 196, "forward", 13, INK, "700", "middle")
+    _t(o, x3 + 56, 214, "pass", 13, INK, "700", "middle")
+    _t(o, x3 + 56, 238, "log P(answer | state)", 10, MUTED, "400", "middle")
+    o.append(f'<line x1="{x3 + 118}" y1="205" x2="{x3 + 164}" y2="205" stroke="{MUTED}" stroke-width="1.2" marker-end="url(#ar)"/>')
+    # column 4: distributions
+    x4 = 700
+    _caps(o, x4, 120, "Distributions")
+    dists = (("category", (("bug", 0.86), ("billing", 0.07), ("account", 0.05))), ("priority", (("high", 0.59), ("urgent", 0.28), ("medium", 0.12))), ("needs_human", (("no", 0.94), ("yes", 0.06))))
+    y = 140
+    for name, items in dists:
+        _t(o, x4, y, name, 11.5, INK, "700")
+        y += 8
+        for lab, pv in items:
+            _bar(o, x4, y, 120 * pv, 8, ACCENT if pv == items[0][1] else LINE)
+            _t(o, x4 + 128, y + 8, f"{lab}  {pv:.2f}", 10.5, INK if pv == items[0][1] else MUTED)
+            y += 15
+        y += 12
+    _hair(o, 40, 340, 860, 340)
+    _t(o, 40, 366, "Latency is one pass over a short batch; it grows with the number of allowed answers, not with output length.", 11, MUTED)
+    _t(o, 40, 384, "Questions are scored independently in the same pass. The backbone is any open causal language model.", 11, MUTED)
+    o.append("</svg>")
     (HERE / "how-it-works.svg").write_text("\n".join(o))
 
 
-figure()
-print("assets written")
+def _rel_bins(tag, task="frustration", key="reliability_raw"):
+    p = HERE.parent / "results" / f"cal_{task}_{tag}@eval.json"
+    if not p.exists():
+        return None
+    qs = json.load(open(p))["questions"]
+    q = qs.get(task) or next(iter(qs.values()))
+    return q[key], q
+
+
+def fig_results():
+    """Hero: three measured panels. Latency per decision; raw calibration error on never-trained
+    tasks before and after training; the reliability curve behind one of those numbers."""
+    o = _svg(900, 330)
+    # panel A: latency
+    ax, ay = 40, 60
+    _caps(o, ax, 34, "A · Latency per decision")
+    models = (("0.6B", 44, 1108), ("1.7B", 51, 912), ("4B", 111, 1268))
+    scale = 190 / 1300
+    for i, (m, brier, gen) in enumerate(models):
+        y = ay + i * 52
+        _t(o, ax, y + 10, m, 11, INK, "700")
+        _bar(o, ax + 40, y, brier * scale, 12, ACCENT)
+        _t(o, ax + 40 + brier * scale + 6, y + 10, f"{brier} ms", 10.5, INK)
+        _bar(o, ax + 40, y + 16, gen * scale, 12, BASE)
+        _t(o, ax + 40 + gen * scale + 6, y + 26, f"{gen} ms", 10.5, MUTED)
+    _hair(o, ax + 40, ay + 160, ax + 40 + 190, ay + 160)
+    o.append(f'<rect x="{ax}" y="{ay + 176}" width="10" height="10" rx="2" fill="{ACCENT}"/>')
+    _t(o, ax + 16, ay + 185, "Brier, one pass", 10.5, MUTED)
+    o.append(f'<rect x="{ax + 120}" y="{ay + 176}" width="10" height="10" rx="2" fill="{BASE}"/>')
+    _t(o, ax + 136, ay + 185, "same weights generating JSON", 10.5, MUTED)
+
+    # panel B: raw ECE on never-trained tasks, untrained -> trained (dumbbells)
+    bx = 340
+    _caps(o, bx, 34, "B · Calibration error, unseen tasks")
+    pairs = []
+    for task, base_tag, tr_tag, label in (("frustration", "Qwen3-4B", "Qwen3-4B-brier-r16-s1200-u0.3-train", "frustration · 4B"),
+                                           ("duplicates", "Qwen3-4B", "Qwen3-4B-brier-r16-s1200-u0.3-train", "duplicates · 4B"),
+                                           ("frustration", "Phi-4-mini-instruct", "Phi-4-mini-r3", "frustration · Phi-4-mini"),
+                                           ("banking", "Qwen3-0.6B", "Qwen3-0.6B-brier-r16-s1500-u0.3-train", "banking (real) · 0.6B")):
+        b, t = _rel_bins(base_tag, task), _rel_bins(tr_tag, task)
+        if b and t:
+            pairs.append((label, b[1]["ece_raw"], t[1]["ece_raw"]))
+    sx = 200 / 0.6
+    for i, (label, e0, e1) in enumerate(pairs):
+        y = ay + 14 + i * 44
+        _t(o, bx, y - 14, label, 10.5, MUTED)
+        _hair(o, bx, y, bx + 200, y)
+        o.append(f'<line x1="{bx + e1 * sx:.1f}" y1="{y}" x2="{bx + e0 * sx:.1f}" y2="{y}" stroke="{INK}" stroke-width="1.5"/>')
+        o.append(f'<circle cx="{bx + e0 * sx:.1f}" cy="{y}" r="5" fill="{BASE}" stroke="{SURFACE}" stroke-width="2"/>')
+        o.append(f'<circle cx="{bx + e1 * sx:.1f}" cy="{y}" r="5" fill="{ACCENT}" stroke="{SURFACE}" stroke-width="2"/>')
+        _t(o, bx + max(e0, e1) * sx + 12, y + 4, f"{e0:.2f} → {e1:.2f}", 10.5, INK)
+    for v in (0, 0.3, 0.6):
+        _t(o, bx + v * sx, ay + 14 + len(pairs) * 44 - 10, f"{v:.1f}", 9.5, FAINT, "400", "middle")
+    _t(o, bx + 100, ay + 14 + len(pairs) * 44 + 6, "expected calibration error, lower is better", 10, FAINT, "400", "middle")
+
+    # panel C: reliability, frustration 4B untrained vs trained
+    cx, cy, S = 660, 78, 150
+    _caps(o, cx, 34, "C · Reliability, frustration, 4B")
+    _hair(o, cx, cy + S, cx + S, cy + S); _hair(o, cx, cy, cx, cy + S)
+    o.append(f'<line x1="{cx}" y1="{cy + S}" x2="{cx + S}" y2="{cy}" stroke="{FAINT}" stroke-width="1" stroke-dasharray="3 3"/>')
+    for tag, color in (("Qwen3-4B", BASE), ("Qwen3-4B-brier-r16-s1200-u0.3-train", ACCENT)):
+        r = _rel_bins(tag)
+        if not r:
+            continue
+        total = sum(n for lo, hi, n, conf, acc in r[0])
+        for lo, hi, n, conf, acc in r[0]:
+            if n < 8:
+                continue
+            rad = 3 + 9 * (n / total) ** 0.5
+            o.append(f'<circle cx="{cx + S * conf:.1f}" cy="{cy + S - S * acc:.1f}" r="{rad:.1f}" fill="{color}" fill-opacity="0.85" stroke="{SURFACE}" stroke-width="2"/>')
+    for v in (0, 0.5, 1):
+        _t(o, cx + S * v, cy + S + 14, f"{v:.1f}", 9.5, FAINT, "400", "middle")
+        _t(o, cx - 6, cy + S - S * v + 3, f"{v:.1f}", 9.5, FAINT, "400", "end")
+    _t(o, cx + S / 2, cy + S + 30, "stated confidence", 10, FAINT, "400", "middle")
+    o.append(f'<text transform="translate({cx - 26} {cy + S / 2}) rotate(-90)" font-size="10" fill="{FAINT}" text-anchor="middle">observed accuracy</text>')
+    o.append(f'<circle cx="{cx + 6}" cy="{cy + S + 52}" r="4" fill="{BASE}"/>')
+    _t(o, cx + 16, cy + S + 56, "untrained", 10.5, MUTED)
+    o.append(f'<circle cx="{cx + 86}" cy="{cy + S + 52}" r="4" fill="{ACCENT}"/>')
+    _t(o, cx + 96, cy + S + 56, "trained", 10.5, MUTED)
+    _t(o, 40, 318, "Panel A: tickets task, same weights, one pass versus generating JSON. B and C: raw probabilities, no post-hoc correction; dot area ∝ decisions in the bin. 300 held-out examples per task; results/.", 9.5, FAINT)
+    o.append("</svg>")
+    (HERE / "fig-results.svg").write_text("\n".join(o))
+
+
+
 
 
 def _svg(w, h):
     o = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" font-family="{FONT}">',
-         '<defs><marker id="ar" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5B6B7C"/></marker></defs>',
-         f'<rect width="{w}" height="{h}" rx="14" fill="#FFFFFF" stroke="{LINE}"/>']
+         f'<defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="{MUTED}"/></marker></defs>',
+         f'<rect width="{w}" height="{h}" fill="{SURFACE}"/>']
     return o
+
+
+def _caps(o, x, y, text, fill=None, anchor="start"):
+    """Small-caps section label, the only decorative element in the system."""
+    o.append(f'<text x="{x}" y="{y}" font-size="10" font-weight="700" letter-spacing="1.4" fill="{fill or MUTED}" text-anchor="{anchor}">{text.upper()}</text>')
+
+
+def _hair(o, x1, y1, x2, y2):
+    o.append(f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{LINE}" stroke-width="1"/>')
+
+
+def _bar(o, x, y, w, h, color, horizontal=True):
+    """A thin bar with a 4px rounded data end and a square baseline end."""
+    if w <= 0 and horizontal or h <= 0 and not horizontal:
+        return
+    if horizontal:
+        r = min(4, w / 2)
+        o.append(f'<path d="M{x} {y} H{x + w - r} a{r} {r} 0 0 1 {r} {r} V{y + h - r} a{r} {r} 0 0 1 -{r} {r} H{x} Z" fill="{color}"/>')
+    else:
+        r = min(4, h / 2)
+        o.append(f'<path d="M{x} {y + h} V{y + r} a{r} {r} 0 0 1 {r} -{r} H{x + w - r} a{r} {r} 0 0 1 {r} {r} V{y + h} Z" fill="{color}"/>')
 
 
 def _t(o, x, y, s, size=12, fill=INK, weight="400", anchor="start"):
@@ -138,10 +227,10 @@ def fig_next_token():
     x = 60
     for t in toks:
         w = 14 + len(t) * 8
-        o.append(f'<rect x="{x}" y="70" width="{w}" height="30" rx="5" fill="#F6F8FB" stroke="{LINE}"/>')
+        o.append(f'<rect x="{x}" y="70" width="{w}" height="30" rx="3" fill="#FFFFFF" stroke="{LINE}"/>')
         _t(o, x + w / 2, 90, t.strip(), 13, INK, "400", "middle")
         x += w + 6
-    o.append(f'<rect x="{x}" y="70" width="60" height="30" rx="5" fill="{PALE}" stroke="{BLUE}" stroke-dasharray="4 3"/>')
+    o.append(f'<rect x="{x}" y="70" width="60" height="30" rx="3" fill="{PALE}" stroke="{BLUE}" stroke-dasharray="4 3"/>')
     _t(o, x + 30, 90, "?", 15, BLUE, "700", "middle")
     _t(o, 60, 130, "context (tokens so far)", 11, MUTED)
     o.append(f'<line x1="{x + 30}" y1="104" x2="{x + 30}" y2="150" stroke="#5B6B7C" stroke-width="2" marker-end="url(#ar)"/>')
@@ -149,7 +238,7 @@ def fig_next_token():
     for i, (t, p) in enumerate(rows):
         y = 168 + i * 20
         _t(o, 340, y + 11, t.strip(), 12, INK if i < 5 else FAINT, "400", "end")
-        o.append(f'<rect x="350" y="{y}" width="300" height="14" rx="3" fill="#E3E8EF"/>')
+        o.append(f'<rect x="350" y="{y}" width="300" height="14" rx="3" fill="#EEF0F3"/>')
         o.append(f'<rect x="350" y="{y}" width="{300 * p:.0f}" height="14" rx="3" fill="{BLUE if i < 5 else FAINT}"/>')
         _t(o, 660, y + 11, f"{p:.2f}", 12, MUTED)
     _t(o, 720, 190, "This vector is the whole", 12, MUTED)
@@ -164,21 +253,21 @@ def fig_scoring():
     o = _svg(900, 320)
     _t(o, 450, 34, "Scoring a candidate: the log-probability the model gives to its tokens, in context", 15, INK, "700", "middle")
     _t(o, 40, 76, "prompt (input + schema + instructions)", 11, MUTED)
-    o.append(f'<rect x="40" y="84" width="330" height="30" rx="5" fill="#F6F8FB" stroke="{LINE}"/>')
+    o.append(f'<rect x="40" y="84" width="330" height="30" rx="3" fill="#FFFFFF" stroke="{LINE}"/>')
     _t(o, 50, 104, "…Fields: category: one of billing, bug, … ", 12, INK)
     _t(o, 380, 76, "field header", 11, MUTED)
-    o.append(f'<rect x="380" y="84" width="130" height="30" rx="5" fill="#F6F8FB" stroke="{LINE}"/>')
+    o.append(f'<rect x="380" y="84" width="130" height="30" rx="3" fill="#FFFFFF" stroke="{LINE}"/>')
     _t(o, 445, 104, '{"category": "', 12, INK, "400", "middle")
     _t(o, 520, 76, "candidate tokens", 11, MUTED)
     for i, (t, lp) in enumerate((("account", "-0.62"),)):
-        o.append(f'<rect x="520" y="84" width="90" height="30" rx="5" fill="{PALE}" stroke="{BLUE}"/>')
+        o.append(f'<rect x="520" y="84" width="90" height="30" rx="3" fill="{PALE}" stroke="{BLUE}"/>')
         _t(o, 565, 104, t, 12, BLUE, "700", "middle")
     _t(o, 620, 104, "log p = −0.62", 12, INK, "700")
     _t(o, 40, 150, "Each field's candidates share the same prompt and header; only the tail differs:", 12, MUTED)
     cands = (("billing", -3.10), ("bug", -1.05), ("feature", -6.40), ("account", -0.62), ("other", -4.20))
     for i, (c, lp) in enumerate(cands):
         y = 172 + i * 26
-        o.append(f'<rect x="40" y="{y}" width="470" height="18" rx="3" fill="#F6F8FB" stroke="{LINE}"/>')
+        o.append(f'<rect x="40" y="{y}" width="470" height="18" rx="3" fill="#FFFFFF" stroke="{LINE}"/>')
         _t(o, 48, y + 13, '…{"category": "', 11, FAINT)
         o.append(f'<rect x="520" y="{y}" width="90" height="18" rx="3" fill="{PALE}" stroke="{BLUE}"/>')
         _t(o, 565, y + 13, c, 11, BLUE, "700", "middle")
@@ -199,9 +288,9 @@ def fig_batch():
     y = 60
     for i, (f, c, n) in enumerate(rows):
         col = colors[f]
-        o.append(f'<rect x="40" y="{y}" width="330" height="16" rx="3" fill="#F6F8FB" stroke="{LINE}"/>')
+        o.append(f'<rect x="40" y="{y}" width="330" height="16" rx="3" fill="#FFFFFF" stroke="{LINE}"/>')
         _t(o, 48, y + 12, "prompt (identical in every row)", 10, FAINT)
-        o.append(f'<rect x="372" y="{y}" width="110" height="16" rx="3" fill="#F6F8FB" stroke="{LINE}"/>')
+        o.append(f'<rect x="372" y="{y}" width="110" height="16" rx="3" fill="#FFFFFF" stroke="{LINE}"/>')
         _t(o, 427, y + 12, f'{{"{f}": "', 10, MUTED, "400", "middle")
         cw = 20 + len(c) * 7
         o.append(f'<rect x="484" y="{y}" width="{cw}" height="16" rx="3" fill="{col}"/>')
@@ -239,7 +328,7 @@ def fig_softmax():
         _t(o, 60, y + 12, c, 12, INK, "700" if c == "account" else "400")
         _t(o, 180, y + 12, f"{lp:+.2f}", 12, INK, "400", "end")
         o.append(f'<line x1="200" y1="{y + 8}" x2="240" y2="{y + 8}" stroke="#5B6B7C" stroke-width="1.5" marker-end="url(#ar)"/>')
-        o.append(f'<rect x="330" y="{y}" width="240" height="16" rx="3" fill="#E3E8EF"/>')
+        o.append(f'<rect x="330" y="{y}" width="240" height="16" rx="3" fill="#EEF0F3"/>')
         o.append(f'<rect x="330" y="{y}" width="{240 * p:.0f}" height="16" rx="3" fill="{BLUE}"/>')
         _t(o, 620, y + 12, f"{p:.2f}", 12, INK, "700" if c == "account" else "400")
     _t(o, 700, 102, "The top value is decoded to", 11, MUTED)
@@ -299,7 +388,7 @@ def fig_temperature():
         for i, p in enumerate(ps):
             y = 90 + i * 24
             _t(o, x0, y + 12, ("bug", "account", "billing", "other")[i], 11, MUTED)
-            o.append(f'<rect x="{x0 + 60}" y="{y}" width="140" height="14" rx="3" fill="#E3E8EF"/>')
+            o.append(f'<rect x="{x0 + 60}" y="{y}" width="140" height="14" rx="3" fill="#EEF0F3"/>')
             o.append(f'<rect x="{x0 + 60}" y="{y}" width="{140 * p:.0f}" height="14" rx="3" fill="{BLUE}"/>')
             _t(o, x0 + 208, y + 11, f"{p:.2f}", 11, INK)
     _t(o, 60, 214, "probability = softmax(score / T). T is chosen to minimise negative log-likelihood on half the data and evaluated on the other half.", 11, FAINT)
@@ -315,7 +404,7 @@ def fig_training():
               ("preference tuning", "reward preferred answers", "human or model preferences", "→ confident, agreeable tone"))
     for i, (name, obj, data, out) in enumerate(stages):
         x = 40 + i * 275
-        o.append(f'<rect x="{x}" y="60" width="255" height="96" rx="10" fill="#F6F8FB" stroke="{LINE}"/>')
+        o.append(f'<rect x="{x}" y="60" width="255" height="96" rx="3" fill="#FFFFFF" stroke="{LINE}"/>')
         _t(o, x + 14, 84, name, 13, INK, "700")
         _t(o, x + 14, 104, f"objective: {obj}", 11, MUTED)
         _t(o, x + 14, 120, f"data: {data}", 11, MUTED)
@@ -325,12 +414,12 @@ def fig_training():
     _t(o, 40, 182, "published open weights (e.g. Qwen3-4B). Milestone 1 uses them exactly as released: good at ranking values, bad at stating probabilities.", 11, FAINT)
 
     o.append(f'<line x1="40" y1="200" x2="860" y2="200" stroke="{LINE}"/>')
-    o.append(f'<rect x="40" y="220" width="200" height="170" rx="10" fill="#F6F8FB" stroke="{LINE}"/>')
+    o.append(f'<rect x="40" y="220" width="200" height="170" rx="3" fill="#FFFFFF" stroke="{LINE}"/>')
     _t(o, 54, 244, "data with ground truth", 13, INK, "700")
     for i, s in enumerate(("synthetic environments", "(answer is computable)", "distilled labels from a", "frontier model, parsed to types", "logs from real software", "with a checkable outcome")):
         _t(o, 54, 266 + i * 16, s, 11, MUTED if i % 2 == 0 else FAINT)
     o.append(f'<line x1="242" y1="305" x2="268" y2="305" stroke="#5B6B7C" stroke-width="2" marker-end="url(#ar)"/>')
-    o.append(f'<rect x="270" y="220" width="220" height="170" rx="10" fill="{PALE}" stroke="{BLUE}" stroke-width="1.5"/>')
+    o.append(f'<rect x="270" y="220" width="220" height="170" rx="3" fill="{PALE}" stroke="{BLUE}" stroke-width="1.5"/>')
     _t(o, 284, 244, "backbone + typed heads", 13, INK, "700")
     _t(o, 284, 266, "the LM head is dropped", 11, MUTED)
     _t(o, 284, 282, "one head per field type:", 11, MUTED)
@@ -340,7 +429,7 @@ def fig_training():
     _t(o, 284, 346, "select → pointer over input", 11, BLUE)
     _t(o, 284, 370, "LoRA on the backbone, heads full", 11, MUTED)
     o.append(f'<line x1="492" y1="305" x2="518" y2="305" stroke="#5B6B7C" stroke-width="2" marker-end="url(#ar)"/>')
-    o.append(f'<rect x="520" y="220" width="340" height="170" rx="10" fill="#F6F8FB" stroke="{LINE}"/>')
+    o.append(f'<rect x="520" y="220" width="340" height="170" rx="3" fill="#FFFFFF" stroke="{LINE}"/>')
     _t(o, 534, 244, "objective: calibrated decisions", 13, INK, "700")
     _t(o, 534, 266, "1. cross-entropy on typed labels: a proper scoring", 11, MUTED)
     _t(o, 534, 281, "   rule, minimised only by honest probabilities", 11, MUTED)
@@ -355,11 +444,11 @@ def fig_training():
 def fig_components():
     o = _svg(900, 300)
     _t(o, 450, 34, "A decide() call through the code", 15, INK, "700", "middle")
-    boxes = (("your code", "Schema + input", "#F6F8FB", LINE), ("brier/schema.py", "Enum, Bool → candidates", "#F6F8FB", LINE),
-             ("brier/scorer.py", "prompt → batch → softmax", PALE, BLUE), ("brier/schema.py", "Decision: value, prob, dist", "#F6F8FB", LINE))
+    boxes = (("your code", "Schema + input", "#FFFFFF", LINE), ("brier/schema.py", "Enum, Bool → candidates", "#FFFFFF", LINE),
+             ("brier/scorer.py", "prompt → batch → softmax", PALE, BLUE), ("brier/schema.py", "Decision: value, prob, dist", "#FFFFFF", LINE))
     for i, (name, what, fill, stroke) in enumerate(boxes):
         x = 40 + i * 215
-        o.append(f'<rect x="{x}" y="70" width="195" height="70" rx="10" fill="{fill}" stroke="{stroke}"/>')
+        o.append(f'<rect x="{x}" y="70" width="195" height="70" rx="3" fill="{fill}" stroke="{stroke}"/>')
         _t(o, x + 12, 96, name, 12, INK, "700")
         _t(o, x + 12, 118, what, 11, MUTED)
         if i < 3:
@@ -393,7 +482,7 @@ def fig_distribution():
     for i, (c, p) in enumerate(outcomes):
         x = 70 + i * 150
         h = 160 * p
-        o.append(f'<rect x="{x}" y="{230 - h:.0f}" width="90" height="{h:.0f}" rx="4" fill="{BLUE}"/>')
+        o.append(f'<rect x="{x}" y="{230 - h:.0f}" width="90" height="{h:.0f}" rx="3" fill="{BLUE}"/>')
         _t(o, x + 45, 250, c, 12, INK, "400", "middle")
         _t(o, x + 45, 222 - h, f"{p:.2f}", 12, INK, "700", "middle")
     o.append(f'<line x1="60" y1="230" x2="820" y2="230" stroke="{MUTED}"/>')
@@ -484,12 +573,12 @@ def fig_scoring_rules():
 def fig_transformer():
     o = _svg(900, 360)
     _t(o, 450, 34, "Inside the backbone: what one forward pass does to a sequence of tokens", 15, INK, "700", "middle")
-    stages = (("tokens", "ids from the tokenizer", "#F6F8FB"), ("embeddings", "each id → a vector", "#F6F8FB"),
-              ("N × blocks", "attention, then MLP", PALE), ("hidden states", "one vector per position", "#F6F8FB"),
-              ("LM head", "vector → 150k logits", "#F6F8FB"), ("softmax", "next-token distribution", "#F6F8FB"))
+    stages = (("tokens", "ids from the tokenizer", "#FFFFFF"), ("embeddings", "each id → a vector", "#FFFFFF"),
+              ("N × blocks", "attention, then MLP", PALE), ("hidden states", "one vector per position", "#FFFFFF"),
+              ("LM head", "vector → 150k logits", "#FFFFFF"), ("softmax", "next-token distribution", "#FFFFFF"))
     for i, (name, what, fill) in enumerate(stages):
         x = 30 + i * 143
-        o.append(f'<rect x="{x}" y="70" width="128" height="72" rx="10" fill="{fill}" stroke="{BLUE if fill == PALE else LINE}"/>')
+        o.append(f'<rect x="{x}" y="70" width="128" height="72" rx="3" fill="{fill}" stroke="{BLUE if fill == PALE else LINE}"/>')
         _t(o, x + 64, 98, name, 11.5, INK, "700", "middle")
         _t(o, x + 64, 118, what, 9.5, MUTED, "400", "middle")
         if i < 5:
@@ -508,13 +597,13 @@ def fig_transformer():
 def fig_lora():
     o = _svg(900, 260)
     _t(o, 450, 34, "LoRA: fine-tune a big matrix by adding a small low-rank one next to it", 15, INK, "700", "middle")
-    o.append(f'<rect x="80" y="70" width="140" height="140" rx="8" fill="#F1F3F6" stroke="{LINE}"/>')
+    o.append(f'<rect x="80" y="70" width="140" height="140" rx="3" fill="#F1F3F6" stroke="{LINE}"/>')
     _t(o, 150, 145, "W", 22, MUTED, "700", "middle")
     _t(o, 150, 230, "frozen, d × d (e.g. 2560 × 2560)", 10, MUTED, "400", "middle")
     _t(o, 260, 145, "+", 26, INK, "700", "middle")
-    o.append(f'<rect x="310" y="70" width="140" height="22" rx="4" fill="{BLUE}"/>')
+    o.append(f'<rect x="310" y="70" width="140" height="22" rx="3" fill="{BLUE}"/>')
     _t(o, 380, 86, "A  (r × d)", 11, "#FFFFFF", "700", "middle")
-    o.append(f'<rect x="310" y="100" width="22" height="110" rx="4" fill="{BLUE}"/>')
+    o.append(f'<rect x="310" y="100" width="22" height="110" rx="3" fill="{BLUE}"/>')
     o.append(f'<text transform="translate(325 155) rotate(-90)" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle">B (d × r)</text>')
     _t(o, 380, 160, "trained", 12, BLUE, "700", "middle")
     _t(o, 380, 178, "r = 16", 11, MUTED, "400", "middle")
@@ -534,7 +623,7 @@ def fig_gradient():
              ("loss", "−log p(correct answer)"), ("backward pass", "gradient w.r.t. LoRA weights"), ("optimizer step", "weights −= lr · gradient"))
     for i, (name, what) in enumerate(steps):
         x = 30 + i * 143
-        o.append(f'<rect x="{x}" y="70" width="128" height="72" rx="10" fill="{PALE if i == 3 else "#F6F8FB"}" stroke="{BLUE if i == 3 else LINE}"/>')
+        o.append(f'<rect x="{x}" y="70" width="128" height="72" rx="3" fill="{PALE if i == 3 else "#FFFFFF"}" stroke="{BLUE if i == 3 else LINE}"/>')
         _t(o, x + 64, 98, name, 11.5, INK, "700", "middle")
         _t(o, x + 64, 118, what, 9.5, MUTED, "400", "middle")
         if i < 5:
@@ -549,3 +638,7 @@ def fig_gradient():
 for fn in (fig_distribution, fig_entropy, fig_softmax_curve, fig_scoring_rules, fig_transformer, fig_lora, fig_gradient):
     fn()
 print("primer figures written")
+
+figure()
+fig_results()
+print("assets written")

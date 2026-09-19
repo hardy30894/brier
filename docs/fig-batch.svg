@@ -1,106 +1,106 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="900" height="330" viewBox="0 0 900 330" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
-<defs><marker id="ar" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5B6B7C"/></marker></defs>
-<rect width="900" height="330" rx="14" fill="#FFFFFF" stroke="#D8DEE6"/>
-<text x="450" y="34" font-size="15" font-weight="700" fill="#1B1F24" text-anchor="middle">One batched forward pass: every candidate of every field is a row</text>
-<rect x="40" y="60" width="330" height="16" rx="3" fill="#F6F8FB" stroke="#D8DEE6"/>
-<text x="48" y="72" font-size="10" font-weight="400" fill="#8A94A0" text-anchor="start">prompt (identical in every row)</text>
-<rect x="372" y="60" width="110" height="16" rx="3" fill="#F6F8FB" stroke="#D8DEE6"/>
-<text x="427" y="72" font-size="10" font-weight="400" fill="#5B6B7C" text-anchor="middle">{"category": "</text>
+<defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#5B6472"/></marker></defs>
+<rect width="900" height="330" fill="#FFFFFF"/>
+<text x="450" y="34" font-size="15" font-weight="700" fill="#0F172A" text-anchor="middle">One batched forward pass: every candidate of every field is a row</text>
+<rect x="40" y="60" width="330" height="16" rx="3" fill="#FFFFFF" stroke="#E4E7EC"/>
+<text x="48" y="72" font-size="10" font-weight="400" fill="#8B93A1" text-anchor="start">prompt (identical in every row)</text>
+<rect x="372" y="60" width="110" height="16" rx="3" fill="#FFFFFF" stroke="#E4E7EC"/>
+<text x="427" y="72" font-size="10" font-weight="400" fill="#5B6472" text-anchor="middle">{"category": "</text>
 <rect x="484" y="60" width="69" height="16" rx="3" fill="#3557C4"/>
 <text x="518.5" y="72" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">billing</text>
 <rect x="555" y="60" width="45" height="16" rx="3" fill="#F1F3F6"/>
-<text x="577.5" y="72" font-size="9" font-weight="400" fill="#8A94A0" text-anchor="middle">pad</text>
-<rect x="40" y="81" width="330" height="16" rx="3" fill="#F6F8FB" stroke="#D8DEE6"/>
-<text x="48" y="93" font-size="10" font-weight="400" fill="#8A94A0" text-anchor="start">prompt (identical in every row)</text>
-<rect x="372" y="81" width="110" height="16" rx="3" fill="#F6F8FB" stroke="#D8DEE6"/>
-<text x="427" y="93" font-size="10" font-weight="400" fill="#5B6B7C" text-anchor="middle">{"category": "</text>
+<text x="577.5" y="72" font-size="9" font-weight="400" fill="#8B93A1" text-anchor="middle">pad</text>
+<rect x="40" y="81" width="330" height="16" rx="3" fill="#FFFFFF" stroke="#E4E7EC"/>
+<text x="48" y="93" font-size="10" font-weight="400" fill="#8B93A1" text-anchor="start">prompt (identical in every row)</text>
+<rect x="372" y="81" width="110" height="16" rx="3" fill="#FFFFFF" stroke="#E4E7EC"/>
+<text x="427" y="93" font-size="10" font-weight="400" fill="#5B6472" text-anchor="middle">{"category": "</text>
 <rect x="484" y="81" width="41" height="16" rx="3" fill="#3557C4"/>
 <text x="504.5" y="93" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">bug</text>
 <rect x="527" y="81" width="73" height="16" rx="3" fill="#F1F3F6"/>
-<text x="563.5" y="93" font-size="9" font-weight="400" fill="#8A94A0" text-anchor="middle">pad</text>
-<rect x="40" y="102" width="330" height="16" rx="3" fill="#F6F8FB" stroke="#D8DEE6"/>
-<text x="48" y="114" font-size="10" font-weight="400" fill="#8A94A0" text-anchor="start">prompt (identical in every row)</text>
-<rect x="372" y="102" width="110" height="16" rx="3" fill="#F6F8FB" stroke="#D8DEE6"/>
-<text x="427" y="114" font-size="10" font-weight="400" fill="#5B6B7C" text-anchor="middle">{"category": "</text>
+<text x="563.5" y="93" font-size="9" font-weight="400" fill="#8B93A1" text-anchor="middle">pad</text>
+<rect x="40" y="102" width="330" height="16" rx="3" fill="#FFFFFF" stroke="#E4E7EC"/>
+<text x="48" y="114" font-size="10" font-weight="400" fill="#8B93A1" text-anchor="start">prompt (identical in every row)</text>
+<rect x="372" y="102" width="110" height="16" rx="3" fill="#FFFFFF" stroke="#E4E7EC"/>
+<text x="427" y="114" font-size="10" font-weight="400" fill="#5B6472" text-anchor="middle">{"category": "</text>
 <rect x="484" y="102" width="69" height="16" rx="3" fill="#3557C4"/>
 <text x="518.5" y="114" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">feature</text>
 <rect x="555" y="102" width="45" height="16" rx="3" fill="#F1F3F6"/>
-<text x="577.5" y="114" font-size="9" font-weight="400" fill="#8A94A0" text-anchor="middle">pad</text>
-<rect x="40" y="123" width="330" height="16" rx="3" fill="#F6F8FB" stroke="#D8DEE6"/>
-<text x="48" y="135" font-size="10" font-weight="400" fill="#8A94A0" text-anchor="start">prompt (identical in every row)</text>
-<rect x="372" y="123" width="110" height="16" rx="3" fill="#F6F8FB" stroke="#D8DEE6"/>
-<text x="427" y="135" font-size="10" font-weight="400" fill="#5B6B7C" text-anchor="middle">{"category": "</text>
+<text x="577.5" y="114" font-size="9" font-weight="400" fill="#8B93A1" text-anchor="middle">pad</text>
+<rect x="40" y="123" width="330" height="16" rx="3" fill="#FFFFFF" stroke="#E4E7EC"/>
+<text x="48" y="135" font-size="10" font-weight="400" fill="#8B93A1" text-anchor="start">prompt (identical in every row)</text>
+<rect x="372" y="123" width="110" height="16" rx="3" fill="#FFFFFF" stroke="#E4E7EC"/>
+<text x="427" y="135" font-size="10" font-weight="400" fill="#5B6472" text-anchor="middle">{"category": "</text>
 <rect x="484" y="123" width="69" height="16" rx="3" fill="#3557C4"/>
 <text x="518.5" y="135" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">account</text>
 <rect x="555" y="123" width="45" height="16" rx="3" fill="#F1F3F6"/>
-<text x="577.5" y="135" font-size="9" font-weight="400" fill="#8A94A0" text-anchor="middle">pad</text>
-<rect x="40" y="144" width="330" height="16" rx="3" fill="#F6F8FB" stroke="#D8DEE6"/>
-<text x="48" y="156" font-size="10" font-weight="400" fill="#8A94A0" text-anchor="start">prompt (identical in every row)</text>
-<rect x="372" y="144" width="110" height="16" rx="3" fill="#F6F8FB" stroke="#D8DEE6"/>
-<text x="427" y="156" font-size="10" font-weight="400" fill="#5B6B7C" text-anchor="middle">{"category": "</text>
+<text x="577.5" y="135" font-size="9" font-weight="400" fill="#8B93A1" text-anchor="middle">pad</text>
+<rect x="40" y="144" width="330" height="16" rx="3" fill="#FFFFFF" stroke="#E4E7EC"/>
+<text x="48" y="156" font-size="10" font-weight="400" fill="#8B93A1" text-anchor="start">prompt (identical in every row)</text>
+<rect x="372" y="144" width="110" height="16" rx="3" fill="#FFFFFF" stroke="#E4E7EC"/>
+<text x="427" y="156" font-size="10" font-weight="400" fill="#5B6472" text-anchor="middle">{"category": "</text>
 <rect x="484" y="144" width="55" height="16" rx="3" fill="#3557C4"/>
 <text x="511.5" y="156" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">other</text>
 <rect x="541" y="144" width="59" height="16" rx="3" fill="#F1F3F6"/>
-<text x="570.5" y="156" font-size="9" font-weight="400" fill="#8A94A0" text-anchor="middle">pad</text>
-<rect x="40" y="165" width="330" height="16" rx="3" fill="#F6F8FB" stroke="#D8DEE6"/>
-<text x="48" y="177" font-size="10" font-weight="400" fill="#8A94A0" text-anchor="start">prompt (identical in every row)</text>
-<rect x="372" y="165" width="110" height="16" rx="3" fill="#F6F8FB" stroke="#D8DEE6"/>
-<text x="427" y="177" font-size="10" font-weight="400" fill="#5B6B7C" text-anchor="middle">{"priority": "</text>
+<text x="570.5" y="156" font-size="9" font-weight="400" fill="#8B93A1" text-anchor="middle">pad</text>
+<rect x="40" y="165" width="330" height="16" rx="3" fill="#FFFFFF" stroke="#E4E7EC"/>
+<text x="48" y="177" font-size="10" font-weight="400" fill="#8B93A1" text-anchor="start">prompt (identical in every row)</text>
+<rect x="372" y="165" width="110" height="16" rx="3" fill="#FFFFFF" stroke="#E4E7EC"/>
+<text x="427" y="177" font-size="10" font-weight="400" fill="#5B6472" text-anchor="middle">{"priority": "</text>
 <rect x="484" y="165" width="41" height="16" rx="3" fill="#5B8DEF"/>
 <text x="504.5" y="177" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">low</text>
 <rect x="527" y="165" width="73" height="16" rx="3" fill="#F1F3F6"/>
-<text x="563.5" y="177" font-size="9" font-weight="400" fill="#8A94A0" text-anchor="middle">pad</text>
-<rect x="40" y="186" width="330" height="16" rx="3" fill="#F6F8FB" stroke="#D8DEE6"/>
-<text x="48" y="198" font-size="10" font-weight="400" fill="#8A94A0" text-anchor="start">prompt (identical in every row)</text>
-<rect x="372" y="186" width="110" height="16" rx="3" fill="#F6F8FB" stroke="#D8DEE6"/>
-<text x="427" y="198" font-size="10" font-weight="400" fill="#5B6B7C" text-anchor="middle">{"priority": "</text>
+<text x="563.5" y="177" font-size="9" font-weight="400" fill="#8B93A1" text-anchor="middle">pad</text>
+<rect x="40" y="186" width="330" height="16" rx="3" fill="#FFFFFF" stroke="#E4E7EC"/>
+<text x="48" y="198" font-size="10" font-weight="400" fill="#8B93A1" text-anchor="start">prompt (identical in every row)</text>
+<rect x="372" y="186" width="110" height="16" rx="3" fill="#FFFFFF" stroke="#E4E7EC"/>
+<text x="427" y="198" font-size="10" font-weight="400" fill="#5B6472" text-anchor="middle">{"priority": "</text>
 <rect x="484" y="186" width="62" height="16" rx="3" fill="#5B8DEF"/>
 <text x="515.0" y="198" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">medium</text>
 <rect x="548" y="186" width="52" height="16" rx="3" fill="#F1F3F6"/>
-<text x="574.0" y="198" font-size="9" font-weight="400" fill="#8A94A0" text-anchor="middle">pad</text>
-<rect x="40" y="207" width="330" height="16" rx="3" fill="#F6F8FB" stroke="#D8DEE6"/>
-<text x="48" y="219" font-size="10" font-weight="400" fill="#8A94A0" text-anchor="start">prompt (identical in every row)</text>
-<rect x="372" y="207" width="110" height="16" rx="3" fill="#F6F8FB" stroke="#D8DEE6"/>
-<text x="427" y="219" font-size="10" font-weight="400" fill="#5B6B7C" text-anchor="middle">{"priority": "</text>
+<text x="574.0" y="198" font-size="9" font-weight="400" fill="#8B93A1" text-anchor="middle">pad</text>
+<rect x="40" y="207" width="330" height="16" rx="3" fill="#FFFFFF" stroke="#E4E7EC"/>
+<text x="48" y="219" font-size="10" font-weight="400" fill="#8B93A1" text-anchor="start">prompt (identical in every row)</text>
+<rect x="372" y="207" width="110" height="16" rx="3" fill="#FFFFFF" stroke="#E4E7EC"/>
+<text x="427" y="219" font-size="10" font-weight="400" fill="#5B6472" text-anchor="middle">{"priority": "</text>
 <rect x="484" y="207" width="48" height="16" rx="3" fill="#5B8DEF"/>
 <text x="508.0" y="219" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">high</text>
 <rect x="534" y="207" width="66" height="16" rx="3" fill="#F1F3F6"/>
-<text x="567.0" y="219" font-size="9" font-weight="400" fill="#8A94A0" text-anchor="middle">pad</text>
-<rect x="40" y="228" width="330" height="16" rx="3" fill="#F6F8FB" stroke="#D8DEE6"/>
-<text x="48" y="240" font-size="10" font-weight="400" fill="#8A94A0" text-anchor="start">prompt (identical in every row)</text>
-<rect x="372" y="228" width="110" height="16" rx="3" fill="#F6F8FB" stroke="#D8DEE6"/>
-<text x="427" y="240" font-size="10" font-weight="400" fill="#5B6B7C" text-anchor="middle">{"priority": "</text>
+<text x="567.0" y="219" font-size="9" font-weight="400" fill="#8B93A1" text-anchor="middle">pad</text>
+<rect x="40" y="228" width="330" height="16" rx="3" fill="#FFFFFF" stroke="#E4E7EC"/>
+<text x="48" y="240" font-size="10" font-weight="400" fill="#8B93A1" text-anchor="start">prompt (identical in every row)</text>
+<rect x="372" y="228" width="110" height="16" rx="3" fill="#FFFFFF" stroke="#E4E7EC"/>
+<text x="427" y="240" font-size="10" font-weight="400" fill="#5B6472" text-anchor="middle">{"priority": "</text>
 <rect x="484" y="228" width="62" height="16" rx="3" fill="#5B8DEF"/>
 <text x="515.0" y="240" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">urgent</text>
 <rect x="548" y="228" width="52" height="16" rx="3" fill="#F1F3F6"/>
-<text x="574.0" y="240" font-size="9" font-weight="400" fill="#8A94A0" text-anchor="middle">pad</text>
-<rect x="40" y="249" width="330" height="16" rx="3" fill="#F6F8FB" stroke="#D8DEE6"/>
-<text x="48" y="261" font-size="10" font-weight="400" fill="#8A94A0" text-anchor="start">prompt (identical in every row)</text>
-<rect x="372" y="249" width="110" height="16" rx="3" fill="#F6F8FB" stroke="#D8DEE6"/>
-<text x="427" y="261" font-size="10" font-weight="400" fill="#5B6B7C" text-anchor="middle">{"needs_human": "</text>
+<text x="574.0" y="240" font-size="9" font-weight="400" fill="#8B93A1" text-anchor="middle">pad</text>
+<rect x="40" y="249" width="330" height="16" rx="3" fill="#FFFFFF" stroke="#E4E7EC"/>
+<text x="48" y="261" font-size="10" font-weight="400" fill="#8B93A1" text-anchor="start">prompt (identical in every row)</text>
+<rect x="372" y="249" width="110" height="16" rx="3" fill="#FFFFFF" stroke="#E4E7EC"/>
+<text x="427" y="261" font-size="10" font-weight="400" fill="#5B6472" text-anchor="middle">{"needs_human": "</text>
 <rect x="484" y="249" width="41" height="16" rx="3" fill="#9DB9F5"/>
 <text x="504.5" y="261" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">yes</text>
 <rect x="527" y="249" width="73" height="16" rx="3" fill="#F1F3F6"/>
-<text x="563.5" y="261" font-size="9" font-weight="400" fill="#8A94A0" text-anchor="middle">pad</text>
-<rect x="40" y="270" width="330" height="16" rx="3" fill="#F6F8FB" stroke="#D8DEE6"/>
-<text x="48" y="282" font-size="10" font-weight="400" fill="#8A94A0" text-anchor="start">prompt (identical in every row)</text>
-<rect x="372" y="270" width="110" height="16" rx="3" fill="#F6F8FB" stroke="#D8DEE6"/>
-<text x="427" y="282" font-size="10" font-weight="400" fill="#5B6B7C" text-anchor="middle">{"needs_human": "</text>
+<text x="563.5" y="261" font-size="9" font-weight="400" fill="#8B93A1" text-anchor="middle">pad</text>
+<rect x="40" y="270" width="330" height="16" rx="3" fill="#FFFFFF" stroke="#E4E7EC"/>
+<text x="48" y="282" font-size="10" font-weight="400" fill="#8B93A1" text-anchor="start">prompt (identical in every row)</text>
+<rect x="372" y="270" width="110" height="16" rx="3" fill="#FFFFFF" stroke="#E4E7EC"/>
+<text x="427" y="282" font-size="10" font-weight="400" fill="#5B6472" text-anchor="middle">{"needs_human": "</text>
 <rect x="484" y="270" width="34" height="16" rx="3" fill="#9DB9F5"/>
 <text x="501.0" y="282" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">no</text>
 <rect x="520" y="270" width="80" height="16" rx="3" fill="#F1F3F6"/>
-<text x="560.0" y="282" font-size="9" font-weight="400" fill="#8A94A0" text-anchor="middle">pad</text>
-<text x="620" y="72" font-size="12" font-weight="700" fill="#1B1F24" text-anchor="start">Only the candidate positions are read</text>
-<text x="620" y="90" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="start">The model produces a next-token</text>
-<text x="620" y="105" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="start">distribution at every position, but</text>
-<text x="620" y="120" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="start">Brier looks up just the candidate</text>
-<text x="620" y="135" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="start">tokens' log-probabilities. That keeps</text>
-<text x="620" y="150" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="start">memory small (the vocabulary is 150k).</text>
-<text x="620" y="182" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="start">Rows are padded to equal length with</text>
-<text x="620" y="197" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="start">an attention mask, so padding is</text>
-<text x="620" y="212" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="start">invisible to the model.</text>
-<text x="620" y="244" font-size="12" font-weight="700" fill="#3557C4" text-anchor="start">11 rows, one call, ~100 ms on a 4090</text>
-<text x="620" y="262" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="start">for a 4B model. The cost grows with</text>
-<text x="620" y="277" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="start">the number of allowed values, not</text>
-<text x="620" y="292" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="start">with output length.</text>
+<text x="560.0" y="282" font-size="9" font-weight="400" fill="#8B93A1" text-anchor="middle">pad</text>
+<text x="620" y="72" font-size="12" font-weight="700" fill="#0F172A" text-anchor="start">Only the candidate positions are read</text>
+<text x="620" y="90" font-size="11" font-weight="400" fill="#5B6472" text-anchor="start">The model produces a next-token</text>
+<text x="620" y="105" font-size="11" font-weight="400" fill="#5B6472" text-anchor="start">distribution at every position, but</text>
+<text x="620" y="120" font-size="11" font-weight="400" fill="#5B6472" text-anchor="start">Brier looks up just the candidate</text>
+<text x="620" y="135" font-size="11" font-weight="400" fill="#5B6472" text-anchor="start">tokens' log-probabilities. That keeps</text>
+<text x="620" y="150" font-size="11" font-weight="400" fill="#5B6472" text-anchor="start">memory small (the vocabulary is 150k).</text>
+<text x="620" y="182" font-size="11" font-weight="400" fill="#5B6472" text-anchor="start">Rows are padded to equal length with</text>
+<text x="620" y="197" font-size="11" font-weight="400" fill="#5B6472" text-anchor="start">an attention mask, so padding is</text>
+<text x="620" y="212" font-size="11" font-weight="400" fill="#5B6472" text-anchor="start">invisible to the model.</text>
+<text x="620" y="244" font-size="12" font-weight="700" fill="#4F46E5" text-anchor="start">11 rows, one call, ~100 ms on a 4090</text>
+<text x="620" y="262" font-size="11" font-weight="400" fill="#5B6472" text-anchor="start">for a 4B model. The cost grows with</text>
+<text x="620" y="277" font-size="11" font-weight="400" fill="#5B6472" text-anchor="start">the number of allowed values, not</text>
+<text x="620" y="292" font-size="11" font-weight="400" fill="#5B6472" text-anchor="start">with output length.</text>
 </svg>

@@ -1,0 +1,52 @@
+{
+ "model": "Phi-4-mini-r3@eval",
+ "created": 1789794576.2287965,
+ "questions": {
+  "matches": {
+   "id": "matches",
+   "T": 0.05000000000000001,
+   "n": 300,
+   "accuracy": 1.0,
+   "ece_raw": 1.0224609997222522e-05,
+   "ece_cal": 0.0,
+   "brier_raw": 2.5110160965822477e-10,
+   "brier_cal": 0.0,
+   "mean_conf_raw": 0.9999897753900028,
+   "mean_conf_cal": 1.0,
+   "reliability_raw": [
+    [
+     0.9,
+     1.0,
+     300,
+     0.9999897753900028,
+     1.0
+    ]
+   ],
+   "reliability_cal": [
+    [
+     0.9,
+     1.0,
+     300,
+     1.0,
+     1.0
+    ]
+   ],
+   "tiers": [
+    {
+     "name": "auto",
+     "target_precision": 0.95,
+     "min_confidence": 1.0,
+     "precision": 1.0,
+     "coverage": 1.0
+    },
+    {
+     "name": "review",
+     "target_precision": 0.8,
+     "min_confidence": 1.0,
+     "precision": 1.0,
+     "coverage": 1.0
+    }
+   ]
+  }
+ }
+}

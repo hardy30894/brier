@@ -2,127 +2,93 @@
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/brier-dark.png">
-  <img alt="Brier" src="docs/brier.png" width="260">
+  <img alt="Brier" src="docs/brier.png" width="150">
 </picture>
 
-**Decisions, not text. Typed, in one pass, with a probability you can trust.**
+<br>
 
-*Give any open model a schema. Get every field back at once, each with a calibrated probability, and never a malformed value.*
+**Calibrated typed decisions from any open language model, in one forward pass.**
 
-[![one forward pass](https://img.shields.io/badge/inference-one%20forward%20pass-3557C4?style=flat-square)](#how-it-works) [![type errors impossible](https://img.shields.io/badge/type%20errors-impossible%20by%20construction-0B8399?style=flat-square)](#how-it-works) [![calibrated](https://img.shields.io/badge/probabilities-measured%2C%20not%20claimed-8A2BE2?style=flat-square)](#benchmarks) [![status](https://img.shields.io/badge/status-milestone%201%20of%203-B7791F?style=flat-square)](#roadmap) [![Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-6A6F7A?style=flat-square)](LICENSE)
+[Architecture](docs/ARCHITECTURE.md) · [Primer](docs/PRIMER.md) · [API](docs/QUESTIONS.md) · [Calibration](docs/CALIBRATION.md) · [Training](docs/TRAINING.md) · [Demo](docs/demo.html)
+
+[![license](https://img.shields.io/badge/license-Apache%202.0-1B1F24?style=flat-square)](LICENSE) [![status](https://img.shields.io/badge/status-research%20preview-4F46E5?style=flat-square)](docs/TRAINING.md)
 
 </div>
 
-Most of what software asks a language model to do is not writing. It is deciding: which
-team gets this ticket, which tool to call next, is this record a duplicate, is this state
-dangerous. Today that decision is made by generating a JSON string one token at a time,
-parsing it, validating it, retrying when it comes back malformed, and trusting a
-confidence number the model made up.
+## Abstract
 
-Brier turns an open causal model into a decision function. You hand it unstructured input
-and a schema of typed fields. It scores every allowed value of every field in a single
-batched forward pass and returns one value per field, each with a probability. The model
-never writes a string, so it can never return a value outside the type. That guarantee is
-structural, not learned.
+Most decisions software asks of a language model are not text: which team gets a
+ticket, which tool to call, whether a passage answers a question, whether two records
+are the same person. Today each is extracted by generating a JSON string one token at a
+time, parsing it, and trusting a confidence the model made up. Brier scores every
+allowed answer to every question in a single forward pass of an open-weight causal
+language model and returns one value per question with a probability. A value outside
+the allowed set cannot occur. The probabilities are then made honest and turned into a
+decision policy by a calibration kit that measures, on held-out data, the confidence at
+which the model may act automatically at a target precision. Training the backbone with
+a proper scoring rule over the answer set, on synthetic decisions with deliberate
+ambiguity and contrastive negatives, raises accuracy and lowers raw calibration error on
+tasks the model never trained on, including a real dataset; the same objective works
+from environment outcomes alone, with no labels. Five backbones from three model
+families run through the pipeline unchanged.
 
-Named after the Brier score, the scoring rule that defines whether a probability is honest.
+<p align="center"><img src="docs/fig-results.svg" width="900" alt="three panels: latency per decision for one pass versus generation; raw calibration error on never-trained tasks before and after training; reliability of the 4B model on the frustration task before and after"></p>
 
-New to all of this? [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) walks from what a language model computes to how Brier decides, how the probabilities are measured, and how the model is trained, assuming nothing.
+## Results
 
-**Contents**: [Architecture, from zero](docs/ARCHITECTURE.md) · [The primer](docs/PRIMER.md) · [How it works](#how-it-works) · [What it is not](#what-it-is-not) · [Benchmarks](#benchmarks) · [Run it](#run-it) · [On a GPU pod](#on-a-gpu-pod) · [Roadmap](#roadmap) · [Layout](#layout)
+Numbers are held-out, on the evaluation half of every template pool, 300 examples per
+task. Full tables and protocol in [TRAINING.md](docs/TRAINING.md).
 
-## How it works
+| | untrained | trained | |
+|---|---|---|---|
+| Latency per three-question decision, 4B, RTX 4090 | 1268 ms generating JSON | **111 ms** one pass | 11× |
+| Frustration (never trained on), Qwen3-4B | 0.44 acc · 0.54 ECE | **0.63 acc · 0.25 ECE** | raw, no correction |
+| Duplicates (never trained on), Qwen3-4B | 0.73 acc · 0.26 ECE | **0.997 acc · 0.04 ECE** | raw |
+| Banking77 (real, never trained on), Qwen3-0.6B | 0.85 acc · 0.10 ECE | **0.90 acc · 0.02 ECE** | raw |
+| Ticket category, Phi-4-mini | 0.71 acc | **0.96 acc** | held-out templates |
+| Gridworld from outcomes only, no labels, Qwen3-0.6B | 0.35 acc | **0.81 acc** | vs 0.84 supervised |
+| Type errors, every model, every task | 0 | 0 | by construction |
 
-<p align="center">
-  <img src="docs/how-it-works.svg" width="900" alt="input and schema go into one batched forward pass; every allowed value of every field is scored at once; the result is a typed decision with a probability per field">
-</p>
+Three findings shape the method. Clean labels alone teach overconfidence: a model
+trained only on exact answers learns to be certain, and the fix is training data with
+irreducible uncertainty and soft labels equal to the generator's own posterior. A
+shortcut learned from cue-triggered claims transfers as a bias, and the fix is a
+contrastive claim where the cue is present and the answer is no. A 0.6B backbone with a
+25-minute adapter outperforms an untrained 4B on every non-templated task, at a quarter
+of the latency.
 
-1. **Schema in.** Each field is an `Enum` over a fixed set of values or a `Bool`. The
-   schema is rendered into the prompt alongside the input.
-2. **One pass.** For every field, every allowed value is appended to the same prompt as a
-   candidate continuation. All candidates for all fields go through the model in one
-   batch. The score of a candidate is the log-probability the model assigns to it.
-3. **Softmax per field.** Scores are normalised within each field, so each field carries a
-   full distribution, not just an argmax.
-4. **Typed out.** The top value per field is decoded back to its Python type. The
-   distribution is kept, so downstream code can act on the probability, escalate below a
-   threshold, or ask a human.
+## Method
 
-Because candidates are scored rather than generated, latency is one forward pass over a
-batch of short sequences, and the output cannot be malformed. Fields are scored
-independently in the same pass, which is the honest trade: no chain of thought, no
-cross-field dependency. That is the right shape for the enormous middle of routing,
-classification, extraction, and state-to-action work where a frontier model is currently
-used as a slow, expensive classifier.
+<p align="center"><img src="docs/how-it-works.svg" width="900" alt="state and questions in, batched candidates through one forward pass, a distribution per question out"></p>
 
-## What it is not
+- **Scoring.** Each allowed answer is appended to the prompt as a candidate; its score
+  is the sum of its tokens' log-probabilities under the backbone. All candidates of all
+  questions go through one batched pass. A softmax within each question yields its
+  distribution. From 1.7B up, the prompt is run once and candidates share its cache.
+- **Calibration.** One temperature per question, fit by maximum likelihood with five-fold
+  cross-fitting, then the lowest confidence cutoff that reaches a target precision on
+  held-out decisions, with its coverage. Expected calibration error and Brier score are
+  reported raw and after temperature.
+- **Training.** LoRA adapters on the backbone, trained with cross-entropy over the answer
+  set, a strictly proper scoring rule, on hard or soft targets. A typed head adds an
+  input-conditional temperature and a per-candidate residual over hidden states,
+  zero-initialised to the plain scorer. An outcome-reward form replaces labels with the
+  environment's result and adds the Brier score of the stated probability against it.
+- **Evaluation.** Every templated task splits its templates into disjoint training and
+  evaluation halves; three tasks are never trained on; one is a real public dataset.
+  The gate for training is raw calibration error on the unseen tasks against the
+  untrained model after temperature scaling.
 
-- **Not a chat model.** It cannot write prose, explain itself, or reason step by step. If a
-  task needs chain of thought, generate text.
-- **Not trained yet.** Milestone 1 uses an open model exactly as published. The
-  probabilities come from the model's own log-likelihoods, which are known to be
-  overconfident. Measuring that gap is the point of this milestone; closing it is the next.
-- **Not a guarantee of correctness.** "Cannot produce a type error" means the value is
-  always one of the allowed ones. It says nothing about whether it is the right one.
-  Accuracy and calibration are measured, below, and reported per field.
+The [architecture document](docs/ARCHITECTURE.md) walks through all of this from
+nothing; the [primer](docs/PRIMER.md) derives it, from probability to the
+policy-gradient objective.
 
-## Benchmarks
-
-Two synthetic tasks with computable ground truth, 200 examples each, on a single RTX 4090.
-The comparison is against the same model generating a JSON object with a self-reported
-confidence, which is how a decision is usually extracted from a language model today.
-
-- **tickets**: support tickets routed to a `category` (5 values), a `priority` (4), and a
-  `needs_human` flag. Signals are mixed and shuffled with noise sentences.
-- **gridworld**: a 5x5 grid with a player, exit, monster, and walls. The `move` field is
-  the first step of a shortest safe path (ties count as correct); `danger` is whether the
-  monster is adjacent.
-
-ECE is expected calibration error over ten confidence bins, lower is better. Brier is the
-mean squared error between the reported confidence and the outcome. Latency is per
-decision, all fields included.
-
-| model | task | method | accuracy | ECE raw | ECE after temp | p50 latency | type errors |
-|---|---|---|---|---|---|---|---|
-| Qwen3-0.6B | tickets | scored | 0.498 | 0.313 | 0.101 | 44 ms | 0 |
-| Qwen3-0.6B | tickets | json | 0.368 | 0.532 | n/a | 1108 ms | 0 |
-| Qwen3-0.6B | gridworld | scored | 0.603 | 0.204 | 0.070 | 41 ms | 0 |
-| Qwen3-0.6B | gridworld | json | 0.625 | 0.275 | n/a | 849 ms | 0 |
-| Qwen3-1.7B | tickets | scored | 0.495 | 0.438 | 0.214 | 51 ms | 0 |
-| Qwen3-1.7B | tickets | json | 0.485 | 0.371 | n/a | 912 ms | 0 |
-| Qwen3-1.7B | gridworld | scored | 0.540 | 0.252 | 0.112 | 40 ms | 0 |
-| Qwen3-1.7B | gridworld | json | 0.647 | 0.253 | n/a | 692 ms | 0 |
-| Qwen3-4B | tickets | scored | 0.585 | 0.369 | 0.158 | 111 ms | 0 |
-| Qwen3-4B | tickets | json | 0.587 | 0.314 | n/a | 1268 ms | 0 |
-| Qwen3-4B | gridworld | scored | 0.805 | 0.187 | 0.111 | 84 ms | 0 |
-| Qwen3-4B | gridworld | json | 0.757 | 0.186 | n/a | 1031 ms | 0 |
-
-Reading the table:
-
-- **Speed.** The single-pass scorer is 10 to 20 times faster than JSON generation from the
-  same model at every size, because there is no token loop.
-- **Accuracy.** Equal to or better than JSON generation at 4B on both tasks, and mixed at
-  the smaller sizes, where neither method is good. Intelligence comes from the backbone;
-  the scorer does not add or remove it.
-- **Type errors.** Zero for the scorer by construction. Also zero for JSON generation
-  here, so at this size and with this simple a schema the guarantee is not yet the
-  differentiator.
-- **Calibration.** Raw log-likelihood confidence is badly overconfident: the 4B model
-  reports 0.95 mean confidence on tickets against 0.59 accuracy. A single temperature per
-  field, fit on half the data and scored on the other half, cuts calibration error by two
-  to four times without any training. That gap is what milestone 2 is for.
-
-Reproduce with `python3 bench.py --n 200 --model Qwen/Qwen3-4B`. Raw results, including
-per-bin reliability tables, are in `results/`.
-
-## Run it
-
-Ask questions about a state. Every question is answered in the same forward pass.
+## Usage
 
 ```python
 from brier import Scorer, Choice, Score, Claim, ask
 
-scorer = Scorer("Qwen/Qwen3-4B")
+scorer = Scorer("microsoft/Phi-4-mini-instruct")
 answers = ask(scorer, "Webhooks are firing twice for every event since 3am. Need this today.", [
     Choice("category", "which team should handle this ticket", ("billing", "bug", "feature", "account", "other")),
     Score("priority", "how fast this must be handled", ("low", "medium", "high", "urgent")),
@@ -132,15 +98,13 @@ answers = ask(scorer, "Webhooks are firing twice for every event since 3am. Need
 answers["category"].value          # 'bug'
 answers["category"].probabilities  # {'billing': 0.07, 'bug': 0.86, 'feature': 0.0, 'account': 0.05, 'other': 0.02}
 answers["priority"].expected       # 2.3   (0 = low … 3 = urgent)
-answers["needs_human"].value       # 0.06  (probability the statement is true)
-answers.latency_ms                 # ~110 on a 4090
+answers["needs_human"].value       # 0.06  (probability the claim is true)
 ```
 
-Then make the probabilities honest and turn them into a policy, on your own labelled
-examples:
+Calibrate on your own labelled examples and get a decision policy:
 
 ```sh
-python3 -m brier calibrate --task tickets --model Qwen/Qwen3-4B --n 300
+python3 -m brier calibrate --task tickets --model microsoft/Phi-4-mini-instruct --n 300
 ```
 
 ```
@@ -151,65 +115,40 @@ category           300  0.680    0.295    0.054   6.46
   human   everything below
 ```
 
-[QUESTIONS.md](docs/QUESTIONS.md) is the API reference, [CALIBRATION.md](docs/CALIBRATION.md)
-the kit, [TRAINING.md](docs/TRAINING.md) the training recipe and results.
-
-Any open-weight causal LM works as the backbone; the same code has run Qwen3 at three
-sizes, SmolLM2 and Phi-4-mini with no changes. The scorer needs a GPU with enough memory
-for the model plus a batch of short sequences. From about 1.7B up, `Scorer(..., shared_prefix=True)`
-runs the prompt once and scores all candidates against its cache, 1.6x to 2.3x faster.
-
-## On a GPU pod
-
-`pod.py` wraps RunPod with a hard time-to-live: every pod it creates is terminated by a
-detached watchdog at its deadline, whatever happens to the session that started it.
+Train, and evaluate the adapter with the same kit:
 
 ```sh
-echo 'RUNPOD_API_KEY=...' > .env         # gitignored, never synced to the pod
-python3 pod.py up --ttl 60               # RTX 4090, forced termination after 60 minutes
-python3 pod.py sync                      # ship the repo
-python3 pod.py exec "bash setup.sh"      # deps, model, smoke bench
-python3 pod.py exec "python3 bench.py --n 200 --model Qwen/Qwen3-4B"
-python3 pod.py pull                      # bring results/ back
-python3 pod.py down                      # terminate now; status should then show no pods
+python3 train.py --model microsoft/Phi-4-mini-instruct --split train --uncertain 0.3 --steps 1200
+python3 -m brier calibrate --model microsoft/Phi-4-mini-instruct --adapter adapters/<name> --split eval
+python3 rl.py --model Qwen/Qwen3-0.6B --episode 6          # outcome reward, no labels
 ```
 
-## Roadmap
+Any open-weight causal language model is a valid backbone; the same code has run Qwen3
+at three sizes, SmolLM2 and Phi-4-mini with no changes. GPU work runs on a RunPod pod
+managed by `pod.py`, which enforces a hard time-to-live on every pod it creates.
 
-- [x] **Milestone 1, zero training.** Single-pass scorer, JSON baseline, two tasks with
-      ground truth, calibration measured. The number that decides whether training is
-      worth it.
-- [x] **The question API and the calibration kit.** Choice, Score, Claim in one pass;
-      per-question temperature with cross-fitting, held-out ECE, reliability diagrams,
-      and a precision-targeted auto/review/human policy.
-- [x] **Milestone 2, training for calibrated decisions.** LoRA on the backbone with
-      per-question cross-entropy over the answer set, a proper scoring rule. Round one
-      showed clean labels teach overconfidence; round two added template hold-out,
-      ambiguous training examples with soft labels, two more never-trained tasks and a
-      real dataset. At 4B the strict gate passes on two of three unseen tasks with no
-      post-hoc correction. Outcome-reward training with no labels reaches supervised
-      accuracy on gridworld. Five backbones from three families ran through the same
-      pipeline unchanged. See TRAINING.md.
-- [x] **Round three.** Contrastive claims in the training set, Phi-4-mini trained, a
-      typed head over hidden states (input-conditional temperature plus per-candidate
-      residual, zero-initialised to the plain scorer), six-step outcome episodes, and
-      the [demo page](docs/demo.html) replaying recorded games with live distributions.
-      Results in TRAINING.md.
-- [ ] **Milestone 3, live demo.** A structured-state environment where the model chooses
-      an action every tick with a visible confidence bar.
+## Repository
 
-## Layout
+| | |
+|---|---|
+| `brier/questions.py` | Choice, Score, Claim and `ask()` |
+| `brier/scorer.py` | the single-pass scorer, full-row and shared-prefix paths, and the JSON-generation baseline |
+| `brier/calibrate.py` · `brier/report.py` | the calibration kit and its figures |
+| `brier/head.py` | the typed head |
+| `train.py` · `rl.py` · `record.py` | supervised training, outcome-reward training, trajectory recording |
+| `tasks/` | eight tasks with computable ground truth or human labels |
+| `results/` | every number in the documents, as produced |
+| `docs/` | the documents, the demo page, and `assets.py`, which draws every figure from `results/` |
 
-- `brier/questions.py` Choice, Score, Claim and `ask()`
-- `brier/scorer.py` the single-pass scorer core and the JSON-generation baseline
-- `brier/calibrate.py`, `brier/report.py` the calibration kit and its figures
-- `brier/metrics.py` accuracy, ECE, Brier, latency, temperature scaling
-- `train.py` LoRA training with the per-question cross-entropy objective
-- `tasks/` five synthetic tasks with computable ground truth
-- `bench.py` the milestone 1 scorer-versus-JSON benchmark
-- `docs/` architecture, primer, API, calibration and training guides; `assets.py` draws every figure
-- `pod.py` RunPod lifecycle with the time-to-live watchdog
-- `setup.sh` fresh-GPU-box setup and smoke run
+## Documentation
+
+| | |
+|---|---|
+| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | what Brier does and why, assuming nothing |
+| [PRIMER.md](docs/PRIMER.md) | the mathematics: distributions, softmax, the chain rule, scoring rules, calibration, temperature, gradient descent, LoRA, the objective, the typed head, policy gradient |
+| [QUESTIONS.md](docs/QUESTIONS.md) | the API |
+| [CALIBRATION.md](docs/CALIBRATION.md) | the kit and how its numbers are computed |
+| [TRAINING.md](docs/TRAINING.md) | recipes, protocol, every result table, and what was learned in each round |
 
 ## License
 

@@ -1,30 +1,30 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="900" height="300" viewBox="0 0 900 300" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
-<defs><marker id="ar" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5B6B7C"/></marker></defs>
-<rect width="900" height="300" rx="14" fill="#FFFFFF" stroke="#D8DEE6"/>
-<text x="450" y="34" font-size="15" font-weight="700" fill="#1B1F24" text-anchor="middle">A decide() call through the code</text>
-<rect x="40" y="70" width="195" height="70" rx="10" fill="#F6F8FB" stroke="#D8DEE6"/>
-<text x="52" y="96" font-size="12" font-weight="700" fill="#1B1F24" text-anchor="start">your code</text>
-<text x="52" y="118" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="start">Schema + input</text>
+<defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#5B6472"/></marker></defs>
+<rect width="900" height="300" fill="#FFFFFF"/>
+<text x="450" y="34" font-size="15" font-weight="700" fill="#0F172A" text-anchor="middle">A decide() call through the code</text>
+<rect x="40" y="70" width="195" height="70" rx="3" fill="#FFFFFF" stroke="#E4E7EC"/>
+<text x="52" y="96" font-size="12" font-weight="700" fill="#0F172A" text-anchor="start">your code</text>
+<text x="52" y="118" font-size="11" font-weight="400" fill="#5B6472" text-anchor="start">Schema + input</text>
 <line x1="237" y1="105" x2="253" y2="105" stroke="#5B6B7C" stroke-width="2" marker-end="url(#ar)"/>
-<rect x="255" y="70" width="195" height="70" rx="10" fill="#F6F8FB" stroke="#D8DEE6"/>
-<text x="267" y="96" font-size="12" font-weight="700" fill="#1B1F24" text-anchor="start">brier/schema.py</text>
-<text x="267" y="118" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="start">Enum, Bool → candidates</text>
+<rect x="255" y="70" width="195" height="70" rx="3" fill="#FFFFFF" stroke="#E4E7EC"/>
+<text x="267" y="96" font-size="12" font-weight="700" fill="#0F172A" text-anchor="start">brier/schema.py</text>
+<text x="267" y="118" font-size="11" font-weight="400" fill="#5B6472" text-anchor="start">Enum, Bool → candidates</text>
 <line x1="452" y1="105" x2="468" y2="105" stroke="#5B6B7C" stroke-width="2" marker-end="url(#ar)"/>
-<rect x="470" y="70" width="195" height="70" rx="10" fill="#EEF3FF" stroke="#3557C4"/>
-<text x="482" y="96" font-size="12" font-weight="700" fill="#1B1F24" text-anchor="start">brier/scorer.py</text>
-<text x="482" y="118" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="start">prompt → batch → softmax</text>
+<rect x="470" y="70" width="195" height="70" rx="3" fill="#FFFFFF" stroke="#4F46E5"/>
+<text x="482" y="96" font-size="12" font-weight="700" fill="#0F172A" text-anchor="start">brier/scorer.py</text>
+<text x="482" y="118" font-size="11" font-weight="400" fill="#5B6472" text-anchor="start">prompt → batch → softmax</text>
 <line x1="667" y1="105" x2="683" y2="105" stroke="#5B6B7C" stroke-width="2" marker-end="url(#ar)"/>
-<rect x="685" y="70" width="195" height="70" rx="10" fill="#F6F8FB" stroke="#D8DEE6"/>
-<text x="697" y="96" font-size="12" font-weight="700" fill="#1B1F24" text-anchor="start">brier/schema.py</text>
-<text x="697" y="118" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="start">Decision: value, prob, dist</text>
-<line x1="40" y1="170" x2="860" y2="170" stroke="#D8DEE6"/>
-<text x="40" y="196" font-size="12" font-weight="700" fill="#5B6B7C" text-anchor="start">measurement, not on the request path</text>
-<text x="40" y="222" font-size="12" font-weight="700" fill="#1B1F24" text-anchor="start">tasks/</text>
-<text x="170" y="222" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="start">synthetic inputs with computable labels</text>
-<text x="460" y="222" font-size="12" font-weight="700" fill="#1B1F24" text-anchor="start">bench.py</text>
-<text x="590" y="222" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="start">runs scorer and JSON baseline, prints the table</text>
-<text x="40" y="256" font-size="12" font-weight="700" fill="#1B1F24" text-anchor="start">brier/metrics.py</text>
-<text x="170" y="256" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="start">accuracy, ECE, Brier, latency, temperature fit</text>
-<text x="460" y="256" font-size="12" font-weight="700" fill="#1B1F24" text-anchor="start">pod.py</text>
-<text x="590" y="256" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="start">GPU pod with a hard time-to-live</text>
+<rect x="685" y="70" width="195" height="70" rx="3" fill="#FFFFFF" stroke="#E4E7EC"/>
+<text x="697" y="96" font-size="12" font-weight="700" fill="#0F172A" text-anchor="start">brier/schema.py</text>
+<text x="697" y="118" font-size="11" font-weight="400" fill="#5B6472" text-anchor="start">Decision: value, prob, dist</text>
+<line x1="40" y1="170" x2="860" y2="170" stroke="#E4E7EC"/>
+<text x="40" y="196" font-size="12" font-weight="700" fill="#5B6472" text-anchor="start">measurement, not on the request path</text>
+<text x="40" y="222" font-size="12" font-weight="700" fill="#0F172A" text-anchor="start">tasks/</text>
+<text x="170" y="222" font-size="11" font-weight="400" fill="#5B6472" text-anchor="start">synthetic inputs with computable labels</text>
+<text x="460" y="222" font-size="12" font-weight="700" fill="#0F172A" text-anchor="start">bench.py</text>
+<text x="590" y="222" font-size="11" font-weight="400" fill="#5B6472" text-anchor="start">runs scorer and JSON baseline, prints the table</text>
+<text x="40" y="256" font-size="12" font-weight="700" fill="#0F172A" text-anchor="start">brier/metrics.py</text>
+<text x="170" y="256" font-size="11" font-weight="400" fill="#5B6472" text-anchor="start">accuracy, ECE, Brier, latency, temperature fit</text>
+<text x="460" y="256" font-size="12" font-weight="700" fill="#0F172A" text-anchor="start">pod.py</text>
+<text x="590" y="256" font-size="11" font-weight="400" fill="#5B6472" text-anchor="start">GPU pod with a hard time-to-live</text>
 </svg>
