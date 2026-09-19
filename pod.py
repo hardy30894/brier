@@ -73,7 +73,7 @@ def cmd_up(a):
     pubkey = Path.home().joinpath(".ssh/id_ed25519.pub").read_text().strip()
     pod = runpod.create_pod(
         name=f"brier-{NAME}-{int(time.time())}", image_name=IMAGE, gpu_type_id=a.gpu, cloud_type=a.cloud,
-        container_disk_in_gb=40, volume_in_gb=0, ports="22/tcp", env={"PUBLIC_KEY": pubkey},
+        container_disk_in_gb=40, volume_in_gb=0, ports="22/tcp" + (f",{a.http}/http" if a.http else ""), env={"PUBLIC_KEY": pubkey},
         min_memory_in_gb=16,
     )
     deadline = time.time() + ttl * 60
@@ -90,6 +90,8 @@ def cmd_up(a):
         ep = ssh_endpoint(p)
         if ep:
             print(f"ssh ready: ssh -p {ep[1]} root@{ep[0]}")
+            if a.http:
+                print(f"http: https://{pod['id']}-{a.http}.proxy.runpod.net")
             return
     print("pod created but ssh not up after 5 min; check `pod.py status`")
 
@@ -199,10 +201,11 @@ def cmd_exec(a):
 def cmd_pull(a):
     ip, port = _endpoint_or_die()
     ssh = ["ssh", "-o", "StrictHostKeyChecking=no", "-p", str(port), f"root@{ip}"]
-    remote = subprocess.Popen(ssh + [f"tar -C {REMOTE} -czf - results"], stdout=subprocess.PIPE)
+    dirs = "results adapters" if a.adapters else "results"
+    remote = subprocess.Popen(ssh + [f"cd {REMOTE} && tar -czf - $(ls -d {dirs} 2>/dev/null)"], stdout=subprocess.PIPE)
     subprocess.run(["tar", "-C", str(ROOT), "-xzf", "-"], stdin=remote.stdout, check=True)
     remote.wait()
-    print("pulled results/")
+    print(f"pulled {dirs}")
 
 
 if __name__ == "__main__":
@@ -212,6 +215,7 @@ if __name__ == "__main__":
     u.add_argument("--gpu", default="NVIDIA GeForce RTX 4090")
     u.add_argument("--cloud", default="ALL")
     u.add_argument("--ttl", type=int, default=90, help="minutes until forced termination")
+    u.add_argument("--http", type=int, default=None, help="also expose this port over RunPod's HTTPS proxy")
     w = sub.add_parser("watchdog")
     w.add_argument("pod_id")
     w.add_argument("deadline")
@@ -224,7 +228,8 @@ if __name__ == "__main__":
     sub.add_parser("sync")
     e = sub.add_parser("exec")
     e.add_argument("command")
-    sub.add_parser("pull")
+    pl = sub.add_parser("pull")
+    pl.add_argument("--adapters", action="store_true", help="also pull adapters/")
     ap.add_argument("--name", default="main", help="which tracked pod this command refers to")
     a = ap.parse_args()
     NAME = a.name

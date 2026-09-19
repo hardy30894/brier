@@ -4,3 +4,4 @@ __pycache__/
 .env
 .pod.json
 .watchdog.log
+adapters/

@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brier live</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --ink:#0B0F1D; --muted:#5C6473; --faint:#8E95A3; --line:#E6E8EE; --bg:#FFFFFF; --panel:#F6F7FB; --accent:#4F46E5; --accent-2:#8B7BFF; --accent-soft:#EEF0FF; --grad:linear-gradient(135deg,#3F39B8 0%,#5B52EA 45%,#A9A6FA 100%); --base:#B45309; --good:#0E7C3A; --bad:#B42318; --shadow:0 1px 2px rgba(11,15,29,.04), 0 8px 24px -12px rgba(11,15,29,.12); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ink:#F2F3F8; --muted:#A6ADBD; --faint:#6E7686; --line:#1E2433; --bg:#0B0F1D; --panel:#10152A; --accent:#8B85F5; --accent-2:#B8B3FF; --accent-soft:#1A1F3F; --grad:linear-gradient(135deg,#4F46E5 0%,#8B7BFF 50%,#C9C5FF 100%); --base:#E0912E; --good:#3DBB6B; --bad:#F0655B; --shadow:none; } }
+  :root[data-theme="dark"] { --ink:#F2F3F8; --muted:#A6ADBD; --faint:#6E7686; --line:#1E2433; --bg:#0B0F1D; --panel:#10152A; --accent:#8B85F5; --accent-2:#B8B3FF; --accent-soft:#1A1F3F; --grad:linear-gradient(135deg,#4F46E5 0%,#8B7BFF 50%,#C9C5FF 100%); --base:#E0912E; --good:#3DBB6B; --bad:#F0655B; --shadow:none; }
+  * { box-sizing:border-box; }
+  html, body { height:100%; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:14px/1.55 Inter,'Helvetica Neue',Helvetica,Arial,sans-serif; -webkit-font-smoothing:antialiased; font-feature-settings:"cv11","ss01"; }
+  header { display:flex; align-items:center; gap:14px; padding:18px 28px; border-bottom:1px solid var(--line); position:sticky; top:0; background:color-mix(in srgb, var(--bg) 86%, transparent); backdrop-filter:blur(10px); z-index:2; }
+  header::after { content:""; position:absolute; left:0; right:0; bottom:-1px; height:2px; background:var(--grad); opacity:.9; }
+  header img { height:26px; width:auto; }
+  header h1 { font-size:16px; font-weight:600; margin:0; letter-spacing:-0.2px; }
+  header h1 span { color:var(--muted); font-weight:500; margin-left:8px; }
+  header .status { margin-left:auto; font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums; display:flex; align-items:center; gap:8px; }
+  .dot { width:8px; height:8px; border-radius:50%; background:var(--faint); box-shadow:0 0 0 3px color-mix(in srgb, var(--faint) 18%, transparent); }
+  .dot.on { background:var(--good); box-shadow:0 0 0 3px color-mix(in srgb, var(--good) 22%, transparent); }
+  main { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:24px; padding:24px 28px 40px; max-width:1360px; margin:0 auto; }
+  @media (max-width: 960px) { main { grid-template-columns:1fr; } }
+  section { background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:24px 26px 28px; min-width:0; box-shadow:var(--shadow); }
+  .caps { font-size:10.5px; font-weight:600; letter-spacing:1.6px; text-transform:uppercase; color:var(--accent); margin:0 0 10px; }
+  h2 { font-size:20px; font-weight:600; margin:0 0 6px; letter-spacing:-0.4px; }
+  .sub { color:var(--muted); font-size:13.5px; margin:0 0 18px; max-width:56ch; }
+  textarea, input, select { width:100%; font:inherit; color:var(--ink); background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:10px 12px; transition:border-color .15s, box-shadow .15s; }
+  textarea { min-height:96px; resize:vertical; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12.5px; line-height:1.5; }
+  textarea:focus, input:focus, select:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
+  .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .presets { display:flex; gap:6px; flex-wrap:wrap; margin:0 0 14px; }
+  .chip { font-size:12.5px; font-weight:500; padding:5px 12px; border:1px solid var(--line); border-radius:999px; background:var(--bg); color:var(--muted); cursor:pointer; transition:all .15s; }
+  .chip:hover { color:var(--ink); border-color:var(--faint); }
+  .chip.on { color:#fff; border-color:transparent; background:var(--grad); }
+  button { font:inherit; font-weight:500; padding:8px 16px; border-radius:10px; border:1px solid var(--line); background:var(--bg); color:var(--ink); cursor:pointer; transition:all .15s; }
+  button:hover { border-color:var(--faint); }
+  button.primary { background:var(--grad); border-color:transparent; color:#fff; box-shadow:0 6px 16px -8px rgba(79,70,229,.6); }
+  button.primary:hover { filter:brightness(1.06); }
+  button:disabled { opacity:.5; cursor:default; }
+  .q { border-top:1px solid var(--line); padding:10px 0; display:grid; grid-template-columns:92px 1fr 1fr auto; gap:8px; align-items:start; }
+  .q input, .q select { padding:7px 10px; font-size:13px; border-radius:8px; }
+  .q .x { color:var(--faint); cursor:pointer; padding:6px 4px; }
+  .q .x:hover { color:var(--bad); }
+  .results { margin-top:20px; }
+  .ans { padding:14px 0; border-top:1px solid var(--line); }
+  .ans .head { display:flex; align-items:baseline; gap:10px; margin-bottom:8px; }
+  .ans .id { font-weight:600; }
+  .ans .val { color:var(--accent); font-weight:600; font-variant-numeric:tabular-nums; }
+  .ans .tier { margin-left:auto; font-size:11px; font-weight:600; letter-spacing:.3px; padding:3px 9px; border-radius:999px; background:var(--accent-soft); color:var(--accent); }
+  .ans .tier.review { background:color-mix(in srgb, var(--base) 14%, transparent); color:var(--base); }
+  .ans .tier.human { background:transparent; color:var(--muted); border:1px solid var(--line); }
+  .bar { display:grid; grid-template-columns:116px 1fr 46px; gap:10px; align-items:center; font-size:13px; margin:4px 0; }
+  .bar .lab { color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .bar .track { height:9px; background:var(--line); border-radius:5px; overflow:hidden; }
+  .bar .fill { height:100%; background:var(--accent); opacity:.38; border-radius:5px; width:0; transition:width .4s cubic-bezier(.2,.8,.2,1), opacity .2s; }
+  .bar.top .fill { background:var(--grad); opacity:1; }
+  .bar.top .lab { color:var(--ink); font-weight:500; }
+  .bar .pct { text-align:right; font-variant-numeric:tabular-nums; color:var(--faint); }
+  .bar.top .pct { color:var(--ink); font-weight:600; }
+  .meta { font-size:12px; color:var(--faint); margin-top:12px; font-variant-numeric:tabular-nums; }
+  .err { color:var(--bad); font-size:13px; margin-top:8px; }
+  .gw { display:grid; grid-template-columns:auto 1fr; gap:28px; align-items:start; }
+  @media (max-width: 1180px) { .gw { grid-template-columns:1fr; } }
+  .grid { display:grid; grid-template-columns:repeat(5,50px); gap:5px; padding:8px; background:var(--bg); border:1px solid var(--line); border-radius:14px; }
+  .cell { width:50px; height:50px; border-radius:9px; background:var(--panel); display:flex; align-items:center; justify-content:center; font-weight:600; font-size:15px; transition:background .18s, transform .18s; }
+  .cell.wall { background:var(--line); }
+  .cell.exit { color:var(--good); box-shadow:inset 0 0 0 1.5px var(--good); }
+  .cell.monster { color:var(--bad); box-shadow:inset 0 0 0 1.5px var(--bad); }
+  .cell.player { background:var(--grad); color:#fff; transform:scale(1.04); box-shadow:0 6px 14px -6px rgba(79,70,229,.7); }
+  .cell.player.dead { background:var(--bad); box-shadow:none; }
+  .cell.player.won { background:var(--good); box-shadow:none; }
+  .legend { font-size:12px; color:var(--faint); margin-top:10px; }
+  .stats { display:grid; grid-template-columns:repeat(3,auto); gap:22px; margin-top:16px; font-size:12px; color:var(--muted); }
+  .stats b { display:block; font-size:22px; font-weight:600; color:var(--ink); font-variant-numeric:tabular-nums; letter-spacing:-0.5px; }
+  .speed { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted); }
+  input[type=range] { width:110px; padding:0; accent-color:var(--accent); }
+</style>
+</head>
+<body>
+<header>
+  <picture><source media="(prefers-color-scheme: dark)" srcset="/static/brier-mark-dark.png"><img src="/static/brier-mark.png" alt=""></picture>
+  <h1>Brier<span>live · every answer is one forward pass, no text generated</span></h1>
+  <span class="status"><span class="dot" id="dot"></span><span id="status">connecting…</span></span>
+</header>
+<main>
+  <section>
+    <p class="caps">Ask</p>
+    <h2>Any state, any typed questions</h2>
+    <p class="sub">Write the state, define the questions, and get a distribution per question from a single pass. Tiers come from a calibration file when the server has one.</p>
+    <div class="presets" id="presets"></div>
+    <textarea id="state" spellcheck="false"></textarea>
+    <div id="qs"></div>
+    <div class="row" style="margin-top:10px">
+      <button id="addq">+ question</button>
+      <span style="flex:1"></span>
+      <button id="askb" class="primary">Decide</button>
+    </div>
+    <div class="err" id="askerr"></div>
+    <div class="results" id="results"></div>
+    <div class="meta" id="askmeta"></div>
+  </section>
+  <section>
+    <p class="caps">Gridworld, live</p>
+    <h2>The model plays, one pass per move</h2>
+    <p class="sub">Trained from the environment's own outcomes with no labels. Four moves scored at once; the bars are the model's distribution before it moves.</p>
+    <div class="row" style="margin-bottom:14px">
+      <button id="newg" class="primary">New game</button>
+      <button id="stepg">Step</button>
+      <button id="playg">Auto-play</button>
+      <span class="speed">speed <input type="range" id="speed" min="120" max="1200" value="550"></span>
+    </div>
+    <div class="gw">
+      <div><div class="grid" id="grid"></div><div class="legend">P player · E exit · M monster · # wall</div></div>
+      <div>
+        <div id="gbars"></div>
+        <div class="meta" id="gmeta"></div>
+        <div class="stats"><div>games won<b id="won">0</b></div><div>games lost<b id="lost">0</b></div><div>latency p50<b id="lat">–</b></div></div>
+      </div>
+    </div>
+  </section>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const api = async (path, body) => { const r = await fetch(path, { method: body ? "POST" : "GET", headers: { "Content-Type": "application/json" }, body: body ? JSON.stringify(body) : undefined }); const j = await r.json(); if (!r.ok) throw new Error(j.error || r.statusText); return j; };
+
+// ---------- presets & question builder ----------
+const PRESETS = {
+  "Support ticket": { state: "Webhooks are firing twice for every event since around 3am UTC. I need this sorted today if at all possible. We're on the Team plan.",
+    questions: [ { kind: "choice", id: "category", instructions: "which team should handle this ticket", options: "billing, bug, feature, account, other" },
+                 { kind: "score", id: "priority", instructions: "how fast this must be handled", options: "low, medium, high, urgent" },
+                 { kind: "claim", id: "needs_human", instructions: "the customer is asking for a human agent rather than an automated reply", options: "" } ] },
+  "Tool call": { state: JSON.stringify({ request: "send me the invoice for September and then cancel my plan", tools: { get_invoice: "Fetch a billing invoice by month", cancel_subscription: "Cancel the current subscription", reset_password: "Send a password reset email", schedule_call: "Book a call with a human agent", none: "No tool applies" } }, null, 1),
+    questions: [ { kind: "choice", id: "tool", instructions: "which tool should be called first", options: "get_invoice, cancel_subscription, reset_password, schedule_call, none" },
+                 { kind: "claim", id: "two_tools", instructions: "the request needs more than one tool", options: "" } ] },
+  "Same person?": { state: JSON.stringify({ record_a: { name: "Priya Raman", email: "priya.raman@northwind.io", phone: "+1 415 555 0142", company: "Northwind" }, record_b: { name: "P. Raman", email: "praman@northwind.io", company: "Northwind" } }, null, 1),
+    questions: [ { kind: "claim", id: "same", instructions: "the two records describe the same person", options: "" } ] },
+  "Passage relevance": { state: JSON.stringify({ question: "What is the refund window?", passage: "Customers receive a 15% discount when paying annually. The support team works in two shifts." }, null, 1),
+    questions: [ { kind: "claim", id: "answers", instructions: "the passage contains the information needed to answer the question", options: "" },
+                 { kind: "score", id: "relevance", instructions: "how related the passage is to the question", options: "unrelated, tangential, related, answers it" } ] },
+};
+function qRow(q) {
+  const d = document.createElement("div"); d.className = "q";
+  d.innerHTML = `<select><option value="choice">Choice</option><option value="score">Score</option><option value="claim">Claim</option></select>
+    <input placeholder="id · instructions" value="">
+    <input placeholder="options, comma separated (levels low → high for Score)" value="">
+    <span class="x" title="remove">✕</span>`;
+  const [sel, idin, optin] = d.querySelectorAll("select, input");
+  sel.value = q.kind; idin.value = q.id + (q.instructions ? " · " + q.instructions : ""); optin.value = q.options || "";
+  optin.style.visibility = q.kind === "claim" ? "hidden" : "visible";
+  sel.onchange = () => { optin.style.visibility = sel.value === "claim" ? "hidden" : "visible"; };
+  d.querySelector(".x").onclick = () => d.remove();
+  return d;
+}
+function readQuestions() {
+  return [...$("qs").children].map(d => {
+    const [sel, idin, optin] = d.querySelectorAll("select, input");
+    const [id, ...rest] = idin.value.split("·"); const instructions = rest.join("·").trim();
+    const opts = optin.value.split(",").map(s => s.trim()).filter(Boolean);
+    const q = { kind: sel.value, id: id.trim() || "q", instructions };
+    if (sel.value === "choice") q.options = opts; if (sel.value === "score") q.levels = opts;
+    return q;
+  }).filter(q => q.kind === "claim" || (q.options || q.levels || []).length >= 2);
+}
+function loadPreset(name) {
+  const p = PRESETS[name]; $("state").value = p.state; $("qs").innerHTML = ""; p.questions.forEach(q => $("qs").appendChild(qRow(q)));
+  [...$("presets").children].forEach(c => c.classList.toggle("on", c.textContent === name));
+  $("results").innerHTML = ""; $("askmeta").textContent = "";
+}
+Object.keys(PRESETS).forEach(n => { const c = document.createElement("span"); c.className = "chip"; c.textContent = n; c.onclick = () => loadPreset(n); $("presets").appendChild(c); });
+$("addq").onclick = () => $("qs").appendChild(qRow({ kind: "choice", id: "q", instructions: "", options: "" }));
+
+// ---------- results: morph in place, keyed by question id ----------
+function renderAnswers(res) {
+  const root = $("results");
+  const seen = new Set();
+  for (const a of res.answers) {
+    seen.add(a.id);
+    let el = root.querySelector(`[data-id="${CSS.escape(a.id)}"]`);
+    if (!el) { el = document.createElement("div"); el.className = "ans"; el.dataset.id = a.id; el.innerHTML = `<div class="head"><span class="id"></span><span class="val"></span><span class="tier"></span></div><div class="bars"></div>`; root.appendChild(el); }
+    el.querySelector(".id").textContent = a.id;
+    el.querySelector(".val").textContent = a.kind === "claim" ? `p(true) = ${a.value.toFixed(2)}` : (a.kind === "score" && a.expected != null ? `${a.value} · expected level ${a.expected.toFixed(2)}` : a.value);
+    const t = el.querySelector(".tier"); t.textContent = a.tier || "uncalibrated"; t.className = "tier " + (a.tier || "human");
+    const bars = el.querySelector(".bars"); const order = Object.entries(a.probabilities).sort((x, y) => y[1] - x[1]);
+    const top = order[0][0];
+    for (const [lab, p] of order) {
+      let b = bars.querySelector(`[data-lab="${CSS.escape(lab)}"]`);
+      if (!b) { b = document.createElement("div"); b.className = "bar"; b.dataset.lab = lab; b.innerHTML = `<span class="lab"></span><div class="track"><div class="fill"></div></div><span class="pct"></span>`; bars.appendChild(b); }
+      b.classList.toggle("top", lab === top); b.querySelector(".lab").textContent = lab; b.querySelector(".fill").style.width = (p * 100).toFixed(1) + "%"; b.querySelector(".pct").textContent = (p * 100).toFixed(0) + "%";
+      bars.appendChild(b);
+    }
+    [...bars.children].forEach(b => { if (!(b.dataset.lab in a.probabilities)) b.remove(); });
+  }
+  [...root.children].forEach(el => { if (!seen.has(el.dataset.id)) el.remove(); });
+  $("askmeta").textContent = `${res.latency_ms.toFixed(0)} ms for ${res.answers.length} question${res.answers.length === 1 ? "" : "s"} in one pass · ${res.model}`;
+}
+$("askb").onclick = async () => {
+  $("askerr").textContent = ""; $("askb").disabled = true;
+  try { let state = $("state").value; try { state = JSON.parse(state); } catch (e) {} renderAnswers(await api("/ask", { state, questions: readQuestions() })); }
+  catch (e) { $("askerr").textContent = e.message; } finally { $("askb").disabled = false; }
+};
+
+// ---------- gridworld ----------
+let game = null, timer = null, lats = [], won = 0, lost = 0, busy = false;
+const MOVES = ["up", "down", "left", "right"];
+function drawGrid() {
+  const g = $("grid");
+  if (g.children.length !== 25) { g.innerHTML = ""; for (let i = 0; i < 25; i++) { const d = document.createElement("div"); d.className = "cell"; g.appendChild(d); } }
+  if (!game) return;
+  const [pr, pc] = game.player;
+  for (let r = 0; r < 5; r++) for (let c = 0; c < 5; c++) {
+    const ch = game.grid[r][c]; const d = g.children[r * 5 + c]; let cls = "cell", txt = "";
+    if (ch === "#") cls += " wall";
+    if (r === game.exit[0] && c === game.exit[1]) { cls += " exit"; txt = "E"; }
+    if (r === game.monster[0] && c === game.monster[1]) { cls += " monster"; txt = "M"; }
+    if (r === pr && c === pc) { cls += " player" + (game.status === "dead" ? " dead" : game.status === "exit" ? " won" : ""); txt = "P"; }
+    d.className = cls; d.textContent = txt;
+  }
+}
+function drawBars(probs, move) {
+  const b = $("gbars");
+  if (b.children.length !== 4) { b.innerHTML = ""; for (const m of MOVES) { const row = document.createElement("div"); row.className = "bar"; row.dataset.lab = m; row.innerHTML = `<span class="lab">${m}</span><div class="track"><div class="fill"></div></div><span class="pct"></span>`; b.appendChild(row); } }
+  for (const row of b.children) { const m = row.dataset.lab; const p = probs ? probs[m] : 0; row.classList.toggle("top", m === move); row.querySelector(".fill").style.width = (p * 100).toFixed(1) + "%"; row.querySelector(".pct").textContent = probs ? (p * 100).toFixed(0) + "%" : ""; }
+}
+function p50() { if (!lats.length) return "–"; const s = [...lats].sort((a, b) => a - b); return s[Math.floor(s.length / 2)].toFixed(0) + " ms"; }
+async function newGame() { stop(); game = await api("/grid/new", {}); drawGrid(); drawBars(null); $("gmeta").textContent = "new game"; }
+async function step() {
+  if (!game || busy || game.status === "exit" || game.status === "dead") return;
+  busy = true;
+  try {
+    const r = await api("/grid/step", { game });
+    lats.push(r.latency_ms); if (lats.length > 200) lats.shift();
+    drawBars(r.probabilities, r.move); game = r.game; drawGrid();
+    $("gmeta").textContent = `chose ${r.move} (${(r.probabilities[r.move] * 100).toFixed(0)}%) · ${r.optimal ? "optimal" : "not optimal"} · ${r.latency_ms.toFixed(0)} ms · ${r.model}`;
+    $("lat").textContent = p50();
+    if (game.status === "exit") { won++; $("won").textContent = won; $("gmeta").textContent += " · reached the exit"; stop(); }
+    else if (game.status === "dead") { lost++; $("lost").textContent = lost; $("gmeta").textContent += " · walked into the monster"; stop(); }
+    else if (game.steps >= 12) { lost++; $("lost").textContent = lost; $("gmeta").textContent += " · out of moves"; game.status = "dead"; stop(); }
+  } catch (e) { $("gmeta").textContent = e.message; stop(); } finally { busy = false; }
+}
+function play() { stop(); $("playg").textContent = "Pause"; timer = setInterval(async () => { if (!game || game.status !== "ok") { await newGame(); $("playg").textContent = "Pause"; timer = timer || null; } await step(); }, 1320 - +$("speed").value); }
+function stop() { if (timer) clearInterval(timer); timer = null; $("playg").textContent = "Auto-play"; }
+$("newg").onclick = newGame; $("stepg").onclick = () => { stop(); step(); }; $("playg").onclick = () => timer ? stop() : play();
+$("speed").oninput = () => { if (timer) play(); };
+
+// ---------- boot ----------
+(async () => {
+  drawGrid(); drawBars(null); loadPreset("Support ticket");
+  try { const h = await api("/health"); $("dot").classList.add("on"); $("status").textContent = (h.mock ? "mock server" : h.models.questions) + (h.calibrated ? " · calibrated" : " · no calibration file"); await newGame(); $("askb").click(); await step(); }
+  catch (e) { $("status").textContent = "server not reachable"; }
+})();
+</script>
+</body>
+</html>
