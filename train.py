@@ -9,6 +9,7 @@ import sys
 import time
 
 import torch
+import torch.distributed as dist
 from peft import LoraConfig, get_peft_model
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -57,13 +58,25 @@ def batch_loss(scorer, exs):
     return loss / max(n, 1)
 
 
+def ddp_setup():
+    """torchrun sets these; a plain `python3 train.py` runs on one device."""
+    if "WORLD_SIZE" in os.environ and int(os.environ["WORLD_SIZE"]) > 1:
+        dist.init_process_group("nccl")
+        rank, world = dist.get_rank(), dist.get_world_size()
+        torch.cuda.set_device(int(os.environ["LOCAL_RANK"]))
+        return rank, world, f"cuda:{os.environ['LOCAL_RANK']}"
+    return 0, 1, None
+
+
 def main():
+    rank, world, device = ddp_setup()
+    log = (lambda *a: print(*a, file=sys.stderr)) if rank == 0 else (lambda *a: None)
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", default="Qwen/Qwen3-0.6B")
     ap.add_argument("--tasks", default="tickets,gridworld,toolcall,passages")
     ap.add_argument("--split", default="all", help="template split: all | train (eval templates held out)")
     ap.add_argument("--uncertain", type=float, default=0.0, help="fraction of examples generated as genuinely ambiguous with soft labels")
-    ap.add_argument("--n", type=int, default=600, help="training examples per task")
+    ap.add_argument("--examples", "--n", dest="n", type=int, default=600, help="training examples per task")
     ap.add_argument("--steps", type=int, default=1500)
     ap.add_argument("--lr", type=float, default=1e-4)
     ap.add_argument("--rank", type=int, default=16)
@@ -77,15 +90,21 @@ def main():
 
     torch.manual_seed(a.seed)
     random.seed(a.seed)
+    if world > 1:
+        log(f"distributed: {world} processes, each step sees {world} × {a.accum} × {a.batch} examples")
     tok = AutoTokenizer.from_pretrained(a.model)
     base = AutoModelForCausalLM.from_pretrained(a.model, dtype=torch.bfloat16)
-    base.gradient_checkpointing_enable()
+    base.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})
     base.enable_input_require_grads()
     cfg = LoraConfig(r=a.rank, lora_alpha=2 * a.rank, lora_dropout=0.05, target_modules=lora_targets(base), task_type="CAUSAL_LM")
     model = get_peft_model(base, cfg)
-    model.print_trainable_parameters()
-    scorer = Scorer(a.model, model=model, tok=tok)
+    if rank == 0:
+        model.print_trainable_parameters()
+    scorer = Scorer(a.model, model=model, tok=tok, device=device)
     scorer.model = scorer.model.to(scorer.device)
+    peft_model = scorer.model
+    if world > 1:
+        scorer.model = torch.nn.parallel.DistributedDataParallel(peft_model, device_ids=[int(os.environ["LOCAL_RANK"])], find_unused_parameters=False)
     if a.head:
         scorer.head = TypedHead(base.config.hidden_size).to(scorer.device)
 
@@ -93,14 +112,16 @@ def main():
     for t in a.tasks.split(","):
         data += examples(t, a.n, seed=a.seed, split=a.split, uncertain=a.uncertain)
     random.shuffle(data)
-    print(f"{len(data)} training examples from {a.tasks}", file=sys.stderr)
+    log(f"{len(data)} training examples from {a.tasks}")
+    if world > 1:
+        data = data[rank::world]
 
-    groups = [{"params": [p for p in model.parameters() if p.requires_grad], "lr": a.lr}]
+    groups = [{"params": [p for p in scorer.model.parameters() if p.requires_grad], "lr": a.lr}]
     if a.head:
         groups.append({"params": list(scorer.head.parameters()), "lr": a.head_lr})
     opt = torch.optim.AdamW(groups, weight_decay=0.0)
     sched = torch.optim.lr_scheduler.LambdaLR(opt, lambda s: min(1.0, (s + 1) / 50) * max(0.05, 1 - s / a.steps))
-    model.train()
+    scorer.model.train()
     t0, running, i = time.perf_counter(), 0.0, 0
     for step in range(a.steps):
         opt.zero_grad(set_to_none=True)
@@ -110,19 +131,23 @@ def main():
             loss = batch_loss(scorer, exs) / a.accum
             loss.backward()
             running += loss.item()
-        torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+        torch.nn.utils.clip_grad_norm_(scorer.model.parameters(), 1.0)
         opt.step()
         sched.step()
         if (step + 1) % 50 == 0:
-            print(f"step {step + 1}/{a.steps} loss {running / 50:.4f} lr {sched.get_last_lr()[0]:.2e} ({time.perf_counter() - t0:.0f}s)", file=sys.stderr)
+            log(f"step {step + 1}/{a.steps} loss {running / 50:.4f} lr {sched.get_last_lr()[0]:.2e} ({time.perf_counter() - t0:.0f}s)")
             running = 0.0
     name = f"{a.model.split('/')[-1]}-brier-r{a.rank}-s{a.steps}" + (f"-u{a.uncertain:g}" if a.uncertain else "") + (f"-{a.split}" if a.split != "all" else "") + ("-head" if a.head else "")
     path = os.path.join(a.out, name)
-    model.save_pretrained(path)
-    if a.head:
-        torch.save(scorer.head.state_dict(), os.path.join(path, "head.pt"))
-    json.dump(vars(a), open(os.path.join(path, "train_args.json"), "w"), indent=1)
-    print(f"saved {path}")
+    if rank == 0:
+        peft_model.save_pretrained(path)
+        if a.head:
+            torch.save(scorer.head.state_dict(), os.path.join(path, "head.pt"))
+        json.dump({**vars(a), "world_size": world, "train_seconds": round(time.perf_counter() - t0)}, open(os.path.join(path, "train_args.json"), "w"), indent=1)
+        print(f"saved {path}  ({world} GPU{'s' if world > 1 else ''}, {time.perf_counter() - t0:.0f}s)")
+    if world > 1:
+        dist.barrier()
+        dist.destroy_process_group()
 
 
 if __name__ == "__main__":

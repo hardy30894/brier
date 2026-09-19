@@ -73,7 +73,7 @@ def cmd_up(a):
     pubkey = Path.home().joinpath(".ssh/id_ed25519.pub").read_text().strip()
     pod = runpod.create_pod(
         name=f"brier-{NAME}-{int(time.time())}", image_name=IMAGE, gpu_type_id=a.gpu, cloud_type=a.cloud,
-        container_disk_in_gb=40, volume_in_gb=0, ports="22/tcp" + (f",{a.http}/http" if a.http else ""), env={"PUBLIC_KEY": pubkey},
+        container_disk_in_gb=40, volume_in_gb=0, ports="22/tcp" + (f",{a.http}/http" if a.http else ""), env={"PUBLIC_KEY": pubkey}, gpu_count=a.gpus,
         min_memory_in_gb=16,
     )
     deadline = time.time() + ttl * 60
@@ -83,7 +83,7 @@ def cmd_up(a):
         [sys.executable, str(ROOT / "pod.py"), "watchdog", pod["id"], str(deadline)],
         stdout=open(log, "a"), stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL, start_new_session=True,
     )
-    print(f"created {pod['id']} ({a.gpu}); hard TTL {ttl} min, watchdog armed")
+    print(f"created {pod['id']} ({a.gpus}× {a.gpu}); hard TTL {ttl} min, watchdog armed")
     for _ in range(60):
         time.sleep(5)
         p = runpod.get_pod(pod["id"])
@@ -216,6 +216,7 @@ if __name__ == "__main__":
     u.add_argument("--cloud", default="ALL")
     u.add_argument("--ttl", type=int, default=90, help="minutes until forced termination")
     u.add_argument("--http", type=int, default=None, help="also expose this port over RunPod's HTTPS proxy")
+    u.add_argument("--gpus", type=int, default=1, help="GPUs in the pod (data-parallel training via torchrun)")
     w = sub.add_parser("watchdog")
     w.add_argument("pod_id")
     w.add_argument("deadline")
