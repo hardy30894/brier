@@ -17,16 +17,28 @@ from .scorer import softmax
 
 
 class PointerHead(torch.nn.Module):
+    """Bilinear option scoring, plus an ordinal term for Grade questions: the query predicts a
+    position on the scale and options are scored by their distance from it, so the head can say
+    "somewhere around medium" even though the option words carry no order of their own."""
+
     def __init__(self, d: int, dh: int = 256):
         super().__init__()
         self.q = torch.nn.Linear(d, dh, bias=False)
         self.k = torch.nn.Linear(d, dh, bias=False)
         self.scale = dh ** -0.5
         self.dh = dh
+        self.mu = torch.nn.Linear(d, 1)
+        self.log_lam = torch.nn.Parameter(torch.tensor(0.0))
 
-    def forward(self, h_query, h_keys):
+    def forward(self, h_query, h_keys, ordinal=False):
         """h_query: (d,), h_keys: (n, d) -> (n,) scores."""
-        return (self.k(h_keys.float()) @ self.q(h_query.float())) * self.scale
+        s = (self.k(h_keys.float()) @ self.q(h_query.float())) * self.scale
+        if ordinal and h_keys.shape[0] > 1:
+            n = h_keys.shape[0]
+            pos = torch.arange(n, device=s.device, dtype=s.dtype) / (n - 1)
+            mu = torch.sigmoid(self.mu(h_query.float())).squeeze(-1)
+            s = s - torch.exp(self.log_lam) * (pos - mu) ** 2 * n
+        return s
 
 
 @dataclass
@@ -114,7 +126,7 @@ def pointer_scores(scorer, head, state, questions, grad=False):
     ctx = torch.enable_grad() if grad else torch.no_grad()
     with ctx:
         h = decoder(scorer.model)(input_ids=x).last_hidden_state[0]
-        return [head(h[qp], h[torch.tensor(op, device=scorer.device)]) for qp, op in zip(qpos, opos)]
+        return [head(h[qp], h[torch.tensor(op, device=scorer.device)], ordinal=isinstance(q, Grade)) for q, qp, op in zip(questions, qpos, opos)]
 
 
 def ask_pointer(scorer, head, state, questions, temperatures=None) -> Answers:

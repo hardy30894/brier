@@ -1,0 +1,363 @@
+/workspace/brier/brier/__main__.py:28: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  sc.pointer.load_state_dict(torch.load(ptr_path, map_location=sc.device))
+  collected 50/300 (3s)
+  collected 100/300 (6s)
+  collected 150/300 (9s)
+  collected 200/300 (12s)
+  collected 250/300 (15s)
+  collected 300/300 (18s)
+Repo card metadata block was not found. Setting CardData to empty.
+  collected 50/300 (4s)
+  collected 100/300 (7s)
+  collected 150/300 (10s)
+  collected 200/300 (13s)
+  collected 250/300 (16s)
+  collected 300/300 (19s)
+
+== tickets ==
+calibration report  model=Qwen3-0.6B-ptr@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+category           300  0.833    0.107    0.059     0.134     0.121    0.923    0.775   2.09
+priority           300  0.593    0.205    0.219     0.285     0.287    0.607    0.540   1.38
+needs_human        300  0.960    0.018    0.013     0.030     0.029    0.978    0.965   1.38
+
+decision policy (calibrated confidence cutoffs, held-out):
+  category         auto    target 0.95: act when confidence >= 0.782  -> precision 0.953, covers 56% of decisions
+  category         review  target 0.80: act when confidence >= 0.367  -> precision 0.833, covers 100% of decisions
+  category         human   everything below
+  priority         auto    target 0.95: unreachable on this data
+  priority         review  target 0.80: unreachable on this data
+  priority         human   everything below
+  needs_human      auto    target 0.95: act when confidence >= 0.505  -> precision 0.960, covers 100% of decisions
+  needs_human      review  target 0.80: act when confidence >= 0.505  -> precision 0.960, covers 100% of decisions
+  needs_human      human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (6s)
+  collected 150/300 (9s)
+  collected 200/300 (13s)
+  collected 250/300 (16s)
+  collected 300/300 (19s)
+
+== gridworld ==
+calibration report  model=Qwen3-0.6B-ptr@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+move               300  0.810    0.094    0.108     0.157     0.163    0.815    0.712   1.66
+danger             300  0.870    0.057    0.058     0.094     0.095    0.905    0.896   1.06
+
+decision policy (calibrated confidence cutoffs, held-out):
+  move             auto    target 0.95: unreachable on this data
+  move             review  target 0.80: act when confidence >= 0.474  -> precision 0.810, covers 100% of decisions
+  move             human   everything below
+  danger           auto    target 0.95: act when confidence >= 0.866  -> precision 0.951, covers 74% of decisions
+  danger           review  target 0.80: act when confidence >= 0.605  -> precision 0.870, covers 100% of decisions
+  danger           human   everything below
+
+== toolcall ==
+calibration report  model=Qwen3-0.6B-ptr@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+tool               300  0.970    0.019    0.017     0.015     0.016    0.973    0.981   0.67
+
+decision policy (calibrated confidence cutoffs, held-out):
+  tool             auto    target 0.95: act when confidence >= 0.517  -> precision 0.970, covers 100% of decisions
+  tool             review  target 0.80: act when confidence >= 0.517  -> precision 0.970, covers 100% of decisions
+  tool             human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (6s)
+  collected 150/300 (9s)
+  collected 200/300 (12s)
+  collected 250/300 (15s)
+  collected 300/300 (18s)
+
+== passages ==
+calibration report  model=Qwen3-0.6B-ptr@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+answers            300  0.947    0.031    0.032     0.035     0.035    0.945    0.941   1.06
+
+decision policy (calibrated confidence cutoffs, held-out):
+  answers          auto    target 0.95: act when confidence >= 0.531  -> precision 0.953, covers 99% of decisions
+  answers          review  target 0.80: act when confidence >= 0.505  -> precision 0.947, covers 100% of decisions
+  answers          human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (6s)
+  collected 150/300 (9s)
+  collected 200/300 (12s)
+  collected 250/300 (15s)
+  collected 300/300 (19s)
+
+== matching ==
+calibration report  model=Qwen3-0.6B-ptr@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+matches            300  1.000    0.003    0.000     0.000     0.000    0.997    1.000   0.05
+
+decision policy (calibrated confidence cutoffs, held-out):
+  matches          auto    target 0.95: act when confidence >= 1.000  -> precision 1.000, covers 100% of decisions
+  matches          review  target 0.80: act when confidence >= 1.000  -> precision 1.000, covers 100% of decisions
+  matches          human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (6s)
+  collected 150/300 (9s)
+  collected 200/300 (13s)
+  collected 250/300 (16s)
+  collected 300/300 (19s)
+
+== ag_news ==
+calibration report  model=Qwen3-0.6B-ptr@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+topic              300  0.827    0.077    0.031     0.119     0.113    0.903    0.839   1.43
+
+decision policy (calibrated confidence cutoffs, held-out):
+  topic            auto    target 0.95: act when confidence >= 0.891  -> precision 0.953, covers 49% of decisions
+  topic            review  target 0.80: act when confidence >= 0.354  -> precision 0.827, covers 100% of decisions
+  topic            human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (6s)
+  collected 150/300 (9s)
+  collected 200/300 (12s)
+  collected 250/300 (15s)
+  collected 300/300 (19s)
+
+== dbpedia ==
+calibration report  model=Qwen3-0.6B-ptr@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+kind               300  0.970    0.022    0.016     0.018     0.016    0.992    0.986   1.73
+
+decision policy (calibrated confidence cutoffs, held-out):
+  kind             auto    target 0.95: act when confidence >= 0.520  -> precision 0.970, covers 100% of decisions
+  kind             review  target 0.80: act when confidence >= 0.520  -> precision 0.970, covers 100% of decisions
+  kind             human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (6s)
+  collected 150/300 (9s)
+  collected 200/300 (12s)
+  collected 250/300 (15s)
+  collected 300/300 (18s)
+
+== sst5 ==
+calibration report  model=Qwen3-0.6B-ptr@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+sentiment          300  0.450    0.075    0.063     0.252     0.251    0.484    0.436   1.33
+
+decision policy (calibrated confidence cutoffs, held-out):
+  sentiment        auto    target 0.95: unreachable on this data
+  sentiment        review  target 0.80: unreachable on this data
+  sentiment        human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (6s)
+  collected 150/300 (9s)
+  collected 200/300 (12s)
+  collected 250/300 (15s)
+  collected 300/300 (18s)
+
+== yelp ==
+calibration report  model=Qwen3-0.6B-ptr@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+stars              300  0.557    0.061    0.045     0.219     0.220    0.580    0.580   1.02
+
+decision policy (calibrated confidence cutoffs, held-out):
+  stars            auto    target 0.95: act when confidence >= 0.821  -> precision 0.960, covers 8% of decisions
+  stars            review  target 0.80: act when confidence >= 0.687  -> precision 0.802, covers 29% of decisions
+  stars            human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (6s)
+  collected 150/300 (9s)
+  collected 200/300 (12s)
+  collected 250/300 (15s)
+  collected 300/300 (18s)
+
+== snli ==
+calibration report  model=Qwen3-0.6B-ptr@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+relation           300  0.803    0.070    0.059     0.119     0.115    0.873    0.817   1.43
+entailed           300  0.937    0.049    0.023     0.054     0.054    0.973    0.936   1.66
+
+decision policy (calibrated confidence cutoffs, held-out):
+  relation         auto    target 0.95: act when confidence >= 0.754  -> precision 0.955, covers 66% of decisions
+  relation         review  target 0.80: act when confidence >= 0.460  -> precision 0.803, covers 100% of decisions
+  relation         human   everything below
+  entailed         auto    target 0.95: act when confidence >= 0.734  -> precision 0.951, covers 95% of decisions
+  entailed         review  target 0.80: act when confidence >= 0.504  -> precision 0.937, covers 100% of decisions
+  entailed         human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (6s)
+  collected 150/300 (9s)
+  collected 200/300 (12s)
+  collected 250/300 (15s)
+  collected 300/300 (18s)
+
+== qqp ==
+calibration report  model=Qwen3-0.6B-ptr@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+duplicate          300  0.797    0.074    0.041     0.142     0.135    0.870    0.819   1.43
+
+decision policy (calibrated confidence cutoffs, held-out):
+  duplicate        auto    target 0.95: act when confidence >= 0.868  -> precision 0.952, covers 49% of decisions
+  duplicate        review  target 0.80: act when confidence >= 0.525  -> precision 0.801, covers 99% of decisions
+  duplicate        human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (6s)
+  collected 150/300 (9s)
+  collected 200/300 (12s)
+  collected 250/300 (15s)
+  collected 300/300 (18s)
+
+== civil ==
+calibration report  model=Qwen3-0.6B-ptr@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+toxic              300  0.937    0.025    0.016     0.054     0.054    0.927    0.936   0.95
+
+decision policy (calibrated confidence cutoffs, held-out):
+  toxic            auto    target 0.95: act when confidence >= 0.741  -> precision 0.952, covers 97% of decisions
+  toxic            review  target 0.80: act when confidence >= 0.522  -> precision 0.937, covers 100% of decisions
+  toxic            human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (6s)
+  collected 150/300 (9s)
+  collected 200/300 (12s)
+  collected 250/300 (15s)
+  collected 300/300 (18s)
+
+== msmarco ==
+calibration report  model=Qwen3-0.6B-ptr@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+answers            300  0.880    0.084    0.006     0.112     0.106    0.964    0.879   1.66
+
+decision policy (calibrated confidence cutoffs, held-out):
+  answers          auto    target 0.95: act when confidence >= 0.914  -> precision 1.000, covers 4% of decisions
+  answers          review  target 0.80: act when confidence >= 0.808  -> precision 0.880, covers 100% of decisions
+  answers          human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (6s)
+  collected 150/300 (9s)
+  collected 200/300 (12s)
+  collected 250/300 (15s)
+  collected 300/300 (18s)
+
+== massive ==
+calibration report  model=Qwen3-0.6B-ptr@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+intent             300  0.787    0.174    0.037     0.173     0.112    0.961    0.796   2.93
+
+decision policy (calibrated confidence cutoffs, held-out):
+  intent           auto    target 0.95: act when confidence >= 0.828  -> precision 0.952, covers 63% of decisions
+  intent           review  target 0.80: act when confidence >= 0.296  -> precision 0.801, covers 97% of decisions
+  intent           human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (6s)
+  collected 150/300 (9s)
+  collected 200/300 (12s)
+  collected 250/300 (15s)
+  collected 300/300 (18s)
+
+== banking ==
+calibration report  model=Qwen3-0.6B-ptr@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+intent             300  0.963    0.026    0.021     0.022     0.018    0.986    0.975   1.43
+
+decision policy (calibrated confidence cutoffs, held-out):
+  intent           auto    target 0.95: act when confidence >= 0.330  -> precision 0.963, covers 100% of decisions
+  intent           review  target 0.80: act when confidence >= 0.330  -> precision 0.963, covers 100% of decisions
+  intent           human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (6s)
+  collected 150/300 (9s)
+  collected 200/300 (12s)
+  collected 250/300 (15s)
+  collected 300/300 (18s)
+
+== mnli ==
+calibration report  model=Qwen3-0.6B-ptr@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+relation           300  0.720    0.092    0.079     0.173     0.165    0.807    0.723   1.49
+entailed           300  0.870    0.070    0.018     0.101     0.096    0.938    0.877   1.66
+
+decision policy (calibrated confidence cutoffs, held-out):
+  relation         auto    target 0.95: act when confidence >= 0.916  -> precision 0.956, covers 15% of decisions
+  relation         review  target 0.80: act when confidence >= 0.580  -> precision 0.802, covers 77% of decisions
+  relation         human   everything below
+  entailed         auto    target 0.95: act when confidence >= 0.894  -> precision 0.952, covers 63% of decisions
+  entailed         review  target 0.80: act when confidence >= 0.501  -> precision 0.870, covers 100% of decisions
+  entailed         human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (6s)
+  collected 150/300 (9s)
+  collected 200/300 (12s)
+  collected 250/300 (15s)
+  collected 300/300 (18s)
+
+== emotion ==
+calibration report  model=Qwen3-0.6B-ptr@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+emotion            300  0.487    0.184    0.059     0.244     0.215    0.659    0.501   1.73
+
+decision policy (calibrated confidence cutoffs, held-out):
+  emotion          auto    target 0.95: unreachable on this data
+  emotion          review  target 0.80: act when confidence >= 0.704  -> precision 0.810, covers 21% of decisions
+  emotion          human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (6s)
+  collected 150/300 (9s)
+  collected 200/300 (12s)
+  collected 250/300 (15s)
+  collected 300/300 (18s)
+
+== imdb ==
+calibration report  model=Qwen3-0.6B-ptr@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+positive           300  0.993    0.075    0.007     0.014     0.007    0.918    0.991   0.41
+
+decision policy (calibrated confidence cutoffs, held-out):
+  positive         auto    target 0.95: act when confidence >= 0.619  -> precision 0.993, covers 100% of decisions
+  positive         review  target 0.80: act when confidence >= 0.619  -> precision 0.993, covers 100% of decisions
+  positive         human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (6s)
+  collected 150/300 (9s)
+  collected 200/300 (12s)
+  collected 250/300 (15s)
+  collected 300/300 (18s)
+
+== frustration ==
+calibration report  model=Qwen3-0.6B-ptr@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+frustration        300  0.440    0.344    0.335     0.205     0.191    0.650    0.607   1.14
+
+decision policy (calibrated confidence cutoffs, held-out):
+  frustration      auto    target 0.95: act when confidence >= 0.691  -> precision 0.957, covers 39% of decisions
+  frustration      review  target 0.80: act when confidence >= 0.657  -> precision 0.800, covers 47% of decisions
+  frustration      human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (6s)
+  collected 150/300 (9s)
+  collected 200/300 (12s)
+  collected 250/300 (15s)
+  collected 300/300 (18s)
+
+== duplicates ==
+calibration report  model=Qwen3-0.6B-ptr@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+same               300  0.927    0.031    0.032     0.054     0.054    0.942    0.940   1.02
+
+decision policy (calibrated confidence cutoffs, held-out):
+  same             auto    target 0.95: act when confidence >= 0.740  -> precision 0.950, covers 94% of decisions
+  same             review  target 0.80: act when confidence >= 0.501  -> precision 0.927, covers 100% of decisions
+  same             human   everything below

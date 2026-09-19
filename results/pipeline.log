@@ -1,10 +1,7 @@
 + cd /workspace/brier
 + mkdir -p results adapters
 + pip install -q 'transformers>=4.51,<4.57' accelerate numpy huggingface_hub peft datasets
-+ MIX=tickets,gridworld,toolcall,passages,matching,ag_news,dbpedia,sst5,yelp,snli,qqp,civil,msmarco,massive,banking
-+ ALL=tickets,gridworld,toolcall,passages,matching,ag_news,dbpedia,sst5,yelp,snli,qqp,civil,msmarco,massive,banking,mnli,emotion,imdb,frustration,duplicates
-+ python3 -m brier calibrate --model microsoft/Phi-4-mini-instruct --split eval --task tickets,gridworld,toolcall,passages,matching,ag_news,dbpedia,sst5,yelp,snli,qqp,civil,msmarco,massive,banking,mnli,emotion,imdb,frustration,duplicates --n 300 --tag Phi-4-mini-base
-+ python3 -m brier calibrate --model microsoft/Phi-4-mini-instruct --adapter adapters/Phi-4-mini-instruct-brier-r16-s1200-u0.3-train --split eval --task tickets,gridworld,toolcall,passages,matching,ag_news,dbpedia,sst5,yelp,snli,qqp,civil,msmarco,massive,banking,mnli,emotion,imdb,frustration,duplicates --n 300 --tag Phi-4-mini-synthetic
-+ python3 train.py --model microsoft/Phi-4-mini-instruct --tasks tickets,gridworld,toolcall,passages,matching,ag_news,dbpedia,sst5,yelp,snli,qqp,civil,msmarco,massive,banking --n 600 --steps 2000 --split train --uncertain 0.3 --out adapters/mix
-+ python3 -m brier calibrate --model microsoft/Phi-4-mini-instruct --adapter adapters/mix/Phi-4-mini-instruct-brier-r16-s2000-u0.3-train --split eval --task tickets,gridworld,toolcall,passages,matching,ag_news,dbpedia,sst5,yelp,snli,qqp,civil,msmarco,massive,banking,mnli,emotion,imdb,frustration,duplicates --n 300 --tag Phi-4-mini-mix
++ python3 train.py --model Qwen/Qwen3-0.6B --tasks tickets,gridworld,toolcall,passages,matching,ag_news,dbpedia,sst5,yelp,snli,qqp,civil,msmarco,massive,banking --examples 600 --steps 2000 --batch 2 --accum 2 --split train --uncertain 0.3 --pointer --out adapters/ptr
++ python3 -m brier calibrate --model Qwen/Qwen3-0.6B --adapter adapters/ptr/Qwen3-0.6B-brier-r16-s2000-u0.3-train-pointer --split eval --task tickets,gridworld,toolcall,passages,matching,ag_news,dbpedia,sst5,yelp,snli,qqp,civil,msmarco,massive,banking,mnli,emotion,imdb,frustration,duplicates --n 300 --tag Qwen3-0.6B-ptr
++ python3 speed_pointer.py --model Qwen/Qwen3-0.6B --adapter adapters/ptr/Qwen3-0.6B-brier-r16-s2000-u0.3-train-pointer
 + echo DONE

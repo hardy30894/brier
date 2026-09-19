@@ -1,0 +1,39 @@
+Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]Fetching 2 files:  50%|█████     | 1/2 [00:07<00:07,  7.23s/it]Fetching 2 files: 100%|██████████| 2/2 [00:11<00:00,  5.96s/it]Fetching 2 files: 100%|██████████| 2/2 [00:11<00:00,  5.96s/it]
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00, 84.05it/s]
+Repo card metadata block was not found. Setting CardData to empty.
+9000 training examples from tickets,gridworld,toolcall,passages,matching,ag_news,dbpedia,sst5,yelp,snli,qqp,civil,msmarco,massive,banking
+`use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`.
+/usr/local/lib/python3.11/dist-packages/torch/utils/checkpoint.py:1399: FutureWarning: `torch.cpu.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cpu', args...)` instead.
+  with device_autocast_ctx, torch.cpu.amp.autocast(**cpu_autocast_kwargs), recompute_context:  # type: ignore[attr-defined]
+step 50/1500 loss 1.6832 lr 9.67e-05 (54s)
+step 100/1500 loss 1.1182 lr 9.33e-05 (106s)
+step 150/1500 loss 0.6862 lr 9.00e-05 (159s)
+step 200/1500 loss 0.8691 lr 8.67e-05 (212s)
+step 250/1500 loss 0.7274 lr 8.33e-05 (265s)
+step 300/1500 loss 0.5457 lr 8.00e-05 (318s)
+step 350/1500 loss 0.7802 lr 7.67e-05 (371s)
+step 400/1500 loss 0.5839 lr 7.33e-05 (424s)
+step 450/1500 loss 0.9500 lr 7.00e-05 (476s)
+step 500/1500 loss 1.7350 lr 6.67e-05 (528s)
+step 550/1500 loss 0.5589 lr 6.33e-05 (581s)
+step 600/1500 loss 0.8471 lr 6.00e-05 (633s)
+step 650/1500 loss 0.5677 lr 5.67e-05 (685s)
+step 700/1500 loss 0.5313 lr 5.33e-05 (736s)
+step 750/1500 loss 0.4919 lr 5.00e-05 (788s)
+step 800/1500 loss 0.4881 lr 4.67e-05 (839s)
+step 850/1500 loss 0.3831 lr 4.33e-05 (892s)
+step 900/1500 loss 0.8108 lr 4.00e-05 (945s)
+step 950/1500 loss 0.7241 lr 3.67e-05 (998s)
+step 1000/1500 loss 0.3787 lr 3.33e-05 (1050s)
+step 1050/1500 loss 0.5764 lr 3.00e-05 (1104s)
+step 1100/1500 loss 0.4691 lr 2.67e-05 (1156s)
+step 1150/1500 loss 0.4407 lr 2.33e-05 (1209s)
+step 1200/1500 loss 0.4518 lr 2.00e-05 (1261s)
+step 1250/1500 loss 0.3943 lr 1.67e-05 (1313s)
+step 1300/1500 loss 0.4967 lr 1.33e-05 (1365s)
+step 1350/1500 loss 0.3963 lr 1.00e-05 (1419s)
+step 1400/1500 loss 0.4754 lr 6.67e-06 (1471s)
+step 1450/1500 loss 0.4535 lr 5.00e-06 (1523s)
+step 1500/1500 loss 0.4274 lr 5.00e-06 (1574s)
+trainable params: 23,068,672 || all params: 3,859,090,432 || trainable%: 0.5978
+saved adapters/ptr/Phi-4-mini-instruct-brier-r16-s1500-u0.3-train-pointer  (1 GPU, 1575s)

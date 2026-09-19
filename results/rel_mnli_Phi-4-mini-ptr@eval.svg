@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="340" viewBox="0 0 600 340" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
+<rect width="600" height="340" rx="14" fill="#FFFFFF" stroke="#D8DEE6"/>
+<text x="300.0" y="28" text-anchor="middle" font-size="14" font-weight="700" fill="#1B1F24">mnli · Phi-4-mini-ptr@eval</text>
+<text x="580" y="28" text-anchor="end" font-size="11" fill="#8A94A0"><tspan fill="#8A2BE2">●</tspan> raw   <tspan fill="#3557C4">●</tspan> calibrated</text>
+<line x1="60" y1="230" x2="230" y2="230" stroke="#5B6B7C"/><line x1="60" y1="230" x2="60" y2="60" stroke="#5B6B7C"/>
+<line x1="60" y1="230" x2="230" y2="60" stroke="#8A94A0" stroke-dasharray="4 4"/>
+<text x="60" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.0</text>
+<text x="54" y="233" font-size="9" fill="#8A94A0" text-anchor="end">0.0</text>
+<text x="145.0" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.5</text>
+<text x="54" y="148.0" font-size="9" fill="#8A94A0" text-anchor="end">0.5</text>
+<text x="230" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">1.0</text>
+<text x="54" y="63" font-size="9" fill="#8A94A0" text-anchor="end">1.0</text>
+<path d="M138.1 157.1 L151.5 170.0 L169.5 108.6 L186.0 124.5 L205.6 110.4 L225.1 69.9" fill="none" stroke="#8A2BE2" stroke-width="2"/><circle cx="138.1" cy="157.1" r="3.5" fill="#8A2BE2"/><circle cx="151.5" cy="170.0" r="3.5" fill="#8A2BE2"/><circle cx="169.5" cy="108.6" r="3.5" fill="#8A2BE2"/><circle cx="186.0" cy="124.5" r="3.5" fill="#8A2BE2"/><circle cx="205.6" cy="110.4" r="3.5" fill="#8A2BE2"/><circle cx="225.1" cy="69.9" r="3.5" fill="#8A2BE2"/>
+<path d="M127.3 230.0 L139.9 173.3 L153.8 141.3 L171.0 102.5 L189.5 124.8 L205.4 78.5 L222.1 70.1" fill="none" stroke="#3557C4" stroke-width="2"/><circle cx="127.3" cy="230.0" r="3.5" fill="#3557C4"/><circle cx="139.9" cy="173.3" r="3.5" fill="#3557C4"/><circle cx="153.8" cy="141.3" r="3.5" fill="#3557C4"/><circle cx="171.0" cy="102.5" r="3.5" fill="#3557C4"/><circle cx="189.5" cy="124.8" r="3.5" fill="#3557C4"/><circle cx="205.4" cy="78.5" r="3.5" fill="#3557C4"/><circle cx="222.1" cy="70.1" r="3.5" fill="#3557C4"/>
+<text x="145.0" y="260" text-anchor="middle" font-size="12" font-weight="700" fill="#1B1F24">relation</text>
+<text x="145.0" y="276" text-anchor="middle" font-size="10" fill="#5B6B7C">acc 0.81 · ECE 0.07 → 0.05 · T 1.3</text>
+<text x="145.0" y="290" text-anchor="middle" font-size="10" fill="#3557C4">auto ≥ 0.92 covers 40% at 0.95</text>
+<line x1="340" y1="230" x2="510" y2="230" stroke="#5B6B7C"/><line x1="340" y1="230" x2="340" y2="60" stroke="#5B6B7C"/>
+<line x1="340" y1="230" x2="510" y2="60" stroke="#8A94A0" stroke-dasharray="4 4"/>
+<text x="340" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.0</text>
+<text x="334" y="233" font-size="9" fill="#8A94A0" text-anchor="end">0.0</text>
+<text x="425.0" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.5</text>
+<text x="334" y="148.0" font-size="9" fill="#8A94A0" text-anchor="end">0.5</text>
+<text x="510" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">1.0</text>
+<text x="334" y="63" font-size="9" fill="#8A94A0" text-anchor="end">1.0</text>
+<path d="M435.4 145.0 L448.7 123.8 L469.0 88.3 L484.0 107.2 L507.8 71.0" fill="none" stroke="#8A2BE2" stroke-width="2"/><circle cx="435.4" cy="145.0" r="3.5" fill="#8A2BE2"/><circle cx="448.7" cy="123.8" r="3.5" fill="#8A2BE2"/><circle cx="469.0" cy="88.3" r="3.5" fill="#8A2BE2"/><circle cx="484.0" cy="107.2" r="3.5" fill="#8A2BE2"/><circle cx="507.8" cy="71.0" r="3.5" fill="#8A2BE2"/>
+<path d="M435.8 132.9 L453.4 88.3 L465.7 104.7 L486.2 87.0 L503.4 67.8" fill="none" stroke="#3557C4" stroke-width="2"/><circle cx="435.8" cy="132.9" r="3.5" fill="#3557C4"/><circle cx="453.4" cy="88.3" r="3.5" fill="#3557C4"/><circle cx="465.7" cy="104.7" r="3.5" fill="#3557C4"/><circle cx="486.2" cy="87.0" r="3.5" fill="#3557C4"/><circle cx="503.4" cy="67.8" r="3.5" fill="#3557C4"/>
+<text x="425.0" y="260" text-anchor="middle" font-size="12" font-weight="700" fill="#1B1F24">entailed</text>
+<text x="425.0" y="276" text-anchor="middle" font-size="10" fill="#5B6B7C">acc 0.90 · ECE 0.06 → 0.01 · T 1.7</text>
+<text x="425.0" y="290" text-anchor="middle" font-size="10" fill="#3557C4">auto ≥ 0.89 covers 75% at 0.95</text>
+</svg>
