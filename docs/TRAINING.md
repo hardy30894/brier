@@ -712,6 +712,22 @@ backbones on one card, `--batch 1` is the honest setting. With ten questions per
 the 0.6B goes from 54 to 80 req/s under eight clients, because a longer prompt fills the
 card better per launch saved.
 
+**Batching the row scorer too.** Grade questions ride the row scorer, which runs one
+candidate row per level. Its rows are independent, so rows from several requests
+concatenate into one pass as well (`Scorer.score_groups_batch`; fp32 batched scores match
+single scores to 1e-5). With a Grade in every three-question request on the 0.6B:
+
+| batch | 1 client | 8 clients | 32 clients |
+|---|---|---|---|
+| 1 | 73 ms, 14 req/s | 569 ms, 14 req/s | 2288 ms, 14 req/s |
+| 8 | 76 ms, 13 req/s | 184 ms, **43 req/s** | 452 ms, **70 req/s** |
+
+A single Grade makes a request six times dearer than three pointer questions (73 ms
+against 12), because the row scorer runs the whole prompt once per level, eagerly, with
+the vocabulary projection; batching across requests buys that path 5× under load. The
+cheaper answer, when Grade accuracy from the pointer head is acceptable for the task, is
+`scorer.pointer_grade = True`, which keeps every question on the one captured row.
+
 **Accuracy.** Five runs on the mixed corpus, evaluated on the same held-out examples as
 round four. Cells are accuracy / raw ECE.
 

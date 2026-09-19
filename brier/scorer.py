@@ -117,6 +117,31 @@ class Scorer:
         input_ids, attn = self.batch(seqs)
         return self.scores_from_rows(input_ids, attn, spans).tolist()
 
+    @torch.no_grad()
+    def score_groups_batch(self, prefixes: list[str], groups_list: list[list[tuple[str, list[str]]]]) -> list[list[list[float]]]:
+        """Several prompts' candidate rows in one pass; returns score_groups' result per prompt.
+        Rows are independent, so concatenating them changes nothing but the padding."""
+        if self.shared_prefix and self.head is None:
+            return [self.score_groups(p, g) for p, g in zip(prefixes, groups_list)]
+        seqs, spans, counts = [], [], []
+        for prefix, groups in zip(prefixes, groups_list):
+            sq, sp = self.build_rows(prefix, groups)
+            seqs += sq
+            spans += sp
+            counts.append([len(c) for _, c in groups])
+        if not seqs:
+            return [[] for _ in prefixes]
+        input_ids, attn = self.batch(seqs)
+        flat = self.scores_from_rows(input_ids, attn, spans).tolist()
+        out, k = [], 0
+        for cs in counts:
+            per = []
+            for n in cs:
+                per.append(flat[k : k + n])
+                k += n
+            out.append(per)
+        return out
+
     def _score_cached(self, prefix, groups):
         """The prompt is run once; its key/value cache is shared by every candidate row, so the
         cost of a decision is one prompt pass plus a batch of short tails."""

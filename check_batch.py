@@ -33,6 +33,11 @@ if a.capture:
 batched = pointer_scores_batch(sc, sc.pointer, reqs)
 worst = max((x - y).abs().max().item() for ss, bs in zip(single, batched) for x, y in zip(ss, bs))
 print(f"batched{' captured' if a.capture else ''} vs single eager{' fp32' if a.fp32 else ' bf16'}: max |score diff| = {worst:.2e}")
+from brier.questions import build_prompt, groups_for
+rows_single = [sc.score_groups(build_prompt(sc, s, qs[2:]), groups_for(qs[2:])) for s in states]
+rows_batched = sc.score_groups_batch([build_prompt(sc, s, qs[2:]) for s in states], [groups_for(qs[2:]) for _ in states])
+w3 = max(abs(x - y) for a_, b_ in zip(rows_single, rows_batched) for xs, ys in zip(a_, b_) for x, y in zip(xs, ys))
+print(f"row scorer batched vs single{' fp32' if a.fp32 else ' bf16'}: max |score diff| = {w3:.2e}")
 b = Batcher(sc, max_batch=8, wait_ms=20)
 res = [None] * len(states)
 def go(i):
@@ -43,5 +48,5 @@ sc.capture = False
 ref = [ask(sc, s, qs) for s in states]
 w2 = max(abs(r[q.id].probabilities[l] - f[q.id].probabilities[l]) for r, f in zip(res, ref) for q in qs for l in q.labels)
 print(f"batcher vs ask: max |prob diff| = {w2:.2e}  batches={b.batches} served={b.served}")
-assert worst < tol and w2 < tol / 10, "batched path disagrees with the single path"
+assert worst < tol and w3 < tol and w2 < tol / 10, "batched path disagrees with the single path"
 print("OK")

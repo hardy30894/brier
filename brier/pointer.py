@@ -263,8 +263,9 @@ def warm(scorer, head=None, max_batch=1, max_len=512):
 class Batcher:
     """Concurrent requests share forward passes. Callers submit from any thread and block for
     their own Answers; one worker drains the queue, waits a few milliseconds for company, and
-    runs every waiting Pick/Claim set through one padded pass. Grade questions still go through
-    the row scorer, serialised on the same worker so the model is never used from two threads."""
+    runs every waiting Pick/Claim set through one padded pass and every waiting Grade set (or
+    everything, without a pointer head) through one batched row pass, on the same worker so the
+    model is never used from two threads."""
 
     def __init__(self, scorer, max_batch=8, wait_ms=2.0):
         self.scorer = scorer
@@ -299,7 +300,7 @@ class Batcher:
         return jobs
 
     def _run(self):
-        from .questions import _ask_rows
+        from .questions import build_prompt, groups_for, answer_from_scores
         sc = self.scorer
         while True:
             jobs = self._take()
@@ -308,11 +309,14 @@ class Batcher:
                 fast = [[q for q in j["questions"] if use_ptr and (sc.pointer_grade or not isinstance(q, Grade))] for j in jobs]
                 slow = [[q for q in j["questions"] if q not in f] for j, f in zip(jobs, fast)]
                 raws = pointer_scores_batch(sc, sc.pointer, [(j["state"], f) for j, f in zip(jobs, fast) if f]) if any(fast) else []
-                it = iter(raws)
+                rows = sc.score_groups_batch([build_prompt(sc, j["state"], s) for j, s in zip(jobs, slow) if s],
+                                             [groups_for(s) for s in slow if s]) if any(slow) else []
+                it, ir = iter(raws), iter(rows)
                 for j, f, s in zip(jobs, fast, slow):
-                    out = answers_from_scores(f, next(it), j["temperatures"]) if f else {}
+                    temps = j["temperatures"] or {}
+                    out = answers_from_scores(f, next(it), temps) if f else {}
                     if s:
-                        out.update(_ask_rows(sc, j["state"], s, j["temperatures"]).answers)
+                        out.update({q.id: answer_from_scores(q, sc_, temps.get(q.id, 1.0)) for q, sc_ in zip(s, next(ir))})
                     j["out"] = Answers({q.id: out[q.id] for q in j["questions"]}, (time.perf_counter() - j["t0"]) * 1000)
                 self.batches += 1
                 self.served += len(jobs)

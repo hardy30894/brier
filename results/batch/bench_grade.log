@@ -1,0 +1,17 @@
+batched vs single eager fp32: max |score diff| = 2.00e-05
+row scorer batched vs single fp32: max |score diff| = 1.14e-05
+batcher vs ask: max |prob diff| = 1.59e-06  batches=1 served=3
+OK
+batched captured vs single eager bf16: max |score diff| = 2.38e-01
+row scorer batched vs single bf16: max |score diff| = 5.62e-02
+batcher vs ask: max |prob diff| = 6.66e-03  batches=1 served=3
+OK
+b1 clients=1 requests=30 questions=3 +grade  13.7 req/s  p50 72.9 ms  p95 76.9 ms  max 78.5 ms
+b1 clients=8 requests=240 questions=3 +grade  14.0 req/s  p50 569.2 ms  p95 583.6 ms  max 598.7 ms
+b1 clients=32 requests=960 questions=3 +grade  14.0 req/s  p50 2288.3 ms  p95 2360.1 ms  max 3298.8 ms
+b1 clients=8 requests=240 questions=10 +grade  12.7 req/s  p50 630.5 ms  p95 660.9 ms  max 688.0 ms
+b8 clients=1 requests=30 questions=3 +grade  13.1 req/s  p50 76.2 ms  p95 78.7 ms  max 80.1 ms
+b8 clients=8 requests=240 questions=3 +grade  43.4 req/s  p50 184.4 ms  p95 189.4 ms  max 192.5 ms
+b8 clients=32 requests=960 questions=3 +grade  70.4 req/s  p50 452.1 ms  p95 458.7 ms  max 534.0 ms
+b8 clients=8 requests=240 questions=10 +grade  15.8 req/s  p50 506.8 ms  p95 509.4 ms  max 511.2 ms
+GRADE_DONE
