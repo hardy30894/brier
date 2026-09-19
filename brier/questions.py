@@ -130,10 +130,25 @@ def groups_for(questions: list[Question]):
 
 
 def ask(scorer: Scorer, state: Any, questions: list[Question], temperatures: dict[str, float] | None = None) -> Answers:
-    """Every question, every allowed answer, one batched forward pass. Questions are independent."""
+    """Every question, every allowed answer, one pass. When the scorer carries a pointer head,
+    Pick and Claim questions go through it (one row for all of them) and Grade questions
+    through the row scorer, which keeps the language prior that ordered scales need.
+    Questions are independent either way."""
     if getattr(scorer, "pointer", None) is not None:
         from .pointer import ask_pointer
-        return ask_pointer(scorer, scorer.pointer, state, questions, temperatures)
+        fast = [q for q in questions if not isinstance(q, Grade)] if scorer.pointer_grade is False else questions
+        slow = [q for q in questions if isinstance(q, Grade)] if scorer.pointer_grade is False else []
+        t0 = time.perf_counter()
+        out = {}
+        if fast:
+            out.update(ask_pointer(scorer, scorer.pointer, state, fast, temperatures).answers)
+        if slow:
+            out.update(_ask_rows(scorer, state, slow, temperatures).answers)
+        return Answers({q.id: out[q.id] for q in questions}, (time.perf_counter() - t0) * 1000)
+    return _ask_rows(scorer, state, questions, temperatures)
+
+
+def _ask_rows(scorer: Scorer, state: Any, questions: list[Question], temperatures: dict[str, float] | None = None) -> Answers:
     t0 = time.perf_counter()
     raw = scorer.score_groups(build_prompt(scorer, state, questions), groups_for(questions))
     temperatures = temperatures or {}

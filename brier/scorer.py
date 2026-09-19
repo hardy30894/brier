@@ -50,6 +50,7 @@ class Scorer:
         self.model = model.eval()
         self.head = None
         self.pointer = None
+        self.pointer_grade = False   # True routes Grade questions through the pointer head too
         self._enc_cache: dict[str, list[int]] = {}
 
     def _enc(self, s: str) -> list[int]:
