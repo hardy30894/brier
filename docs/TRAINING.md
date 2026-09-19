@@ -392,7 +392,29 @@ Four changes, run in parallel on four pods:
 
 ROUND3_TABLES
 
-ROUND3_LESSONS
+## What was learned in round three
+
+**Contrastive data cured the negative transfer.** With the matching task and the
+not-human phrases in training, and nothing else changed, the 0.6B's duplicates result
+goes from 0.64 (round two, worse than untrained) to 0.97, with raw calibration error
+0.27 to 0.03. The model no longer learns that shared cues mean yes, because the training
+set now contains claims where shared cues mean no. Category also improves, 0.70 to 0.82.
+This is the cleanest demonstration in the project that the model learns exactly the
+decision rules its data contains, and that the fix for a shortcut is a counterexample.
+
+**The typed head is a calibration tool, not an accuracy tool, at 0.6B.** Joint training
+with the head lowers raw calibration error on the unseen frustration task from 0.44 to
+0.25, which is the input-conditional temperature doing its job on a task where the
+model should be unsure. But the per-candidate residual costs accuracy on the ordinal
+and many-way questions: priority 0.76 to 0.47, banking 0.89 to 0.83. At this size the
+residual term has more capacity to overfit the training tasks than the LoRA adapters
+do. The natural next configuration is the temperature term alone, or the residual with
+a much smaller learning rate. HEAD_4B_SENTENCE
+
+**Phi-4-mini trained.** PHI_SENTENCE
+
+**Six-step episodes.** RL_SENTENCE
+
 
 ## Next
 

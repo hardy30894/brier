@@ -123,7 +123,7 @@ Softmax turns any list of real numbers $s_1, \dots, s_n$ (called **scores** or
 p_i \;=\; \frac{\exp(s_i / T)}{\sum_{j=1}^{n} \exp(s_j / T)}
 ```
 
-with $T > 0$ the **temperature**. Exponentiation makes every term positive; dividing by
+with $T \gt  0$ the **temperature**. Exponentiation makes every term positive; dividing by
 the sum makes them add to one. Because $\exp$ is increasing, the order of the $p_i$ is
 the order of the $s_i$: the argmax never changes with $T$.
 
@@ -151,7 +151,7 @@ writes the probability of a whole sequence as a product of conditionals:
 
 ```math
 P(x_1, x_2, \dots, x_n) \;=\; P(x_1)\, P(x_2 \mid x_1)\, P(x_3 \mid x_1, x_2) \cdots P(x_n \mid x_1, \dots, x_{n-1})
-\;=\; \prod_{t=1}^{n} P(x_t \mid x_{<t})
+\;=\; \prod_{t=1}^{n} P(x_t \mid x_{\lt t})
 ```
 
 This is not an approximation; it is an identity. Its importance is that a system which
@@ -159,7 +159,7 @@ can compute $P(\text{next} \mid \text{everything so far})$ can, by multiplying, 
 the probability of any sequence. In logs, by adding:
 
 ```math
-\log P(x_1, \dots, x_n) \;=\; \sum_{t=1}^{n} \log P(x_t \mid x_{<t})
+\log P(x_1, \dots, x_n) \;=\; \sum_{t=1}^{n} \log P(x_t \mid x_{\lt t})
 ```
 
 ## 6. What a language model is, mathematically
@@ -300,9 +300,9 @@ decisions fell in each bin. Brier uses $M = 10$ equal-width bins. The reliabilit
 diagram in the architecture doc is the plot of *acc(m)* against *conf(m)*; ECE is the
 weighted distance from the diagonal.
 
-A model can be miscalibrated in two directions. **Overconfident**: $\text{conf} >
-\text{acc}$, the curve below the diagonal. This is the near-universal failure of
-language models used as classifiers. **Underconfident**: $\text{conf} < \text{acc}$,
+A model can be miscalibrated in two directions. **Overconfident**: $\text{conf} \gt \text{acc}$, the curve
+below the diagonal. This is the near-universal failure of
+language models used as classifiers. **Underconfident**: $\text{conf} \lt  \text{acc}$,
 above the diagonal; rarer, and it appears when temperature is set too high.
 
 ## 10. Proper scoring rules
