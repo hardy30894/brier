@@ -471,8 +471,8 @@ gradients, and the optimizer's running estimates in memory at once: roughly 16 b
 parameter, 64 GB, plus activations. It does not fit a consumer GPU, and it risks
 overwriting what pretraining learned.
 
-**LoRA** (low-rank adaptation) sidesteps both. For a weight matrix $W \in
-\mathbb{R}^{d \times d}$, it freezes $W$ and adds a trainable product $BA$ where
+**LoRA** (low-rank adaptation) sidesteps both. For a weight matrix
+$W \in \mathbb{R}^{d \times d}$, it freezes $W$ and adds a trainable product $BA$ where
 $A \in \mathbb{R}^{r \times d}$ and $B \in \mathbb{R}^{d \times r}$, with $r$ small (16
 here):
 
