@@ -52,6 +52,12 @@ class Engine:
         from .__main__ import load_scorer
         from .calibrate import Calibration
         self.q_scorer = load_scorer(a.model, a.adapter)
+        self.q_scorer.capture = a.capture
+        from .pointer import Batcher, warm
+        if a.capture and self.q_scorer.pointer is not None:
+            n = warm(self.q_scorer, max_batch=a.batch)
+            print(f"captured {n} graphs", file=sys.stderr)
+        self.batcher = Batcher(self.q_scorer, max_batch=a.batch, wait_ms=a.batch_wait_ms)
         if a.grid_model or a.grid_adapter:
             self.g_scorer = load_scorer(a.grid_model or a.model, a.grid_adapter)
         else:
@@ -74,9 +80,8 @@ class Engine:
                             "confidence": probs[top], "tier": None, "expected": None})
             time.sleep(0.05)
             return {"answers": out, "latency_ms": (time.perf_counter() - t0) * 1000, "model": self.names["questions"]}
-        from .questions import ask
         temps = self.cal.temperatures if self.cal else None
-        ans = ask(self.q_scorer, state, qs, temperatures=temps)
+        ans = self.batcher.ask(state, qs, temperatures=temps)
         if self.cal:
             self.cal.apply(ans)
         out = [{"id": a.id, "kind": a.kind, "value": a.value, "probabilities": a.probabilities, "confidence": a.confidence,
@@ -256,6 +261,9 @@ if __name__ == "__main__":
     ap.add_argument("--page", default=str(ROOT / "docs" / "live.html"))
     ap.add_argument("--port", type=int, default=8000)
     ap.add_argument("--mock", action="store_true")
+    ap.add_argument("--capture", action="store_true", help="replay the body from CUDA graphs on the pointer path (GPU)")
+    ap.add_argument("--batch", type=int, default=8, help="most concurrent requests that share one forward pass")
+    ap.add_argument("--batch-wait-ms", type=float, default=2.0, help="how long a request waits for company")
     a = ap.parse_args()
     engine = Engine(a)
     srv = ThreadingHTTPServer(("0.0.0.0", a.port), make_handler(engine, Path(a.page)))

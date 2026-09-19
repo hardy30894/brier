@@ -291,13 +291,16 @@ the head never needs the next-token distribution. It can only score options that
 listed, so the type guarantee is unchanged, and the calibration kit and the training
 objective apply to its scores exactly as to the row scorer's.
 
-Measured on Phi-4-mini on an RTX 4090 with the compiled body: 18 ms for three
+Measured on Phi-4-mini on an RTX 4090 with the body replayed from a CUDA graph: 18 ms for three
 questions and 32 ms for ten, against 105 and 852 ms for the row scorer, which cannot fit
 thirty questions on the card at all. The head trains from scratch in ten to forty
 minutes and matches the row scorer on Pick and Claim questions across the real datasets;
 on Grade questions it trails, because the option words carry no order of their own, so
 `ask()` sends Grade questions through the row scorer and everything else through the
-head. [TRAINING.md](TRAINING.md) has the tables and the [primer](PRIMER.md) the equation.
+head. The server goes one step further: concurrent requests are right-padded into one
+pass, which cannot change any real position under causal attention, so a small backbone
+serves 170 requests a second on one card. [TRAINING.md](TRAINING.md) has the tables and
+the [primer](PRIMER.md) the equation.
 
 ### 2.10 Where the speed comes from
 

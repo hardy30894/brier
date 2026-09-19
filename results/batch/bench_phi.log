@@ -1,0 +1,29 @@
+batched vs single eager bf16: max |score diff| = 1.09e-01
+batcher vs ask: max |prob diff| = 1.35e-02  batches=1 served=3
+OK
+batched captured vs single eager bf16: max |score diff| = 1.11e-01
+batcher vs ask: max |prob diff| = 1.42e-02  batches=1 served=3
+OK
+  File "/usr/local/lib/python3.11/dist-packages/peft/tuners/lora/layer.py", line 1102, in forward
+    result = result + lora_B(lora_A(dropout(x))) * scaling
+                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 5.81 GiB. GPU 0 has a total capacity of 23.52 GiB of which 2.79 GiB is free. Including non-PyTorch memory, this process has 20.72 GiB memory in use. Of the allocated memory 19.43 GiB is allocated by PyTorch, with 283.38 MiB allocated in private pools (e.g., CUDA Graphs), and 806.15 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+captured 3 graphs
+serving on :8000  models={'questions': 'microsoft/Phi-4-mini-instruct + Phi-4-mini-instruct-brier-r16-s1000-u0.3-train-pointer', 'gridworld': 'microsoft/Phi-4-mini-instruct'}  mock=False
+phi-b1 clients=1 requests=30 questions=3  43.5 req/s  p50 22.6 ms  p95 23.7 ms  max 30.9 ms
+phi-b1 clients=8 requests=240 questions=3  46.7 req/s  p50 171.4 ms  p95 172.1 ms  max 173.0 ms
+phi-b1 clients=32 requests=960 questions=3  46.6 req/s  p50 687.0 ms  p95 689.6 ms  max 691.0 ms
+phi-b1 clients=8 requests=240 questions=10  25.8 req/s  p50 309.8 ms  p95 312.5 ms  max 314.0 ms
+captured 12 graphs
+serving on :8000  models={'questions': 'microsoft/Phi-4-mini-instruct + Phi-4-mini-instruct-brier-r16-s1000-u0.3-train-pointer', 'gridworld': 'microsoft/Phi-4-mini-instruct'}  mock=False
+phi-b8 clients=1 requests=30 questions=3  40.1 req/s  p50 24.9 ms  p95 25.6 ms  max 26.1 ms
+phi-b8 clients=8 requests=240 questions=3  42.1 req/s  p50 184.2 ms  p95 241.9 ms  max 243.2 ms
+phi-b8 clients=32 requests=960 questions=3  49.4 req/s  p50 647.4 ms  p95 653.0 ms  max 724.2 ms
+phi-b8 clients=8 requests=240 questions=10  19.2 req/s  p50 393.4 ms  p95 511.8 ms  max 517.4 ms
+captured 15 graphs
+serving on :8000  models={'questions': 'microsoft/Phi-4-mini-instruct + Phi-4-mini-instruct-brier-r16-s1000-u0.3-train-pointer', 'gridworld': 'microsoft/Phi-4-mini-instruct'}  mock=False
+phi-b16 clients=1 requests=30 questions=3  39.2 req/s  p50 25.2 ms  p95 27.3 ms  max 27.4 ms
+phi-b16 clients=8 requests=240 questions=3  41.5 req/s  p50 187.9 ms  p95 241.1 ms  max 243.8 ms
+phi-b16 clients=32 requests=960 questions=3  41.6 req/s  p50 693.8 ms  p95 1384.5 ms  max 2765.2 ms
+phi-b16 clients=8 requests=240 questions=10  19.0 req/s  p50 429.9 ms  p95 510.9 ms  max 514.5 ms
+BENCH_DONE

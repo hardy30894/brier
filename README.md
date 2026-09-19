@@ -57,8 +57,8 @@ task. Full tables and protocol in [TRAINING.md](docs/TRAINING.md).
 | MNLI (never trained on), Qwen3-0.6B, mixed corpus | 0.38 acc | **0.77 acc** | real, held-out dataset |
 | Civil Comments toxicity, Phi-4-mini, mixed corpus | 0.49 acc · 0.33 ECE | **0.94 acc · 0.02 ECE** | real, raw |
 | Gridworld from outcomes only, no labels, Qwen3-0.6B | 0.35 acc | **0.81 acc** | vs 0.84 supervised |
-| Ten questions per request, Phi-4-mini, pointer head, compiled | 852 ms row scorer | **32 ms** one row | 27× |
-| Three questions, Qwen3-0.6B, pointer head, compiled | 40 ms | **13 ms** | 3× |
+| Ten questions per request, Phi-4-mini, pointer head, captured | 852 ms row scorer | **32 ms** one row | 27× |
+| Three questions over HTTP, Qwen3-0.6B, pointer head, captured | 40 ms | **12 ms** end to end | 3× |
 | Type errors, every model, every task | 0 | 0 | by construction |
 
 Three findings shape the method. Clean labels alone teach overconfidence: a model
@@ -164,8 +164,14 @@ python3 -m brier.serve --model microsoft/Phi-4-mini-instruct --adapter adapters/
 ```
 
 With a pointer adapter loaded, Pick and Claim questions go through the head in one row
-and Grade questions through the row scorer; set `scorer.compile = True` on a GPU for the
-compiled body.
+and Grade questions through the row scorer. On a GPU, `--capture` replays the transformer
+body from CUDA graphs (12 ms per request on the 0.6B, 23 ms on Phi-4-mini, over HTTP) and
+`--batch N` lets concurrent requests share one forward pass:
+
+```sh
+python3 -m brier.serve --model Qwen/Qwen3-0.6B --adapter adapters/<pointer adapter> --capture --batch 8
+python3 bench_serve.py --clients 32 --n 30      # throughput as concurrent clients see it
+```
 
 Train, and evaluate the adapter with the same kit:
 

@@ -206,6 +206,18 @@ def cmd_sync(a):
     print("synced")
 
 
+def cmd_push(a):
+    """Copy one local path (a directory such as adapters/ptr) to the same place on the pod."""
+    ip, port = _endpoint_or_die()
+    ssh = ["ssh", "-o", "StrictHostKeyChecking=no", "-p", str(port), f"root@{ip}"]
+    for path in a.paths:
+        rel = os.path.relpath(path, ROOT)
+        tar = subprocess.Popen(["tar", "-C", str(ROOT), "-czf", "-", rel], stdout=subprocess.PIPE)
+        subprocess.run(ssh + [f"mkdir -p {REMOTE} && tar -C {REMOTE} -xzf -"], stdin=tar.stdout, check=True)
+        tar.wait()
+        print(f"pushed {rel}")
+
+
 def cmd_exec(a):
     ip, port = _endpoint_or_die()
     r = subprocess.run(["ssh", "-o", "StrictHostKeyChecking=no", "-p", str(port), f"root@{ip}",
@@ -244,6 +256,8 @@ if __name__ == "__main__":
     d.add_argument("--force", action="store_true", help="terminate even if results were never pulled")
     sub.add_parser("ssh")
     sub.add_parser("sync")
+    ps = sub.add_parser("push")
+    ps.add_argument("paths", nargs="+")
     e = sub.add_parser("exec")
     e.add_argument("command")
     pl = sub.add_parser("pull")

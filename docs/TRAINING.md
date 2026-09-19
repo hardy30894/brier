@@ -660,20 +660,57 @@ options by their distance from it, since the option words carry no order of thei
 | Phi-4-mini | 30 | 110 | out of memory | fits | |
 | Qwen3-0.6B | 3 | 11 | 40 ms | 34 ms | 1.2× |
 | Qwen3-0.6B | 10 | 38 | 228 ms | 36 ms | 6× |
-| Qwen3-0.6B, compiled | 3 | 11 | 40 ms | **13 ms** | 3× |
-| Qwen3-0.6B, compiled | 10 | 38 | 228 ms | **17 ms** | 14× |
-| Phi-4-mini, compiled | 3 | 11 | 105 ms | **18 ms** | 6× |
-| Phi-4-mini, compiled | 10 | 38 | 852 ms | **32 ms** | 27× |
+| Qwen3-0.6B, captured | 3 | 11 | 40 ms | **13 ms** | 3× |
+| Qwen3-0.6B, captured | 10 | 38 | 228 ms | **17 ms** | 14× |
+| Phi-4-mini, captured | 3 | 11 | 105 ms | **18 ms** | 6× |
+| Phi-4-mini, captured | 10 | 38 | 852 ms | **32 ms** | 27× |
 
 The pointer's latency is flat in the number of questions; the row scorer's grows with
 every candidate and at thirty questions no longer fits on the card. Profiling the single
 row showed that everything outside the forward pass, rendering, tokenising with offsets,
 position lookup, the head, costs under two milliseconds; the forward pass itself was 30
-ms for 136 tokens on the 0.6B, which is per-layer launch overhead at batch size one, not
-compute. Compiling the transformer body with CUDA graphs (`scorer.compile = True`, inputs
-padded to fixed buckets) cuts that to 11 ms, and the whole request to 13 ms. A decision
-on a laptop-class GPU is now in the tens of milliseconds, independent of how many
-questions it carries.
+ms for 136 tokens on the 0.6B, which is per-layer kernel launch overhead at batch size
+one, not compute. Replaying the transformer body from a CUDA graph removes the launches.
+Three ways of doing that were measured on the 0.6B (`graph_probe.py`, one row of 128
+tokens):
+
+| body | setup per shape | per pass | output vs eager |
+|---|---|---|---|
+| eager | 0 | 53 ms | exact |
+| Inductor, static shapes | 62 s | 10.1 ms | differs (fused kernels) |
+| Inductor, dynamic shapes | 177 s, then fails on batches | 13.0 ms | differs |
+| CUDA-graph capture, no compiler | **0.3 s** | **8.0 ms** | **exact to the bit** |
+
+Plain capture wins on every column: it costs three forward passes per input shape instead
+of a minute of compilation, replays faster, and returns the eager numbers unchanged.
+`scorer.capture = True` turns it on; inputs are padded to fixed length and batch buckets
+so the number of graphs stays small, and the server captures them all at start-up.
+
+**Batching concurrent requests.** Several requests share one pass by right-padding their
+prompts to a common length. Under causal attention a padded token can only influence
+positions after itself, so the real positions are unchanged: in fp32 the batched scores
+match single-request scores to 2e-5 on both backbones (`check_batch.py --fp32`; in bf16
+the batched matmul picks different kernels and scores move by up to 0.2, which is the
+same noise the row scorer shows between its own paths). The server queues requests, waits
+two milliseconds for company, and runs every waiting Pick and Claim set in one pass.
+Measured over HTTP on one RTX 4090 with three questions per request:
+
+| backbone | batch | 1 client | 8 clients | 32 clients |
+|---|---|---|---|---|
+| Qwen3-0.6B | 1 | 12 ms, 82 req/s | 85 ms, 94 req/s | 340 ms, 94 req/s |
+| Qwen3-0.6B | 8 | 14 ms, 71 req/s | 52 ms, **143 req/s** | 185 ms, **171 req/s** |
+| Qwen3-0.6B | 16 | 14 ms, 70 req/s | 57 ms, 141 req/s | 191 ms, 125 req/s |
+| Phi-4-mini | 1 | 23 ms, 44 req/s | 171 ms, 47 req/s | 687 ms, 47 req/s |
+| Phi-4-mini | 8 | 25 ms, 40 req/s | 184 ms, 42 req/s | 647 ms, 49 req/s |
+
+(latency is the client's p50.) Batching pays where the card is idle between launches:
+on the 0.6B it lifts throughput 1.8× at 32 clients and cuts queueing latency in half.
+Phi-4-mini fills the card with a single request, so a batch of eight costs eight times as
+long and throughput does not move; a batch of sixteen is worse for both because the
+bucket padding grows faster than the work. The default is a batch of eight; for Phi-sized
+backbones on one card, `--batch 1` is the honest setting. With ten questions per request
+the 0.6B goes from 54 to 80 req/s under eight clients, because a longer prompt fills the
+card better per launch saved.
 
 **Accuracy.** Five runs on the mixed corpus, evaluated on the same held-out examples as
 round four. Cells are accuracy / raw ECE.

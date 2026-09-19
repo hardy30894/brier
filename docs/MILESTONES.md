@@ -169,7 +169,7 @@ distillation are the fixes, measured in the tables.
 
 ## Next
 
-- Serve the compiled pointer path by default and batch concurrent requests.
+- Batch across the Grade row scorer too, so mixed requests do not serialise on it.
 - Conformal prediction sets: a distribution-free coverage guarantee per question, from the same held-out data.
 - Distilled labels on real tickets and tool-call logs, with disagreements kept.
 - Multi-step credit assignment: discounting or a value estimate for longer episodes.

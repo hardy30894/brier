@@ -12,10 +12,10 @@ from brier.questions import Pick, Grade, Claim
 ap = argparse.ArgumentParser()
 ap.add_argument("--model", default="Qwen/Qwen3-0.6B")
 ap.add_argument("--adapter", default=None, help="pointer adapter dir (pointer.pt); untrained head if omitted")
-ap.add_argument("--compile", action="store_true")
+ap.add_argument("--capture", action="store_true")
 a = ap.parse_args()
 sc = load_scorer(a.model, a.adapter) if a.adapter else Scorer(a.model)
-sc.compile = a.compile
+sc.capture = a.capture
 head = sc.pointer or PointerHead(sc.model.config.hidden_size).to(sc.device)
 sc.pointer = None
 state = "Webhooks are firing twice for every event since around 3am UTC. I need this sorted today if at all possible. We're on the Team plan."

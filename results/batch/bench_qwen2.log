@@ -1,0 +1,29 @@
+batched vs single eager bf16: max |score diff| = 1.58e-01
+batcher vs ask: max |prob diff| = 1.07e-02  batches=1 served=3
+OK
+batched captured vs single eager bf16: max |score diff| = 2.38e-01
+batcher vs ask: max |prob diff| = 4.70e-03  batches=1 served=3
+OK
+  File "/usr/local/lib/python3.11/dist-packages/torch/nn/modules/linear.py", line 117, in forward
+    return F.linear(input, self.weight, self.bias)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 27.55 GiB. GPU 0 has a total capacity of 23.52 GiB of which 9.37 GiB is free. Including non-PyTorch memory, this process has 14.14 GiB memory in use. Of the allocated memory 11.90 GiB is allocated by PyTorch, with 130.38 MiB allocated in private pools (e.g., CUDA Graphs), and 1.73 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+captured 3 graphs
+serving on :8000  models={'questions': 'Qwen/Qwen3-0.6B + Qwen3-0.6B-brier-r16-s5000-u0.3-train-pointer', 'gridworld': 'Qwen/Qwen3-0.6B'}  mock=False
+qwen-b1 clients=1 requests=30 questions=3  82.4 req/s  p50 12.1 ms  p95 13.1 ms  max 13.3 ms
+qwen-b1 clients=8 requests=240 questions=3  93.7 req/s  p50 85.0 ms  p95 87.2 ms  max 88.0 ms
+qwen-b1 clients=32 requests=960 questions=3  94.1 req/s  p50 339.6 ms  p95 340.8 ms  max 343.3 ms
+qwen-b1 clients=8 requests=240 questions=10  54.3 req/s  p50 147.3 ms  p95 148.3 ms  max 149.5 ms
+captured 12 graphs
+serving on :8000  models={'questions': 'Qwen/Qwen3-0.6B + Qwen3-0.6B-brier-r16-s5000-u0.3-train-pointer', 'gridworld': 'Qwen/Qwen3-0.6B'}  mock=False
+qwen-b8 clients=1 requests=30 questions=3  71.0 req/s  p50 13.9 ms  p95 14.9 ms  max 15.8 ms
+qwen-b8 clients=8 requests=240 questions=3  143.2 req/s  p50 51.7 ms  p95 70.0 ms  max 73.3 ms
+qwen-b8 clients=32 requests=960 questions=3  171.3 req/s  p50 185.2 ms  p95 191.5 ms  max 213.8 ms
+qwen-b8 clients=8 requests=240 questions=10  79.7 req/s  p50 99.9 ms  p95 103.4 ms  max 107.3 ms
+captured 15 graphs
+serving on :8000  models={'questions': 'Qwen/Qwen3-0.6B + Qwen3-0.6B-brier-r16-s5000-u0.3-train-pointer', 'gridworld': 'Qwen/Qwen3-0.6B'}  mock=False
+qwen-b16 clients=1 requests=30 questions=3  70.4 req/s  p50 14.1 ms  p95 15.3 ms  max 16.2 ms
+qwen-b16 clients=8 requests=240 questions=3  140.8 req/s  p50 57.0 ms  p95 71.4 ms  max 75.9 ms
+qwen-b16 clients=32 requests=960 questions=3  125.0 req/s  p50 191.0 ms  p95 258.0 ms  max 1238.4 ms
+qwen-b16 clients=8 requests=240 questions=10  61.4 req/s  p50 132.1 ms  p95 146.4 ms  max 148.2 ms
+BENCH_DONE
