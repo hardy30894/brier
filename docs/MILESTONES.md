@@ -153,7 +153,6 @@ never-trained datasets, raw calibration error at or under 0.10 almost everywhere
 
 - A head without the language-model term, scoring from hidden states alone.
 - Conformal prediction sets: a distribution-free coverage guarantee per question, from the same held-out data.
-- Calibration certificates: verifiable held-out evidence shipped with every calibration file.
 - Distilled labels on real tickets and tool-call logs, with disagreements kept.
 - Multi-step credit assignment: discounting or a value estimate for longer episodes.
 - Phi-4-mini as the working backbone throughout.
