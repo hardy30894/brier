@@ -51,12 +51,16 @@ def state():
 
 
 def set_state(pod):
-    d = _all()
-    if pod is None:
-        d.pop(NAME, None)
-    else:
-        d[NAME] = pod
-    _save_all(d)
+    """Read-modify-write under a file lock, so several pods can be brought up at once."""
+    import fcntl
+    with open(ROOT / ".pod.lock", "w") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        d = _all()
+        if pod is None:
+            d.pop(NAME, None)
+        else:
+            d[NAME] = pod
+        _save_all(d)
 
 
 def ssh_endpoint(pod):

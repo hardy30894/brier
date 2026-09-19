@@ -19,27 +19,46 @@ from .scorer import softmax
 
 
 class PointerHead(torch.nn.Module):
-    """Bilinear option scoring, plus an ordinal term for Grade questions: the query predicts a
-    position on the scale and options are scored by their distance from it, so the head can say
-    "somewhere around medium" even though the option words carry no order of their own."""
+    """Bilinear option scoring, plus an ordinal term for Grade questions so the head can say
+    "somewhere around medium" even though the option words carry no order of their own. Two
+    forms: `quadratic` predicts a position on the scale and penalises distance from it;
+    `cumulative` is the cumulative-link model of ordinal regression, one latent score against
+    K-1 ordered thresholds, whose class probabilities are differences of adjacent sigmoids."""
 
-    def __init__(self, d: int, dh: int = 256):
+    def __init__(self, d: int, dh: int = 256, ordinal: str = "quadratic"):
         super().__init__()
         self.q = torch.nn.Linear(d, dh, bias=False)
         self.k = torch.nn.Linear(d, dh, bias=False)
         self.scale = dh ** -0.5
         self.dh = dh
+        self.ordinal_form = ordinal
         self.mu = torch.nn.Linear(d, 1)
         self.log_lam = torch.nn.Parameter(torch.tensor(0.0))
+        self.z = torch.nn.Linear(d, 1)
+        self.cut_scale = torch.nn.Parameter(torch.tensor(1.0))
+        self.cut_off = torch.nn.Parameter(torch.tensor(0.0))
+
+    def cumulative(self, h_query, n):
+        """log p(y = i) for i in 0..n-1 from one latent score and n-1 evenly spaced, jointly
+        scaled thresholds."""
+        z = self.z(h_query.float()).squeeze(-1)
+        k = torch.arange(1, n, device=z.device, dtype=z.dtype)
+        cuts = (k / n - 0.5) * torch.exp(self.cut_scale) * 4 + self.cut_off
+        cdf = torch.sigmoid(cuts - z)
+        cdf = torch.cat([cdf.new_zeros(1), cdf, cdf.new_ones(1)])
+        return torch.log((cdf[1:] - cdf[:-1]).clamp_min(1e-6))
 
     def forward(self, h_query, h_keys, ordinal=False):
         """h_query: (d,), h_keys: (n, d) -> (n,) scores."""
         s = (self.k(h_keys.float()) @ self.q(h_query.float())) * self.scale
-        if ordinal and h_keys.shape[0] > 1:
-            n = h_keys.shape[0]
-            pos = torch.arange(n, device=s.device, dtype=s.dtype) / (n - 1)
-            mu = torch.sigmoid(self.mu(h_query.float())).squeeze(-1)
-            s = s - torch.exp(self.log_lam) * (pos - mu) ** 2 * n
+        n = h_keys.shape[0]
+        if ordinal and n > 1:
+            if self.ordinal_form == "cumulative":
+                s = s + self.cumulative(h_query, n)
+            else:
+                pos = torch.arange(n, device=s.device, dtype=s.dtype) / (n - 1)
+                mu = torch.sigmoid(self.mu(h_query.float())).squeeze(-1)
+                s = s - torch.exp(self.log_lam) * (pos - mu) ** 2 * n
         return s
 
 
@@ -50,9 +69,10 @@ class Layout:
     option_chars: list[list[int]]    # per question, per option: char index (exclusive end) of the option mention
 
 
-def render(state, questions) -> Layout:
+def render(state, questions, grade_numbers=False) -> Layout:
     """The same prompt the row scorer uses, but with the character position of every option and
-    of every question's end recorded as it is written."""
+    of every question's end recorded as it is written. With grade_numbers, each Grade level is
+    written with its rank ("1 low, 2 medium, ...") so the option's own tokens carry the order."""
     head = ("Read the state and answer every question with exactly one of its allowed answers. "
             "Reply with a single JSON object keyed by question id and nothing else.\n\n"
             f"State:\n{render_state(state)}\n\nQuestions:\n")
@@ -74,7 +94,7 @@ def render(state, questions) -> Layout:
             ends = []
             labels = q.labels
             for i, lab in enumerate(labels):
-                line += lab
+                line += (f"{i + 1} " if grade_numbers and isinstance(q, Grade) else "") + lab
                 ends.append(pos + len(line))
                 if i < len(labels) - 1:
                     line += ", "
@@ -98,7 +118,7 @@ def char_to_token(offsets, char_end):
 
 
 def encode(scorer, state, questions):
-    lay = render(state, questions)
+    lay = render(state, questions, getattr(scorer, "grade_numbers", False))
     full = scorer.chat_prefix(lay.text)
     base = full.find(lay.text)
     enc = scorer.tok(full, return_offsets_mapping=True, add_special_tokens=False)

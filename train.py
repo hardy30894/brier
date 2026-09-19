@@ -117,6 +117,9 @@ def main():
     ap.add_argument("--pointer", action="store_true", help="train the pointer head: one row per example, options scored from the prompt's hidden states")
     ap.add_argument("--distill", default=None, help="adapter dir of a row-scorer teacher; adds KL to its distributions (pointer only)")
     ap.add_argument("--head-lr", type=float, default=1e-3)
+    ap.add_argument("--ordinal", default="quadratic", choices=("quadratic", "cumulative"), help="pointer head's Grade term")
+    ap.add_argument("--grade-numbers", action="store_true", help="pointer prompt writes Grade levels with their rank")
+    ap.add_argument("--grade-boost", type=int, default=1, help="repeat examples that carry a Grade question this many times")
     a = ap.parse_args()
 
     torch.manual_seed(a.seed)
@@ -140,7 +143,8 @@ def main():
         scorer.head = TypedHead(base.config.hidden_size).to(scorer.device)
     pointer, teacher = None, None
     if a.pointer:
-        pointer = PointerHead(base.config.hidden_size).to(scorer.device)
+        pointer = PointerHead(base.config.hidden_size, ordinal=a.ordinal).to(scorer.device)
+        scorer.grade_numbers = a.grade_numbers
         if a.distill:
             from brier.__main__ import load_scorer
             from brier.questions import ask as _ask
@@ -150,6 +154,9 @@ def main():
     data = []
     for t in a.tasks.split(","):
         data += examples(t, a.n, seed=a.seed, split=a.split, uncertain=a.uncertain)
+    if a.grade_boost > 1:
+        from brier.questions import Grade as _Grade
+        data += [ex for ex in data if any(isinstance(q, _Grade) for q in ex["questions"])] * (a.grade_boost - 1)
     random.shuffle(data)
     log(f"{len(data)} training examples from {a.tasks}")
     if world > 1:
@@ -178,7 +185,7 @@ def main():
         if (step + 1) % 50 == 0:
             log(f"step {step + 1}/{a.steps} loss {running / 50:.4f} lr {sched.get_last_lr()[0]:.2e} ({time.perf_counter() - t0:.0f}s)")
             running = 0.0
-    name = f"{a.model.split('/')[-1]}-brier-r{a.rank}-s{a.steps}" + (f"-u{a.uncertain:g}" if a.uncertain else "") + (f"-{a.split}" if a.split != "all" else "") + ("-head" if a.head else "") + ("-pointer" if a.pointer else "") + ("-distill" if a.distill else "")
+    name = f"{a.model.split('/')[-1]}-brier-r{a.rank}-s{a.steps}" + (f"-u{a.uncertain:g}" if a.uncertain else "") + (f"-{a.split}" if a.split != "all" else "") + ("-head" if a.head else "") + ("-pointer" if a.pointer else "") + ("-distill" if a.distill else "") + ("-cum" if a.ordinal == "cumulative" else "") + ("-num" if a.grade_numbers else "") + (f"-gb{a.grade_boost}" if a.grade_boost > 1 else "")
     path = os.path.join(a.out, name)
     if rank == 0:
         peft_model.save_pretrained(path)
@@ -186,6 +193,7 @@ def main():
             torch.save(scorer.head.state_dict(), os.path.join(path, "head.pt"))
         if pointer is not None:
             torch.save(pointer.state_dict(), os.path.join(path, "pointer.pt"))
+            json.dump({"ordinal": a.ordinal, "grade_numbers": a.grade_numbers}, open(os.path.join(path, "pointer.json"), "w"))
         json.dump({**vars(a), "world_size": world, "train_seconds": round(time.perf_counter() - t0)}, open(os.path.join(path, "train_args.json"), "w"), indent=1)
         print(f"saved {path}  ({world} GPU{'s' if world > 1 else ''}, {time.perf_counter() - t0:.0f}s)")
     if world > 1:

@@ -52,6 +52,7 @@ class Scorer:
         self.pointer = None
         self.pointer_grade = False   # True routes Grade questions through the pointer head too
         self.capture = False         # True replays the body from CUDA graphs on the pointer path (GPU only)
+        self.grade_numbers = False   # pointer prompt writes Grade levels with their rank
         self._enc_cache: dict[str, list[int]] = {}
 
     def _enc(self, s: str) -> list[int]:

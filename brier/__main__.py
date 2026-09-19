@@ -1,5 +1,6 @@
 """python3 -m brier calibrate --task tickets --model Qwen/Qwen3-4B --n 300 [--adapter path]"""
 import argparse
+import json
 import os
 import sys
 import time
@@ -24,7 +25,10 @@ def load_scorer(model_id, adapter=None):
     ptr_path = os.path.join(adapter, "pointer.pt")
     if os.path.exists(ptr_path):
         from .pointer import PointerHead
-        sc.pointer = PointerHead(base.config.hidden_size).to(sc.device)
+        meta_path = os.path.join(adapter, "pointer.json")
+        meta = json.load(open(meta_path)) if os.path.exists(meta_path) else {}
+        sc.grade_numbers = meta.get("grade_numbers", False)
+        sc.pointer = PointerHead(base.config.hidden_size, ordinal=meta.get("ordinal", "quadratic")).to(sc.device)
         sc.pointer.load_state_dict(torch.load(ptr_path, map_location=sc.device), strict=False)
         sc.pointer.eval()
     head_path = os.path.join(adapter, "head.pt")
@@ -39,9 +43,12 @@ def load_scorer(model_id, adapter=None):
 def cmd_calibrate(a):
     from tasks import examples
     scorer = load_scorer(a.model, a.adapter)
+    scorer.pointer_grade = a.pointer_grade
     tag = a.tag or (a.adapter.rstrip("/").split("/")[-1] if a.adapter else a.model.split("/")[-1])
     if a.split != "all":
         tag += f"@{a.split}"
+    if a.pointer_grade:
+        tag += "+ptrgrade"
     os.makedirs(a.out, exist_ok=True)
     for task in a.task.split(","):
         exs = examples(task, a.n, seed=a.seed, split=a.split)
@@ -62,6 +69,9 @@ def cmd_calibrate(a):
         print(f"\n== {task} ==")
         print(report(cal))
         cal.save(f"{a.out}/cal_{task}_{tag}.json")
+        with open(f"{a.out}/rec_{task}_{tag}.json", "w") as f:
+            json.dump({"task": task, "tag": tag, "seed": a.seed, "labels": {q.id: list(q.labels) for q in questions},
+                       "records": {k: [[s, sorted(acc)] for s, acc in v] for k, v in records.items()}}, f)
         with open(f"{a.out}/rel_{task}_{tag}.svg", "w") as f:
             f.write(reliability_svg(cal, f"{task} · {tag}"))
 
@@ -94,6 +104,7 @@ if __name__ == "__main__":
     c.add_argument("--seed", type=int, default=7)
     c.add_argument("--split", default="all", help="all | eval (templates held out from training)")
     c.add_argument("--tag", default=None, help="override the results tag")
+    c.add_argument("--pointer-grade", action="store_true", help="route Grade questions through the pointer head too")
     c.add_argument("--out", default="results")
     a = ap.parse_args()
     {"calibrate": cmd_calibrate, "fetch": cmd_fetch}[a.cmd](a)
