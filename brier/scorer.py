@@ -9,6 +9,15 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from .schema import Schema, Decision, FieldDecision
 
 
+def load_causal_lm(model_id, device):
+    """bfloat16 on GPU (float16 on Apple silicon, float32 on CPU); tolerant of older transformers."""
+    dtype = torch.float32 if device == "cpu" else (torch.float16 if device == "mps" else torch.bfloat16)
+    try:
+        return AutoModelForCausalLM.from_pretrained(model_id, dtype=dtype)
+    except TypeError:
+        return AutoModelForCausalLM.from_pretrained(model_id, torch_dtype=dtype)
+
+
 def pick_device():
     if torch.backends.mps.is_available():
         return "mps"
@@ -37,8 +46,7 @@ class Scorer:
         if self.tok.pad_token_id is None:
             self.tok.pad_token = self.tok.eos_token
         if model is None:
-            dtype = torch.bfloat16 if self.device != "cpu" else torch.float32
-            model = AutoModelForCausalLM.from_pretrained(model_id, dtype=dtype).to(self.device)
+            model = load_causal_lm(model_id, self.device).to(self.device)
         self.model = model.eval()
         self.head = None
         self._enc_cache: dict[str, list[int]] = {}

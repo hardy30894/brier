@@ -15,8 +15,9 @@ def load_scorer(model_id, adapter=None):
     import torch
     from peft import PeftModel
     from transformers import AutoModelForCausalLM, AutoTokenizer
+    from .scorer import load_causal_lm, pick_device
     tok = AutoTokenizer.from_pretrained(model_id)
-    base = AutoModelForCausalLM.from_pretrained(model_id, dtype=torch.bfloat16)
+    base = load_causal_lm(model_id, pick_device())
     model = PeftModel.from_pretrained(base, adapter)
     sc = Scorer(model_id, model=model, tok=tok)
     sc.model = sc.model.to(sc.device)

@@ -90,6 +90,33 @@ The [architecture document](docs/ARCHITECTURE.md) walks through all of this from
 nothing; the [primer](docs/PRIMER.md) derives it, from probability to the
 policy-gradient objective.
 
+## Run the live demo
+
+The demo is a page served by a small server that holds the model. It runs on a laptop.
+
+```sh
+pip install torch transformers peft numpy          # once
+python3 -m brier.serve --model Qwen/Qwen3-0.6B     # then open http://localhost:8000
+```
+
+On an Apple-silicon Mac with 8 GB the 0.6B answers a three-question ticket in about a
+second and plays a gridworld move in about half a second; on an RTX 4090 the same calls
+take 45 ms and 40 ms. Larger backbones and adapters load the same way:
+
+```sh
+python3 -m brier.serve --model microsoft/Phi-4-mini-instruct \
+    --adapter adapters/Phi-4-mini-instruct-brier-r16-s1200-u0.3-train \
+    --grid-model Qwen/Qwen3-0.6B --grid-adapter adapters/Qwen3-0.6B-brier-rl-s600 \
+    --calibration results/cal_tickets_Phi-4-mini-r3@eval.json
+python3 -m brier.serve --mock                        # the page with no model, for development
+```
+
+The page decides as you type, shows every question's distribution from one pass with
+its latency, applies the auto / review / human tiers when a calibration file is loaded,
+and plays gridworld live with the move distribution drawn on the grid.
+[docs/demo.html](docs/demo.html) is the static replay of recorded games for when no
+model is running.
+
 ## Usage
 
 ```python

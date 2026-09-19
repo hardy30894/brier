@@ -61,6 +61,19 @@
   .bar .pct { text-align:right; font-variant-numeric:tabular-nums; color:var(--faint); }
   .bar.top .pct { color:var(--ink); font-weight:600; }
   .meta { font-size:12px; color:var(--faint); margin-top:12px; font-variant-numeric:tabular-nums; }
+  .toggle { display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--muted); cursor:pointer; user-select:none; }
+  .toggle input { width:auto; margin:0; accent-color:var(--accent); }
+  .kbd { font-size:11px; color:var(--faint); border:1px solid var(--line); border-radius:6px; padding:2px 6px; }
+  .lat { display:flex; align-items:baseline; gap:14px; margin-top:14px; padding-top:12px; border-top:1px solid var(--line); }
+  .lat b { font-size:26px; font-weight:600; letter-spacing:-0.6px; font-variant-numeric:tabular-nums; background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .lat span { font-size:12px; color:var(--muted); }
+  .pulse { animation:pulse .5s ease; }
+  @keyframes pulse { 0% { opacity:.35 } 100% { opacity:1 } }
+  /* arrows on the grid */
+  .cell .arrow { position:absolute; font-size:11px; font-weight:600; color:var(--accent); opacity:0; transition:opacity .25s; pointer-events:none; }
+  .cell .arrow.show { opacity:1; }
+  .cell.trail { box-shadow:inset 0 0 0 2px color-mix(in srgb, var(--accent) 35%, transparent); }
+  .cell { position:relative; }
   .err { color:var(--bad); font-size:13px; margin-top:8px; }
   .gw { display:grid; grid-template-columns:auto 1fr; gap:28px; align-items:start; }
   @media (max-width: 1180px) { .gw { grid-template-columns:1fr; } }
@@ -70,6 +83,7 @@
   .cell.exit { color:var(--good); box-shadow:inset 0 0 0 1.5px var(--good); }
   .cell.monster { color:var(--bad); box-shadow:inset 0 0 0 1.5px var(--bad); }
   .cell.player { background:var(--grad); color:#fff; transform:scale(1.04); box-shadow:0 6px 14px -6px rgba(79,70,229,.7); }
+  .cell .txt { position:relative; z-index:1; }
   .cell.player.dead { background:var(--bad); box-shadow:none; }
   .cell.player.won { background:var(--good); box-shadow:none; }
   .legend { font-size:12px; color:var(--faint); margin-top:10px; }
@@ -95,11 +109,14 @@
     <div id="qs"></div>
     <div class="row" style="margin-top:10px">
       <button id="addq">+ question</button>
+      <label class="toggle"><input type="checkbox" id="live" checked> decide as I type</label>
       <span style="flex:1"></span>
+      <span class="kbd">⌘↩</span>
       <button id="askb" class="primary">Decide</button>
     </div>
     <div class="err" id="askerr"></div>
     <div class="results" id="results"></div>
+    <div class="lat" id="asklat" hidden><b id="latnum">–</b><span id="latcmp"></span></div>
     <div class="meta" id="askmeta"></div>
   </section>
   <section>
@@ -167,7 +184,7 @@ function readQuestions() {
 function loadPreset(name) {
   const p = PRESETS[name]; $("state").value = p.state; $("qs").innerHTML = ""; p.questions.forEach(q => $("qs").appendChild(qRow(q)));
   [...$("presets").children].forEach(c => c.classList.toggle("on", c.textContent === name));
-  $("results").innerHTML = ""; $("askmeta").textContent = "";
+  $("results").innerHTML = ""; $("askmeta").textContent = ""; $("asklat").hidden = true; scheduleDecide();
 }
 Object.keys(PRESETS).forEach(n => { const c = document.createElement("span"); c.className = "chip"; c.textContent = n; c.onclick = () => loadPreset(n); $("presets").appendChild(c); });
 $("addq").onclick = () => $("qs").appendChild(qRow({ kind: "choice", id: "q", instructions: "", options: "" }));
@@ -194,20 +211,32 @@ function renderAnswers(res) {
     [...bars.children].forEach(b => { if (!(b.dataset.lab in a.probabilities)) b.remove(); });
   }
   [...root.children].forEach(el => { if (!seen.has(el.dataset.id)) el.remove(); });
-  $("askmeta").textContent = `${res.latency_ms.toFixed(0)} ms for ${res.answers.length} question${res.answers.length === 1 ? "" : "s"} in one pass · ${res.model}`;
+  const nc = res.answers.reduce((n, a) => n + Object.keys(a.probabilities).length, 0);
+  $("asklat").hidden = false; $("latnum").textContent = `${res.latency_ms.toFixed(0)} ms`; $("latnum").classList.remove("pulse"); void $("latnum").offsetWidth; $("latnum").classList.add("pulse");
+  $("latcmp").textContent = `${res.answers.length} question${res.answers.length === 1 ? "" : "s"}, ${nc} candidates, one forward pass · generating the same answers as JSON takes about ${Math.round(res.answers.length * 400)} ms on the same weights`;
+  $("askmeta").textContent = res.model;
 }
-$("askb").onclick = async () => {
-  $("askerr").textContent = ""; $("askb").disabled = true;
-  try { let state = $("state").value; try { state = JSON.parse(state); } catch (e) {} renderAnswers(await api("/ask", { state, questions: readQuestions() })); }
-  catch (e) { $("askerr").textContent = e.message; } finally { $("askb").disabled = false; }
-};
+let askTimer = null, askSeq = 0;
+async function decide() {
+  const seq = ++askSeq; $("askerr").textContent = "";
+  try { let state = $("state").value; try { state = JSON.parse(state); } catch (e) {} const res = await api("/ask", { state, questions: readQuestions() }); if (seq === askSeq) renderAnswers(res); }
+  catch (e) { if (seq === askSeq) $("askerr").textContent = e.message; }
+}
+function scheduleDecide() { if (!$("live").checked) return; clearTimeout(askTimer); askTimer = setTimeout(decide, 350); }
+$("state").addEventListener("input", scheduleDecide);
+$("qs").addEventListener("input", scheduleDecide);
+document.addEventListener("keydown", e => { if ((e.metaKey || e.ctrlKey) && e.key === "Enter") { e.preventDefault(); decide(); } });
+$("askb").onclick = decide;
 
 // ---------- gridworld ----------
 let game = null, timer = null, lats = [], won = 0, lost = 0, busy = false;
 const MOVES = ["up", "down", "left", "right"];
-function drawGrid() {
+let trail = [];
+const DIRV = { up: [-1, 0], down: [1, 0], left: [0, -1], right: [0, 1] };
+const GLYPH = { up: "↑", down: "↓", left: "←", right: "→" };
+function drawGrid(probs) {
   const g = $("grid");
-  if (g.children.length !== 25) { g.innerHTML = ""; for (let i = 0; i < 25; i++) { const d = document.createElement("div"); d.className = "cell"; g.appendChild(d); } }
+  if (g.children.length !== 25) { g.innerHTML = ""; for (let i = 0; i < 25; i++) { const d = document.createElement("div"); d.className = "cell"; d.innerHTML = `<span class="txt"></span><span class="arrow"></span>`; g.appendChild(d); } }
   if (!game) return;
   const [pr, pc] = game.player;
   for (let r = 0; r < 5; r++) for (let c = 0; c < 5; c++) {
@@ -215,8 +244,17 @@ function drawGrid() {
     if (ch === "#") cls += " wall";
     if (r === game.exit[0] && c === game.exit[1]) { cls += " exit"; txt = "E"; }
     if (r === game.monster[0] && c === game.monster[1]) { cls += " monster"; txt = "M"; }
+    if (trail.some(([tr, tc]) => tr === r && tc === c) && !(r === pr && c === pc)) cls += " trail";
     if (r === pr && c === pc) { cls += " player" + (game.status === "dead" ? " dead" : game.status === "exit" ? " won" : ""); txt = "P"; }
-    d.className = cls; d.textContent = txt;
+    d.className = cls; d.querySelector(".txt").textContent = txt;
+    const ar = d.querySelector(".arrow"); ar.className = "arrow"; ar.textContent = "";
+  }
+  if (probs && game.status === "ok") {
+    for (const [m, [dr, dc]] of Object.entries(DIRV)) {
+      const r = pr + dr, c = pc + dc; if (r < 0 || r > 4 || c < 0 || c > 4) continue;
+      const ar = g.children[r * 5 + c].querySelector(".arrow"); const p = probs[m];
+      ar.textContent = `${GLYPH[m]} ${(p * 100).toFixed(0)}`; ar.style.fontSize = (9 + 9 * p).toFixed(1) + "px"; ar.style.opacity = 0.35 + 0.65 * p; ar.classList.add("show");
+    }
   }
 }
 function drawBars(probs, move) {
@@ -225,14 +263,16 @@ function drawBars(probs, move) {
   for (const row of b.children) { const m = row.dataset.lab; const p = probs ? probs[m] : 0; row.classList.toggle("top", m === move); row.querySelector(".fill").style.width = (p * 100).toFixed(1) + "%"; row.querySelector(".pct").textContent = probs ? (p * 100).toFixed(0) + "%" : ""; }
 }
 function p50() { if (!lats.length) return "–"; const s = [...lats].sort((a, b) => a - b); return s[Math.floor(s.length / 2)].toFixed(0) + " ms"; }
-async function newGame() { stop(); game = await api("/grid/new", {}); drawGrid(); drawBars(null); $("gmeta").textContent = "new game"; }
+async function newGame() { stop(); game = await api("/grid/new", {}); trail = []; drawGrid(); drawBars(null); $("gmeta").textContent = "new game"; }
 async function step() {
   if (!game || busy || game.status === "exit" || game.status === "dead") return;
   busy = true;
   try {
     const r = await api("/grid/step", { game });
     lats.push(r.latency_ms); if (lats.length > 200) lats.shift();
-    drawBars(r.probabilities, r.move); game = r.game; drawGrid();
+    drawBars(r.probabilities, r.move); drawGrid(r.probabilities);
+    await new Promise(res => setTimeout(res, 260));
+    trail.push(game.player); game = r.game; drawGrid();
     $("gmeta").textContent = `chose ${r.move} (${(r.probabilities[r.move] * 100).toFixed(0)}%) · ${r.optimal ? "optimal" : "not optimal"} · ${r.latency_ms.toFixed(0)} ms · ${r.model}`;
     $("lat").textContent = p50();
     if (game.status === "exit") { won++; $("won").textContent = won; $("gmeta").textContent += " · reached the exit"; stop(); }

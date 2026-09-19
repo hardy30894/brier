@@ -124,13 +124,15 @@ each decision, with play, step and reset, for a trained and an untrained model.
 twelve games each: the outcome-reward 0.6B, trained with no labels, reaches the exit
 in seven and walks into the monster in two; the untrained 0.6B reaches it in one.
 
-**Limit.** It is a replay of recorded games, because the page is static and the model
-needs a GPU. A live version, the page asking a local scorer each tick, is the first item
-below.
+**Live.** `python3 -m brier.serve` puts the scorer behind three endpoints and serves
+`docs/live.html`: any state, any typed questions, decisions updating as you type with
+the latency of the pass, calibration tiers when a file is loaded, and gridworld played
+live with the move distribution drawn on the grid. It runs on a laptop with the 0.6B
+(about a second per decision on Apple silicon) and on a GPU with any backbone and
+adapter.
 
 ## Next
 
-- A live demo served from the scorer.
 - A head without the language-model term, scoring from hidden states alone.
 - Distilled labels on real tickets and tool-call logs, with disagreements kept.
 - Multi-step credit assignment: discounting or a value estimate for longer episodes.
