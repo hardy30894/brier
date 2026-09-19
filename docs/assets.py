@@ -398,7 +398,7 @@ def fig_temperature():
 
 def fig_training():
     o = _svg(900, 420)
-    _t(o, 450, 34, "How the backbone was trained (today) and how Brier will train on top of it (milestone 2)", 15, INK, "700", "middle")
+    _t(o, 450, 34, "How the backbone was trained before Brier, and how Brier trains on top of it", 15, INK, "700", "middle")
     stages = (("pretraining", "predict the next token", "trillions of tokens of text", "→ general knowledge, reading"),
               ("instruction tuning", "imitate helpful answers", "curated prompt/response pairs", "→ follows instructions, JSON"),
               ("preference tuning", "reward preferred answers", "human or model preferences", "→ confident, agreeable tone"))
@@ -411,41 +411,41 @@ def fig_training():
         _t(o, x + 14, 140, out, 11, BLUE)
         if i < 2:
             o.append(f'<line x1="{x + 257}" y1="108" x2="{x + 273}" y2="108" stroke="#5B6B7C" stroke-width="2" marker-end="url(#ar)"/>')
-    _t(o, 40, 182, "published open weights (e.g. Qwen3-4B). Milestone 1 uses them exactly as released: good at ranking values, bad at stating probabilities.", 11, FAINT)
+    _t(o, 40, 182, "published open weights (Qwen3, Phi-4-mini, SmolLM2). The untrained scorer uses them exactly as released: good at ranking answers, bad at stating probabilities.", 11, FAINT)
 
     o.append(f'<line x1="40" y1="200" x2="860" y2="200" stroke="{LINE}"/>')
     o.append(f'<rect x="40" y="220" width="200" height="170" rx="3" fill="#FFFFFF" stroke="{LINE}"/>')
     _t(o, 54, 244, "data with ground truth", 13, INK, "700")
-    for i, s in enumerate(("synthetic environments", "(answer is computable)", "distilled labels from a", "frontier model, parsed to types", "logs from real software", "with a checkable outcome")):
+    for i, s in enumerate(("synthetic tasks, held-out templates", "(the generator chose the label)", "30% ambiguous, soft labels", "= the generator's own posterior", "contrastive claims", "(the cue is present, the answer is no)")):
         _t(o, 54, 266 + i * 16, s, 11, MUTED if i % 2 == 0 else FAINT)
     o.append(f'<line x1="242" y1="305" x2="268" y2="305" stroke="#5B6B7C" stroke-width="2" marker-end="url(#ar)"/>')
     o.append(f'<rect x="270" y="220" width="220" height="170" rx="3" fill="{PALE}" stroke="{BLUE}" stroke-width="1.5"/>')
-    _t(o, 284, 244, "backbone + typed heads", 13, INK, "700")
-    _t(o, 284, 266, "the LM head is dropped", 11, MUTED)
-    _t(o, 284, 282, "one head per field type:", 11, MUTED)
-    _t(o, 284, 298, "enum → softmax over values", 11, BLUE)
-    _t(o, 284, 314, "bool → one logit", 11, BLUE)
-    _t(o, 284, 330, "number → bucketed distribution", 11, BLUE)
-    _t(o, 284, 346, "select → pointer over input", 11, BLUE)
-    _t(o, 284, 370, "LoRA on the backbone, heads full", 11, MUTED)
+    _t(o, 284, 244, "backbone + LoRA + typed head", 13, INK, "700")
+    _t(o, 284, 266, "base weights frozen", 11, MUTED)
+    _t(o, 284, 282, "LoRA rank 16 on q, k, v, o,", 11, MUTED)
+    _t(o, 284, 298, "gate, up, down in every block", 11, MUTED)
+    _t(o, 284, 322, "typed head over hidden states:", 11, BLUE)
+    _t(o, 284, 338, "input-conditional temperature", 11, BLUE)
+    _t(o, 284, 354, "+ per-candidate residual", 11, BLUE)
+    _t(o, 284, 376, "zero-initialised = plain scorer", 11, MUTED)
     o.append(f'<line x1="492" y1="305" x2="518" y2="305" stroke="#5B6B7C" stroke-width="2" marker-end="url(#ar)"/>')
     o.append(f'<rect x="520" y="220" width="340" height="170" rx="3" fill="#FFFFFF" stroke="{LINE}"/>')
     _t(o, 534, 244, "objective: calibrated decisions", 13, INK, "700")
-    _t(o, 534, 266, "1. cross-entropy on typed labels: a proper scoring", 11, MUTED)
-    _t(o, 534, 281, "   rule, minimised only by honest probabilities", 11, MUTED)
-    _t(o, 534, 301, "2. outcome reward on environments: Brier score of", 11, MUTED)
-    _t(o, 534, 316, "   the stated probability, penalising confident misses", 11, MUTED)
-    _t(o, 534, 336, "3. gate: ECE on held-out data must beat the", 11, MUTED)
-    _t(o, 534, 351, "   temperature-scaled milestone 1 number", 11, MUTED)
+    _t(o, 534, 266, "1. cross-entropy over the answer set, hard or soft", 11, MUTED)
+    _t(o, 534, 281, "   targets: a proper scoring rule, honest at its minimum", 11, MUTED)
+    _t(o, 534, 301, "2. outcome reward, no labels: policy gradient on the", 11, MUTED)
+    _t(o, 534, 316, "   environment's result + Brier score of the stated p", 11, MUTED)
+    _t(o, 534, 336, "3. gate: raw ECE on never-trained tasks must beat", 11, MUTED)
+    _t(o, 534, 351, "   the untrained model after temperature scaling", 11, MUTED)
     _t(o, 534, 375, "no preference model, no pass/fail reward", 11, BLUE)
     _write(o, "training")
 
 
 def fig_components():
     o = _svg(900, 300)
-    _t(o, 450, 34, "A decide() call through the code", 15, INK, "700", "middle")
-    boxes = (("your code", "Schema + input", "#FFFFFF", LINE), ("brier/schema.py", "Enum, Bool → candidates", "#FFFFFF", LINE),
-             ("brier/scorer.py", "prompt → batch → softmax", PALE, BLUE), ("brier/schema.py", "Decision: value, prob, dist", "#FFFFFF", LINE))
+    _t(o, 450, 34, "An ask() call through the code", 15, INK, "700", "middle")
+    boxes = (("your code", "state + questions", "#FFFFFF", LINE), ("brier/questions.py", "Choice, Score, Claim → candidates", "#FFFFFF", LINE),
+             ("brier/scorer.py", "prompt → batch → softmax", PALE, BLUE), ("brier/questions.py", "Answer: value, probabilities", "#FFFFFF", LINE))
     for i, (name, what, fill, stroke) in enumerate(boxes):
         x = 40 + i * 215
         o.append(f'<rect x="{x}" y="70" width="195" height="70" rx="3" fill="{fill}" stroke="{stroke}"/>')
@@ -455,8 +455,8 @@ def fig_components():
             o.append(f'<line x1="{x + 197}" y1="105" x2="{x + 213}" y2="105" stroke="#5B6B7C" stroke-width="2" marker-end="url(#ar)"/>')
     o.append(f'<line x1="40" y1="170" x2="860" y2="170" stroke="{LINE}"/>')
     _t(o, 40, 196, "measurement, not on the request path", 12, MUTED, "700")
-    items = (("tasks/", "synthetic inputs with computable labels"), ("bench.py", "runs scorer and JSON baseline, prints the table"),
-             ("brier/metrics.py", "accuracy, ECE, Brier, latency, temperature fit"), ("pod.py", "GPU pod with a hard time-to-live"))
+    items = (("tasks/", "eight tasks with computable or human labels"), ("brier/calibrate.py", "temperature, held-out ECE, decision policy"),
+             ("train.py · rl.py", "supervised and outcome-reward training"), ("pod.py", "GPU pod with a hard time-to-live"))
     for i, (n, d) in enumerate(items):
         x = 40 + (i % 2) * 420
         y = 222 + (i // 2) * 34
