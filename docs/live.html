@@ -5,33 +5,34 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Brier</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg:#F7F6F2; --bg-2:#F1F0EB; --bg-3:#E9E7E1; --line:#DAD8D0; --line-2:#C3C0B6;
-    --fg:#111111; --fg-2:#4A4A46; --fg-3:#8A8983; --accent:#3F39B8; --accent-2:#3F39B8; --warn:#9A5B12; --ok:#1F6F3F; --bad:#A3261B;
-    --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace; --sans:'IBM Plex Sans',-apple-system,Helvetica,Arial,sans-serif;
+    /* the logo's tokens: ink #0B0F1D, sweep #3B3694 → #5B52EA → #BFC1FC */
+    --bg:#0B0F1D; --bg-2:#0E1322; --bg-3:#141A2C; --line:#1B2135; --line-2:#2B3350;
+    --fg:#F4F5FA; --fg-2:#AEB4C6; --fg-3:#67708A; --accent:#8F8AF5; --sweep:linear-gradient(90deg,#3B3694 0%,#5B52EA 55%,#BFC1FC 100%); --warn:#E0A54E; --ok:#4CC286; --bad:#F0705F;
+    --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace; --sans:'Manrope',-apple-system,Helvetica,Arial,sans-serif;
   }
-  :root[data-theme="dark"] { --bg:#111111; --bg-2:#161616; --bg-3:#1F1F1F; --line:#262626; --line-2:#383838; --fg:#EDECE8; --fg-2:#B5B3AC; --fg-3:#6F6E69; --accent:#8F88F0; --accent-2:#6C64E8; --warn:#D59A3F; --ok:#4CB877; --bad:#E36B5F; }
+  :root[data-theme="light"] { --bg:#FFFFFF; --bg-2:#F8F8FC; --bg-3:#EFF0F7; --line:#E4E6EF; --line-2:#C9CDDC; --fg:#0B0F1D; --fg-2:#4A5065; --fg-3:#8A90A6; --accent:#4F46E5; --sweep:linear-gradient(90deg,#3B3694 0%,#5B52EA 55%,#8F8AF5 100%); --warn:#A8620F; --ok:#1B7A47; --bad:#B4321F; }
   * { box-sizing:border-box; }
   html, body { height:100%; }
-  body { margin:0; background:var(--bg); color:var(--fg); font:13px/1.5 var(--sans); -webkit-font-smoothing:antialiased; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:13px/1.5 var(--sans); font-weight:500; -webkit-font-smoothing:antialiased; }
   .mono { font-family:var(--mono); }
   .app { display:grid; grid-template-rows:44px 1fr; height:100vh; }
   /* bar */
   .bar { display:flex; align-items:center; gap:18px; padding:0 16px; border-bottom:1px solid var(--line); background:var(--bg-2); font-size:12.5px; }
-  .bar img { height:18px; }
+  .bar img { height:22px; }
   .bar .name { font-weight:600; letter-spacing:.2px; }
   .bar .modes { display:flex; gap:2px; margin-left:8px; }
   .bar .modes button { padding:5px 10px; border-radius:6px; }
-  .bar .modes button.on { background:var(--bg-3); color:var(--fg); }
+  .bar .modes button.on { background:var(--bg-3); color:var(--fg); box-shadow:inset 0 -2px 0 0 #5B52EA; border-radius:6px 6px 2px 2px; }
   .bar .r { margin-left:auto; display:flex; align-items:center; gap:16px; color:var(--fg-2); font-family:var(--mono); font-size:12px; }
   .bar .r .lat { color:var(--fg); }
   .dot { width:7px; height:7px; border-radius:50%; background:var(--fg-3); display:inline-block; margin-right:6px; }
   .dot.on { background:var(--ok); }
   button { font:inherit; color:var(--fg-2); background:transparent; border:1px solid transparent; border-radius:6px; padding:5px 10px; cursor:pointer; }
   button:hover { color:var(--fg); background:var(--bg-3); }
-  button.solid { background:var(--fg); color:var(--bg); }
+  button.solid { background:var(--fg); color:var(--bg); font-weight:600; }
   button.solid:hover { background:var(--fg-2); }
   button.ghost { border-color:var(--line-2); }
   button:disabled { opacity:.45; cursor:default; }
@@ -61,11 +62,12 @@
   .q .h .val { color:var(--fg); font-weight:500; }
   .q .h .tier { margin-left:auto; font-size:11px; letter-spacing:.6px; text-transform:uppercase; }
   .q .h .tier.auto { color:var(--ok); } .q .h .tier.review { color:var(--warn); } .q .h .tier.human { color:var(--fg-3); } .q .h .tier.none { color:var(--fg-3); }
+  .ph { font-family:var(--sans); font-weight:600; }
   .row { display:grid; grid-template-columns:120px 1fr 52px; gap:12px; align-items:center; height:20px; font-family:var(--mono); font-size:12px; }
   .row .lab { color:var(--fg-2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .row .tr { height:6px; background:var(--bg-3); border-radius:2px; overflow:hidden; }
   .row .fl { height:100%; width:0; background:var(--line-2); border-radius:2px; transition:width .35s cubic-bezier(.2,.8,.2,1), background .2s; }
-  .row.top .fl { background:var(--accent); }
+  .row.top .fl { background:var(--sweep); }
   .row.top .lab { color:var(--fg); }
   .row .pc { text-align:right; color:var(--fg-3); font-variant-numeric:tabular-nums; }
   .row.top .pc { color:var(--fg); }
@@ -79,12 +81,12 @@
   .grid { display:grid; grid-template-columns:repeat(5,58px); gap:4px; }
   .cell { width:58px; height:58px; border-radius:4px; background:var(--bg-3); position:relative; display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:13px; color:var(--fg-2); transition:background .2s; }
   .cell.wall { background:var(--line-2); }
-  .cell.exit { box-shadow:inset 0 0 0 1px var(--ok); color:var(--ok); }
-  .cell.monster { box-shadow:inset 0 0 0 1px var(--bad); color:var(--bad); }
+  .cell.exit { box-shadow:inset 0 0 0 1.5px var(--ok); color:var(--ok); }
+  .cell.monster { box-shadow:inset 0 0 0 1.5px var(--bad); color:var(--bad); }
   .cell.trail { box-shadow:inset 0 0 0 1px var(--line-2); }
-  .cell.player { background:var(--fg); color:var(--bg); }
+  .cell.player { background:var(--fg); color:var(--bg); font-weight:600; }
   .cell.player.dead { background:var(--bad); } .cell.player.won { background:var(--ok); }
-  .cell .arrow { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:11px; color:var(--fg); opacity:0; transition:opacity .2s; }
+  .cell .arrow { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:11px; color:var(--accent); opacity:0; transition:opacity .2s; }
   .cell .arrow.show { opacity:1; }
   .gctl { display:flex; gap:4px; align-items:center; padding:12px 16px; border-bottom:1px solid var(--line); }
   .gctl .sp { flex:1; }
@@ -102,8 +104,7 @@
 <body>
 <div class="app">
   <div class="bar">
-    <img id="mark" src="/static/brier-mark.png" alt="">
-    <span class="name">Brier</span>
+    <img id="mark" src="/static/brier-lockup-dark.png" alt="Brier">
     <div class="modes"><button id="m-decide" class="on">Decide</button><button id="m-play">Gridworld</button></div>
     <div class="r"><span><span class="dot" id="dot"></span><span id="model">connecting</span></span><span id="cal"></span><span class="lat" id="lat">–</span><button id="theme" title="theme">◐</button></div>
   </div>
@@ -143,8 +144,8 @@ const ms = x => x >= 1000 ? (x / 1000).toFixed(2) + " s" : x.toFixed(0) + " ms";
 const now = () => new Date().toTimeString().slice(0, 8);
 
 // theme
-function setTheme(t) { document.documentElement.dataset.theme = t; $("mark").src = t === "light" ? "/static/brier-mark.png" : "/static/brier-mark-dark.png"; try { localStorage.setItem("brier-theme", t); } catch (e) {} }
-let theme = "light"; try { theme = localStorage.getItem("brier-theme") || "light"; } catch (e) {} setTheme(theme);
+function setTheme(t) { document.documentElement.dataset.theme = t; $("mark").src = t === "light" ? "/static/brier-lockup.png" : "/static/brier-lockup-dark.png"; try { localStorage.setItem("brier-theme", t); } catch (e) {} }
+let theme = "dark"; try { theme = localStorage.getItem("brier-theme") || "dark"; } catch (e) {} setTheme(theme);
 $("theme").onclick = () => setTheme(document.documentElement.dataset.theme === "light" ? "dark" : "light");
 
 // modes
