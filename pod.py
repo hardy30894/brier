@@ -185,7 +185,7 @@ def cmd_sync(a):
     ssh = ["ssh", "-o", "StrictHostKeyChecking=no", "-p", str(port), f"root@{ip}"]
     tar = subprocess.Popen(["tar", "-C", str(ROOT), "-czf", "-", "--exclude", ".git", "--exclude", "results",
                             "--exclude", ".env", "--exclude", ".pod.json", "--exclude", "__pycache__",
-                            "--exclude", ".watchdog.log", "."], stdout=subprocess.PIPE)
+                            "--exclude", ".watchdog.log", "--exclude", "adapters", "."], stdout=subprocess.PIPE)
     subprocess.run(ssh + [f"mkdir -p {REMOTE} && tar -C {REMOTE} -xzf -"], stdin=tar.stdout, check=True)
     tar.wait()
     print("synced")
