@@ -69,11 +69,11 @@ def generate(n, seed=0, size=5):
     return out
 
 
-from brier.questions import Choice, Noul  # noqa: E402
+from brier.questions import Choice, Claim  # noqa: E402
 
 QUESTIONS = [
     Choice("move", "the single step that gets the player closer to the exit along the shortest safe path", ("up", "down", "left", "right")),
-    Noul("danger", "a monster is in one of the four cells directly next to the player"),
+    Claim("danger", "a monster is in one of the four cells directly next to the player"),
 ]
 
 

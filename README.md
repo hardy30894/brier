@@ -120,13 +120,13 @@ per-bin reliability tables, are in `results/`.
 Ask questions about a state. Every question is answered in the same forward pass.
 
 ```python
-from brier import Scorer, Choice, Score, Noul, ask
+from brier import Scorer, Choice, Score, Claim, ask
 
 scorer = Scorer("Qwen/Qwen3-4B")
 answers = ask(scorer, "Webhooks are firing twice for every event since 3am. Need this today.", [
     Choice("category", "which team should handle this ticket", ("billing", "bug", "feature", "account", "other")),
     Score("priority", "how fast this must be handled", ("low", "medium", "high", "urgent")),
-    Noul("needs_human", "the customer is asking for a human agent rather than an automated reply"),
+    Claim("needs_human", "the customer is asking for a human agent rather than an automated reply"),
 ])
 
 answers["category"].value          # 'bug'
@@ -177,7 +177,7 @@ python3 pod.py down                      # terminate now; status should then sho
 - [x] **Milestone 1, zero training.** Single-pass scorer, JSON baseline, two tasks with
       ground truth, calibration measured. The number that decides whether training is
       worth it.
-- [x] **The question API and the calibration kit.** Choice, Score, Noul in one pass;
+- [x] **The question API and the calibration kit.** Choice, Score, Claim in one pass;
       per-question temperature with cross-fitting, held-out ECE, reliability diagrams,
       and a precision-targeted auto/review/human policy.
 - [ ] **Milestone 2, training for calibrated decisions.** LoRA on the backbone with
@@ -189,7 +189,7 @@ python3 pod.py down                      # terminate now; status should then sho
 
 ## Layout
 
-- `brier/questions.py` Choice, Score, Noul and `ask()`
+- `brier/questions.py` Choice, Score, Claim and `ask()`
 - `brier/scorer.py` the single-pass scorer core and the JSON-generation baseline
 - `brier/calibrate.py`, `brier/report.py` the calibration kit and its figures
 - `brier/metrics.py` accuracy, ECE, Brier, latency, temperature scaling

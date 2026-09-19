@@ -129,7 +129,7 @@ reference is [QUESTIONS.md](QUESTIONS.md):
 - `Score("priority", "how fast this must be handled", ("low", "medium", "high", "urgent"))`,
   which level on an ordered scale. The answer also carries the probability-weighted
   mean position, so "between medium and high" is expressible.
-- `Noul("needs_human", "the customer is asking for a human agent")`, is this statement
+- `Claim("needs_human", "the customer is asking for a human agent")`, is this statement
   true, answered as a probability.
 
 All three reduce to the same thing underneath: a **finite set of allowed answers**. The
@@ -528,7 +528,7 @@ forward pass, gather the candidate positions' log-probabilities, sum per candida
 `generate_json()` is the baseline: a normal generation call, a regex to find the
 object, a parse, and a per-field validation. The `debias` flag is section 3.7.
 
-**`brier/questions.py`.** `Choice`, `Score`, `Noul`; `ask()` renders the state and the
+**`brier/questions.py`.** `Choice`, `Score`, `Claim`; `ask()` renders the state and the
 questions into one prompt, calls `score_groups`, and softmaxes per question into
 `Answer` objects with value, probabilities, confidence, margin and, for scores, the
 expected level.

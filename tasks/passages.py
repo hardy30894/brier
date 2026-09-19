@@ -1,9 +1,9 @@
-"""RAG passage relevance: does this passage answer the question? A Noul."""
+"""RAG passage relevance: does this passage answer the question? A Claim."""
 import random
 
-from brier.questions import Noul
+from brier.questions import Claim
 
-QUESTIONS = [Noul("answers", "the passage contains the information needed to answer the question")]
+QUESTIONS = [Claim("answers", "the passage contains the information needed to answer the question")]
 
 FACTS = [
     ("What year was the company founded?", "The company was founded in {year} by two former engineers.", "The company's headquarters moved to a larger office in {year}."),

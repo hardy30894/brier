@@ -5,7 +5,7 @@ question in a call is answered in the same forward pass, and every answer carrie
 probability distribution. This page is the reference; the [architecture doc](ARCHITECTURE.md)
 explains the mechanism and the [primer](PRIMER.md) the mathematics.
 
-**Contents**: [State](#state) · [Choice](#choice) · [Score](#score) · [Noul](#noul) · [Asking](#asking) · [Answers](#answers) · [Confidence](#confidence) · [Independence](#independence) · [Writing good questions](#writing-good-questions) · [Limits](#limits)
+**Contents**: [State](#state) · [Choice](#choice) · [Score](#score) · [Claim](#claim) · [Asking](#asking) · [Answers](#answers) · [Confidence](#confidence) · [Independence](#independence) · [Writing good questions](#writing-good-questions) · [Limits](#limits)
 
 ## State
 
@@ -69,16 +69,16 @@ probability-weighted mean position (0 for the lowest level). A distribution spli
 between `annoyed` and `angry` has `expected ≈ 1.5`, which is the honest answer where the
 argmax has to pick one.
 
-## Noul
+## Claim
 
 *Is this statement true of the state?*
 
 ```python
-from brier import Noul
+from brier import Claim
 
-Noul("needs_human", "the customer is asking for a human agent rather than an automated reply")
-Noul("answers", "the passage contains the information needed to answer the question")
-Noul("refund", "a refund is requested", true="asks for money back", false="anything else")
+Claim("needs_human", "the customer is asking for a human agent rather than an automated reply")
+Claim("answers", "the passage contains the information needed to answer the question")
+Claim("refund", "a refund is requested", true="asks for money back", false="anything else")
 ```
 
 - `instructions`: the statement, phrased so that "yes" means it holds.
@@ -144,7 +144,7 @@ probabilities, where it is explicit.
 ## Writing good questions
 
 - **Atomic.** One judgement per question. "Is this a bug report" and "is it urgent" are
-  two Nouls, not one Choice over four combinations.
+  two Claims, not one Choice over four combinations.
 - **Literal.** The model answers what is written. If the boundary matters, put it in the
   instructions: "the customer explicitly asks for a person" rather than "needs a human."
 - **Bounded.** Choice options should be exhaustive; include an `other` or `none` when

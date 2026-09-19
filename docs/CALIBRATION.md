@@ -34,11 +34,11 @@ python3 -m brier calibrate --task tickets --model Qwen/Qwen3-0.6B --adapter adap
 On your own data, from Python:
 
 ```python
-from brier import Scorer, Choice, Noul
+from brier import Scorer, Choice, Claim
 from brier.calibrate import collect, calibrate, report, Calibration
 from brier.report import reliability_svg
 
-questions = [Choice("category", "...", (...)), Noul("needs_human", "...")]
+questions = [Choice("category", "...", (...)), Claim("needs_human", "...")]
 examples = [(state, {"category": "bug", "needs_human": True}), ...]   # a few hundred, labelled
 
 scorer = Scorer("Qwen/Qwen3-4B")
@@ -49,7 +49,7 @@ cal.save("cal_tickets.json")
 open("rel_tickets.svg", "w").write(reliability_svg(cal))
 ```
 
-Labels may be a single value, a boolean for a Noul, or a tuple of acceptable values
+Labels may be a single value, a boolean for a Claim, or a tuple of acceptable values
 when several answers are correct.
 
 ## Reading the report

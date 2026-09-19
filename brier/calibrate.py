@@ -9,7 +9,7 @@ from typing import Any
 import numpy as np
 
 from .metrics import ece, brier as brier_score
-from .questions import Question, Noul, ask, answer_from_scores
+from .questions import Question, Claim, ask, answer_from_scores
 from .scorer import softmax
 
 
@@ -78,7 +78,7 @@ class Calibration:
 
 def acceptable(q: Question, label: Any) -> set[int]:
     labels = q.labels
-    if isinstance(q, Noul):
+    if isinstance(q, Claim):
         if isinstance(label, bool):
             label = "yes" if label else "no"
     if isinstance(label, (tuple, list, set)):

@@ -52,10 +52,10 @@ the evaluation seed:
 
 | task | question(s) | trained on |
 |---|---|---|
-| tickets | category (Choice), priority (Score), needs_human (Noul) | yes |
-| gridworld | move (Choice, ties allowed), danger (Noul) | yes |
+| tickets | category (Choice), priority (Score), needs_human (Claim) | yes |
+| gridworld | move (Choice, ties allowed), danger (Claim) | yes |
 | toolcall | tool (Choice over a per-example subset of eight tools) | yes |
-| passages | answers (Noul) | yes |
+| passages | answers (Claim) | yes |
 | frustration | frustration (Score, four levels) | **no**, held out entirely |
 
 The generators know every label because they chose it, so there is no label noise to

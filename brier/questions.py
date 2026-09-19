@@ -1,4 +1,4 @@
-"""The question interface: Choice, Score and Noul, answered together in one pass."""
+"""The question interface: Choice, Score and Claim, answered together in one pass."""
 import json
 import math
 import time
@@ -49,7 +49,7 @@ class Score:
 
 
 @dataclass(frozen=True)
-class Noul:
+class Claim:
     """Is this statement true of the state? Answered as a probability."""
     id: str
     instructions: str
@@ -65,7 +65,7 @@ class Noul:
         return f'- "{self.id}" ({self.instructions}) yes or no{clar}'
 
 
-Question = Choice | Score | Noul
+Question = Choice | Score | Claim
 
 
 @dataclass
@@ -107,8 +107,8 @@ def answer_from_scores(q: Question, scores: list[float], T: float = 1.0) -> Answ
     probs = softmax(scores, T)
     dist = dict(zip(labels, probs))
     conf, margin = confidence_of(probs)
-    if isinstance(q, Noul):
-        return Answer(q.id, "noul", dist["yes"], dist, conf, margin, dict(zip(labels, scores)))
+    if isinstance(q, Claim):
+        return Answer(q.id, "claim", dist["yes"], dist, conf, margin, dict(zip(labels, scores)))
     best = max(dist, key=dist.get)
     if isinstance(q, Score):
         expected = sum(i * p for i, p in enumerate(probs))

@@ -128,12 +128,12 @@ def generate(n, seed=0):
     return out
 
 
-from brier.questions import Choice, Score, Noul  # noqa: E402
+from brier.questions import Choice, Score, Claim  # noqa: E402
 
 QUESTIONS = [
     Choice("category", "which team should handle this ticket", ("billing", "bug", "feature", "account", "other")),
     Score("priority", "how fast this must be handled", ("low", "medium", "high", "urgent")),
-    Noul("needs_human", "the customer is asking for a human agent rather than an automated reply"),
+    Claim("needs_human", "the customer is asking for a human agent rather than an automated reply"),
 ]
 
 
