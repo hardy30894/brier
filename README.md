@@ -17,20 +17,31 @@
 
 ## Abstract
 
-Most decisions software asks of a language model are not text: which team gets a
-ticket, which tool to call, whether a passage answers a question, whether two records
-are the same person. Today each is extracted by generating a JSON string one token at a
-time, parsing it, and trusting a confidence the model made up. Brier scores every
-allowed answer to every question in a single forward pass of an open-weight causal
-language model and returns one value per question with a probability. A value outside
-the allowed set cannot occur. The probabilities are then made honest and turned into a
-decision policy by a calibration kit that measures, on held-out data, the confidence at
-which the model may act automatically at a target precision. Training the backbone with
-a proper scoring rule over the answer set, on synthetic decisions with deliberate
-ambiguity and contrastive negatives, raises accuracy and lowers raw calibration error on
-tasks the model never trained on, including a real dataset; the same objective works
-from environment outcomes alone, with no labels. Five backbones from three model
-families run through the pipeline unchanged.
+A language model spends most of its working life not writing, but deciding. Which team
+gets this ticket. Which tool to call. Does this passage answer the question. Are these
+two records the same person. Each of those is a choice from a short list, and today each
+one is made by generating a JSON string a token at a time, parsing it, retrying when it
+comes back malformed, and trusting a confidence number the model invented on the spot.
+
+Brier makes the decision instead of writing it down. Every allowed answer to every
+question is scored in a single forward pass of an open-weight language model, and what
+comes back is a distribution per question. There is no token loop, so a three-question
+decision takes 111 ms where generation takes 1268 ms on the same weights. There is no
+string, so an answer outside the allowed set is not merely rare; it cannot occur.
+
+A probability is only useful if it is honest, and out of the box these are not: a 4B
+model reports 0.95 confidence while being right 59% of the time. So Brier ships the
+measurement. A calibration kit fits one temperature per question on held-out data,
+reports the calibration error, and derives the confidence at which the model may act
+on its own at a target precision, with the coverage that buys. Training closes the rest
+of the gap: LoRA on the backbone with a proper scoring rule over the answer set, on
+decisions built to contain real ambiguity and contrastive negatives. On tasks the model
+never trained on, including a real intent dataset, accuracy rises and raw calibration
+error falls to within a few hundredths of the temperature-scaled baseline, and on the
+4B it beats it. The same objective learns from environment outcomes alone, with no
+labels. Five backbones from three model families run through the pipeline unchanged; a
+0.6B model with a 25-minute adapter outperforms an untrained 4B at a quarter of the
+latency.
 
 <p align="center"><img src="docs/fig-results.svg" width="900" alt="three panels: latency per decision for one pass versus generation; raw calibration error on never-trained tasks before and after training; reliability of the 4B model on the frustration task before and after"></p>
 
