@@ -1,0 +1,32 @@
+Fetching 3 files:   0%|          | 0/3 [00:00<?, ?it/s]Fetching 3 files:  33%|███▎      | 1/3 [00:01<00:02,  1.43s/it]Fetching 3 files:  67%|██████▋   | 2/3 [00:10<00:05,  5.49s/it]Fetching 3 files: 100%|██████████| 3/3 [00:11<00:00,  3.74s/it]Fetching 3 files: 100%|██████████| 3/3 [00:11<00:00,  3.74s/it]
+Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 3/3 [00:00<00:00, 67.79it/s]
+3000 training examples from tickets,gridworld,toolcall,passages,matching
+`use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`.
+/usr/local/lib/python3.11/dist-packages/torch/utils/checkpoint.py:295: FutureWarning: `torch.cpu.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cpu', args...)` instead.
+  with torch.enable_grad(), device_autocast_ctx, torch.cpu.amp.autocast(**ctx.cpu_autocast_kwargs):  # type: ignore[attr-defined]
+step 50/1200 loss 0.7715 lr 9.58e-05 (68s)
+step 100/1200 loss 0.4255 lr 9.17e-05 (137s)
+step 150/1200 loss 0.3861 lr 8.75e-05 (209s)
+step 200/1200 loss 0.3250 lr 8.33e-05 (281s)
+step 250/1200 loss 0.3999 lr 7.92e-05 (351s)
+step 300/1200 loss 0.2788 lr 7.50e-05 (420s)
+step 350/1200 loss 0.2780 lr 7.08e-05 (489s)
+step 400/1200 loss 0.3199 lr 6.67e-05 (557s)
+step 450/1200 loss 0.2851 lr 6.25e-05 (624s)
+step 500/1200 loss 0.2352 lr 5.83e-05 (694s)
+step 550/1200 loss 0.1844 lr 5.42e-05 (768s)
+step 600/1200 loss 0.2095 lr 5.00e-05 (836s)
+step 650/1200 loss 0.1668 lr 4.58e-05 (905s)
+step 700/1200 loss 0.2379 lr 4.17e-05 (978s)
+step 750/1200 loss 0.2212 lr 3.75e-05 (1048s)
+step 800/1200 loss 0.2107 lr 3.33e-05 (1115s)
+step 850/1200 loss 0.2401 lr 2.92e-05 (1184s)
+step 900/1200 loss 0.2445 lr 2.50e-05 (1257s)
+step 950/1200 loss 0.1960 lr 2.08e-05 (1328s)
+step 1000/1200 loss 0.2227 lr 1.67e-05 (1399s)
+step 1050/1200 loss 0.1825 lr 1.25e-05 (1468s)
+step 1100/1200 loss 0.1970 lr 8.33e-06 (1537s)
+step 1150/1200 loss 0.2017 lr 5.00e-06 (1605s)
+step 1200/1200 loss 0.2150 lr 5.00e-06 (1671s)
+trainable params: 33,030,144 || all params: 4,055,498,240 || trainable%: 0.8145
+saved adapters/Qwen3-4B-brier-r16-s1200-u0.3-train-head

@@ -409,7 +409,11 @@ model should be unsure. But the per-candidate residual costs accuracy on the ord
 and many-way questions: priority 0.76 to 0.47, banking 0.89 to 0.83. At this size the
 residual term has more capacity to overfit the training tasks than the LoRA adapters
 do. The natural next configuration is the temperature term alone, or the residual with
-a much smaller learning rate. HEAD_4B_SENTENCE
+a much smaller learning rate. At 4B the picture reverses: the head costs nothing and helps where it
+matters. Passages goes from 0.88 to 0.93 with raw calibration error 0.09 to 0.01,
+priority 0.63 to 0.65, frustration 0.63 to 0.65, and banking stays at 0.96. With enough
+backbone capacity the residual term stops overfitting and the conditional temperature is
+pure gain. The head is worth keeping on models from about 4B up and switching off below.
 
 **Phi-4-mini trained is the strongest model in the project.** The best untrained
 backbone, put through the round-three recipe, reaches 0.96 on ticket category (the

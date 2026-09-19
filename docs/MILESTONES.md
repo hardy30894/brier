@@ -4,6 +4,8 @@ The project's plan, what each stage set out to prove, what it measured, and what
 changed. Dates are when the numbers were produced. Every result named here is in
 [TRAINING.md](TRAINING.md) or [CALIBRATION.md](CALIBRATION.md) with its table.
 
+<p align="center"><img src="fig-milestones.svg" width="900" alt="timeline of milestones and rounds, each with its question and the number that answered it"></p>
+
 **Contents**: [Milestone 1](#milestone-1-zero-training) · [Question API and kit](#question-api-and-calibration-kit) · [Milestone 2](#milestone-2-training-for-calibrated-decisions) · [Round three](#round-three) · [Milestone 3](#milestone-3-the-demo) · [Next](#next) · [Principles](#principles-that-held)
 
 ## Milestone 1, zero training
@@ -103,9 +105,9 @@ in parallel.
 
 **Found.** Contrastive data cured the negative transfer: 0.6B duplicates 0.64 to 0.97
 with nothing else changed. Phi-4-mini trained is the strongest model in the project
-(0.96 on ticket category, 0.99 on duplicates, 0.92 on real banking). The typed head at
-0.6B improves calibration on the unseen task and costs accuracy on ordinal and many-way
-questions; the 4B result decides its future.
+(0.96 on ticket category, 0.99 on duplicates, 0.92 on real banking). The typed head
+costs accuracy at 0.6B and is pure gain at 4B (passages 0.88 to 0.93 with raw ECE 0.09
+to 0.01), so it is kept from about 4B up.
 
 ## Milestone 3, the demo
 
