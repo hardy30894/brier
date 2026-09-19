@@ -97,6 +97,15 @@
   .gstat div:last-child { border-right:0; }
   .gstat b { display:block; font-size:18px; font-weight:500; color:var(--fg); }
   .gbars { padding:12px 16px; border-bottom:1px solid var(--line); }
+  .cq { padding:14px 16px; border-bottom:1px solid var(--line); display:grid; grid-template-columns:200px 1fr; gap:20px; align-items:start; }
+  .cq svg { display:block; }
+  .cq .nums { font-family:var(--mono); font-size:12px; color:var(--fg-2); }
+  .cq .nums .t { color:var(--fg); font-weight:500; margin-bottom:6px; }
+  .cq .nums table { border-collapse:collapse; margin-top:8px; }
+  .cq .nums td { padding:2px 14px 2px 0; }
+  .cq .nums td.k { color:var(--fg-3); }
+  .cq .policy { margin-top:10px; padding-top:8px; border-top:1px solid var(--line); }
+  .cq .policy .auto { color:var(--ok); } .cq .policy .review { color:var(--warn); } .cq .policy .human { color:var(--fg-3); }
   .hidden { display:none !important; }
   @media (max-width: 860px) { .ws { grid-template-columns:1fr; } .pane + .pane { border-left:0; border-top:1px solid var(--line); } .gw { grid-template-columns:1fr; } .board { border-right:0; border-bottom:1px solid var(--line); } }
 </style>
@@ -105,7 +114,7 @@
 <div class="app">
   <div class="bar">
     <img id="mark" src="/static/brier-lockup-dark.png" alt="Brier">
-    <div class="modes"><button id="m-decide" class="on">Decide</button><button id="m-play">Gridworld</button></div>
+    <div class="modes"><button id="m-decide" class="on">Decide</button><button id="m-cal">Calibrate</button><button id="m-play">Gridworld</button></div>
     <div class="r"><span><span class="dot" id="dot"></span><span id="model">connecting</span></span><span id="cal"></span><span class="lat" id="lat">–</span><button id="theme" title="theme">◐</button></div>
   </div>
 
@@ -123,6 +132,22 @@
       <div class="res" id="res"></div>
       <div class="ph">Log</div>
       <div class="log" id="log"></div>
+    </div>
+  </div>
+
+  <div class="ws hidden" id="calm">
+    <div class="pane">
+      <div class="ph">Questions<span class="sp"></span><span style="text-transform:none;letter-spacing:0;font-weight:500;color:var(--fg-3)">shared with Decide</span></div>
+      <div class="ed questions"><textarea id="cquestions" spellcheck="false"></textarea></div>
+      <div class="ph">Labelled examples<span class="sp"></span><div class="examples" id="cload"></div></div>
+      <div class="ed state"><textarea id="cexamples" spellcheck="false" placeholder='one JSON object per line: {"state": …, "labels": {"category": "bug", "needs_human": "no"}}'></textarea></div>
+      <div class="help"><b>n</b> <span id="cn">0</span> examples · targets <b>auto</b> <input id="tauto" value="0.95" style="width:52px;display:inline;padding:2px 6px;font:inherit;background:var(--bg-3);border:0;color:var(--fg);border-radius:4px"> <b>review</b> <input id="treview" value="0.80" style="width:52px;display:inline;padding:2px 6px;font:inherit;background:var(--bg-3);border:0;color:var(--fg);border-radius:4px"></div>
+      <div class="gctl"><button id="crun" class="solid">Calibrate</button><span id="cstatus" style="color:var(--fg-3);font-family:var(--mono);font-size:12px"></span></div>
+      <div class="err" id="cerr"></div>
+    </div>
+    <div class="pane">
+      <div class="ph">Reliability, held-out folds<span class="sp"></span><span style="text-transform:none;letter-spacing:0;font-family:var(--mono);color:var(--fg-3)"><span style="color:var(--warn)">●</span> raw &nbsp;<span style="color:var(--accent)">●</span> after temperature</span></div>
+      <div id="cres"></div>
     </div>
   </div>
 
@@ -149,8 +174,9 @@ let theme = "dark"; try { theme = localStorage.getItem("brier-theme") || "dark";
 $("theme").onclick = () => setTheme(document.documentElement.dataset.theme === "light" ? "dark" : "light");
 
 // modes
-$("m-decide").onclick = () => { $("decide").classList.remove("hidden"); $("play").classList.add("hidden"); $("m-decide").classList.add("on"); $("m-play").classList.remove("on"); };
-$("m-play").onclick = () => { $("play").classList.remove("hidden"); $("decide").classList.add("hidden"); $("m-play").classList.add("on"); $("m-decide").classList.remove("on"); if (!game) newGame(); };
+const MODES = { "m-decide": "decide", "m-cal": "calm", "m-play": "play" };
+function setMode(id) { for (const [b, w] of Object.entries(MODES)) { $(b).classList.toggle("on", b === id); $(w).classList.toggle("hidden", b !== id); } if (id === "m-play" && !game) newGame(); if (id === "m-cal") { $("cquestions").value = $("questions").value; } }
+Object.keys(MODES).forEach(id => $(id).onclick = () => setMode(id));
 
 // ---- questions DSL ----
 function parseQuestions(text) {
@@ -279,13 +305,49 @@ function playG() { stopG(); $("playg").textContent = "Pause"; gtimer = setInterv
 function stopG() { if (gtimer) clearInterval(gtimer); gtimer = null; $("playg").textContent = "Auto"; }
 $("newg").onclick = newGame; $("stepg").onclick = () => { stopG(); stepG(); }; $("playg").onclick = () => gtimer ? stopG() : playG(); $("speed").oninput = () => { if (gtimer) playG(); };
 
+// ---- calibrate ----
+function readExamples() {
+  const lines = $("cexamples").value.split("\n").map(l => l.trim()).filter(Boolean); const out = [], errs = [];
+  lines.forEach((l, i) => { try { const o = JSON.parse(l); if (!("state" in o) || !("labels" in o)) throw new Error("needs state and labels"); out.push(o); } catch (e) { errs.push(`line ${i + 1}: ${e.message}`); } });
+  return { examples: out, errs };
+}
+function countExamples() { $("cn").textContent = readExamples().examples.length; }
+$("cexamples").addEventListener("input", countExamples);
+[["tickets", 200], ["gridworld", 200], ["passages", 200], ["duplicates", 200]].forEach(([t, n]) => {
+  const b = document.createElement("button"); b.textContent = `${t} ×${n}`;
+  b.onclick = async () => { try { const r = await api(`/examples?task=${t}&n=${n}`); $("cquestions").value = r.questions; $("questions").value = r.questions; $("cexamples").value = r.examples.map(e => JSON.stringify(e)).join("\n"); countExamples(); [...$("cload").children].forEach(x => x.classList.toggle("on", x === b)); } catch (e) { $("cerr").textContent = e.message; } };
+  $("cload").appendChild(b);
+});
+function reliabilitySvg(q) {
+  const S = 150, ox = 30, oy = 8, pts = (rows, color) => rows.filter(r => r[2] >= 3).map(r => `<circle cx="${(ox + S * r[3]).toFixed(1)}" cy="${(oy + S - S * r[4]).toFixed(1)}" r="${(2.5 + 5 * Math.sqrt(r[2] / q.n)).toFixed(1)}" fill="${color}" fill-opacity=".85"/>`).join("");
+  return `<svg width="190" height="186" viewBox="0 0 190 186"><line x1="${ox}" y1="${oy + S}" x2="${ox + S}" y2="${oy + S}" stroke="var(--line-2)"/><line x1="${ox}" y1="${oy}" x2="${ox}" y2="${oy + S}" stroke="var(--line-2)"/><line x1="${ox}" y1="${oy + S}" x2="${ox + S}" y2="${oy}" stroke="var(--line-2)" stroke-dasharray="3 3"/>${pts(q.reliability_raw, "var(--warn)")}${pts(q.reliability_cal, "var(--accent)")}<text x="${ox + S / 2}" y="${oy + S + 16}" font-size="9" fill="var(--fg-3)" text-anchor="middle" font-family="var(--mono)">stated confidence</text><text transform="translate(9 ${oy + S / 2}) rotate(-90)" font-size="9" fill="var(--fg-3)" text-anchor="middle" font-family="var(--mono)">accuracy</text></svg>`;
+}
+function renderCal(res) {
+  const root = $("cres"); root.innerHTML = "";
+  for (const q of Object.values(res.questions)) {
+    const d = document.createElement("div"); d.className = "cq";
+    const pol = q.tiers.map(t => t.min_confidence == null ? `<div class="${t.name}">${t.name} ≥ ${t.target_precision.toFixed(2)}: unreachable on this data</div>` : `<div class="${t.name}">${t.name}: act when confidence ≥ ${t.min_confidence.toFixed(3)} → precision ${t.precision.toFixed(3)}, covers ${(t.coverage * 100).toFixed(0)}%</div>`).join("") + `<div class="human">human: everything below</div>`;
+    d.innerHTML = `${reliabilitySvg(q)}<div class="nums"><div class="t">${q.id} · n ${q.n} · T ${q.T.toFixed(2)}</div><table><tr><td class="k"></td><td>raw</td><td>after T</td></tr><tr><td class="k">accuracy</td><td>${q.accuracy.toFixed(3)}</td><td>${q.accuracy.toFixed(3)}</td></tr><tr><td class="k">ECE</td><td>${q.ece_raw.toFixed(3)}</td><td>${q.ece_cal.toFixed(3)}</td></tr><tr><td class="k">Brier</td><td>${q.brier_raw.toFixed(3)}</td><td>${q.brier_cal.toFixed(3)}</td></tr><tr><td class="k">mean conf</td><td>${q.mean_conf_raw.toFixed(3)}</td><td>${q.mean_conf_cal.toFixed(3)}</td></tr></table><div class="policy">${pol}</div></div>`;
+    root.appendChild(d);
+  }
+}
+$("crun").onclick = async () => {
+  const { questions, errs } = parseQuestions($("cquestions").value); const ex = readExamples();
+  $("cerr").textContent = [...errs, ...ex.errs.slice(0, 3)].join("\n"); if (!questions.length || !ex.examples.length) return;
+  $("questions").value = $("cquestions").value;
+  $("crun").disabled = true; $("cstatus").textContent = `running ${ex.examples.length} examples through the model…`; const t0 = performance.now();
+  try { const r = await api("/calibrate", { questions, examples: ex.examples, targets: [["auto", +$("tauto").value], ["review", +$("treview").value]] }); renderCal(r); $("cstatus").textContent = `done in ${((performance.now() - t0) / 1000).toFixed(1)} s · Decide now applies these temperatures and tiers`; $("cal").textContent = "calibrated"; decide(); }
+  catch (e) { $("cerr").textContent = e.message; $("cstatus").textContent = ""; } finally { $("crun").disabled = false; }
+};
+
 // ---- boot ----
 (async () => {
   drawGrid(); drawBars(null);
   try { const h = await api("/health"); $("dot").classList.add("on"); modelName = h.mock ? "mock" : h.models.questions; $("model").textContent = modelName; $("cal").textContent = h.calibrated ? "calibrated" : "no calibration file"; }
   catch (e) { $("model").textContent = "server not reachable"; return; }
   decide();
-  if (location.hash === "#gridworld") $("m-play").click();
+  if (location.hash === "#gridworld") setMode("m-play"); if (location.hash.startsWith("#calibrate")) setMode("m-cal");
+  if (location.hash === "#calibrate-demo") { $("cload").children[0].click(); setTimeout(() => $("crun").click(), 800); }
 })();
 </script>
 </body>

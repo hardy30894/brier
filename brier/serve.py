@@ -83,6 +83,50 @@ class Engine:
                 "margin": a.margin, "expected": a.expected, "tier": a.tier} for a in ans]
         return {"answers": out, "latency_ms": ans.latency_ms, "model": self.names["questions"]}
 
+    def examples(self, task, n):
+        """Built-in labelled examples in the page's question language, for the calibrate mode."""
+        sys.path.insert(0, str(ROOT))
+        from tasks import examples
+        exs = examples(task, n, seed=7, split="eval")
+        qs = exs[0]["questions"]
+        def render(q):
+            k = q.__class__.__name__.lower()
+            if k == "claim":
+                return f"{q.id}: claim {q.instructions}"
+            labels = q.labels
+            sep = " < " if k == "score" else " | "
+            return f"{q.id}: {k} {q.instructions} = {sep.join(labels)}"
+        def lab(v):
+            if isinstance(v, bool):
+                return "yes" if v else "no"
+            if isinstance(v, (tuple, list)):
+                return list(v)
+            return v
+        return {"questions": "\n".join(render(q) for q in qs), "examples": [{"state": e["state"], "labels": {k: lab(v) for k, v in e["labels"].items()}} for e in exs]}
+
+    def calibrate(self, items, examples, targets):
+        from .calibrate import collect, calibrate, Calibration
+        qs = parse_questions(items)
+        if self.mock:
+            import random as _r
+            out = {}
+            for q in qs:
+                out[q.id] = {"id": q.id, "T": 3.2, "n": len(examples), "accuracy": 0.7, "ece_raw": 0.25, "ece_cal": 0.05, "brier_raw": 0.27, "brier_cal": 0.19,
+                             "mean_conf_raw": 0.9, "mean_conf_cal": 0.7,
+                             "reliability_raw": [[i / 10, (i + 1) / 10, 20, (i + 0.5) / 10, max(0, (i + 0.5) / 10 - 0.3)] for i in range(4, 10)],
+                             "reliability_cal": [[i / 10, (i + 1) / 10, 20, (i + 0.5) / 10, (i + 0.5) / 10 - 0.03] for i in range(3, 10)],
+                             "tiers": [{"name": n, "target_precision": t, "min_confidence": 0.9 - 0.2 * k, "precision": t + 0.01, "coverage": 0.1 + 0.4 * k} for k, (n, t) in enumerate(targets)]}
+            time.sleep(1)
+            return {"questions": out, "model": self.names["questions"]}
+        pairs = [(e["state"], e["labels"]) for e in examples]
+        records = collect(self.q_scorer, qs, pairs, log_every=0)
+        cal = calibrate(qs, records, targets=tuple(targets), model=self.names["questions"])
+        if self.cal is None:
+            self.cal = Calibration({}, model=self.names["questions"])
+        self.cal.questions.update(cal.questions)
+        from dataclasses import asdict
+        return {"questions": {k: asdict(v) for k, v in cal.questions.items()}, "model": self.names["questions"]}
+
     def generate(self, state, items):
         """The baseline, for the race: the same weights writing the answers as JSON."""
         from .schema import Schema, Enum, Bool
@@ -165,6 +209,13 @@ def make_handler(engine, page):
                     self.wfile.write(body)
                 else:
                     self._json(404, {"error": "not found"})
+            elif self.path.startswith("/examples"):
+                from urllib.parse import urlparse, parse_qs
+                qsd = parse_qs(urlparse(self.path).query)
+                try:
+                    self._json(200, engine.examples(qsd.get("task", ["tickets"])[0], int(qsd.get("n", ["200"])[0])))
+                except Exception as e:
+                    self._json(400, {"error": f"{type(e).__name__}: {e}"})
             elif self.path == "/health":
                 self._json(200, {"ok": True, "mock": engine.mock, "models": engine.names, "calibrated": engine.cal is not None})
             else:
@@ -176,6 +227,9 @@ def make_handler(engine, page):
                 data = json.loads(self.rfile.read(n) or b"{}")
                 if self.path == "/ask":
                     self._json(200, engine.ask(data.get("state", ""), data.get("questions", [])))
+                elif self.path == "/calibrate":
+                    targets = [tuple(t) for t in data.get("targets", [["auto", 0.95], ["review", 0.80]])]
+                    self._json(200, engine.calibrate(data.get("questions", []), data.get("examples", []), targets))
                 elif self.path == "/generate":
                     self._json(200, engine.generate(data.get("state", ""), data.get("questions", [])))
                 elif self.path == "/grid/new":
