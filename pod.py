@@ -29,8 +29,34 @@ def load_key():
     runpod.api_key = key
 
 
+def _all():
+    if not STATE.exists():
+        return {}
+    d = json.loads(STATE.read_text())
+    return {"main": d} if "id" in d else d
+
+
+def _save_all(d):
+    if d:
+        STATE.write_text(json.dumps(d))
+    elif STATE.exists():
+        STATE.unlink()
+
+
+NAME = "main"
+
+
 def state():
-    return json.loads(STATE.read_text()) if STATE.exists() else None
+    return _all().get(NAME)
+
+
+def set_state(pod):
+    d = _all()
+    if pod is None:
+        d.pop(NAME, None)
+    else:
+        d[NAME] = pod
+    _save_all(d)
 
 
 def ssh_endpoint(pod):
@@ -43,15 +69,15 @@ def ssh_endpoint(pod):
 def cmd_up(a):
     ttl = min(a.ttl, MAX_TTL_MIN)
     if state():
-        sys.exit(f"pod {state()['id']} already recorded in .pod.json; run `pod.py down` first")
+        sys.exit(f"pod {state()['id']} already recorded under name {NAME!r}; run `pod.py down --name {NAME}` first")
     pubkey = Path.home().joinpath(".ssh/id_ed25519.pub").read_text().strip()
     pod = runpod.create_pod(
-        name=f"brier-{int(time.time())}", image_name=IMAGE, gpu_type_id=a.gpu, cloud_type=a.cloud,
+        name=f"brier-{NAME}-{int(time.time())}", image_name=IMAGE, gpu_type_id=a.gpu, cloud_type=a.cloud,
         container_disk_in_gb=40, volume_in_gb=0, ports="22/tcp", env={"PUBLIC_KEY": pubkey},
         min_memory_in_gb=16,
     )
     deadline = time.time() + ttl * 60
-    STATE.write_text(json.dumps({"id": pod["id"], "created": time.time(), "deadline": deadline, "gpu": a.gpu}))
+    set_state({"id": pod["id"], "created": time.time(), "deadline": deadline, "gpu": a.gpu})
     log = ROOT / ".watchdog.log"
     subprocess.Popen(
         [sys.executable, str(ROOT / "pod.py"), "watchdog", pod["id"], str(deadline)],
@@ -77,24 +103,43 @@ def cmd_watchdog(a):
         print(f"{time.ctime()} watchdog terminated {a.pod_id}")
     except Exception as e:
         print(f"{time.ctime()} watchdog: {a.pod_id} already gone ({e})")
-    if state() and state()["id"] == a.pod_id:
-        STATE.unlink()
+    d = _all()
+    for k, v in list(d.items()):
+        if v["id"] == a.pod_id:
+            d.pop(k)
+    _save_all(d)
+
+
+def cmd_extend(a):
+    s = state()
+    if not s:
+        sys.exit("no tracked pod")
+    total = (time.time() - s["created"]) / 60 + a.minutes
+    if total > MAX_TTL_MIN:
+        sys.exit(f"refusing: total lifetime would be {total:.0f} min > cap {MAX_TTL_MIN}")
+    subprocess.run(["pkill", "-f", f"pod.py watchdog {s['id']}"])
+    deadline = time.time() + a.minutes * 60
+    s["deadline"] = deadline
+    set_state(s)
+    subprocess.Popen([sys.executable, str(ROOT / "pod.py"), "watchdog", s["id"], str(deadline)],
+                     stdout=open(ROOT / ".watchdog.log", "a"), stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL, start_new_session=True)
+    print(f"{s['id']}: new hard deadline in {a.minutes} min (total lifetime {total:.0f} min), watchdog re-armed")
 
 
 def cmd_status(a):
     pods = runpod.get_pods()
-    mine = state()
+    mine = {v["id"]: k for k, v in _all().items()}
     if not pods:
         print("no pods on account")
     for p in pods:
         up = p.get("runtime") or {}
         mins = up.get("uptimeInSeconds", 0) / 60
-        tag = "(this repo)" if mine and mine["id"] == p["id"] else "(UNTRACKED)"
+        tag = f"(this repo: {mine[p['id']]})" if p["id"] in mine else "(UNTRACKED)"
         print(f"{p['id']} {p['name']} {p.get('desiredStatus')} gpu={p.get('machine', {}).get('gpuDisplayName')} "
               f"up={mins:.0f}min ${p.get('costPerHr', 0):.2f}/hr {tag}")
-    if mine:
-        left = (mine["deadline"] - time.time()) / 60
-        print(f"tracked pod {mine['id']}: {left:.0f} min until watchdog terminates it")
+    for k, v in _all().items():
+        left = (v["deadline"] - time.time()) / 60
+        print(f"tracked pod {k} {v['id']}: {left:.0f} min until watchdog terminates it")
 
 
 def cmd_down(a):
@@ -107,8 +152,10 @@ def cmd_down(a):
             print(f"terminated {pid}")
         except Exception as e:
             print(f"{pid}: {e}")
-    if STATE.exists():
-        STATE.unlink()
+    if a.all:
+        _save_all({})
+    else:
+        set_state(None)
     time.sleep(3)
     left = runpod.get_pods()
     print(f"pods remaining on account: {len(left)}")
@@ -169,6 +216,8 @@ if __name__ == "__main__":
     w.add_argument("pod_id")
     w.add_argument("deadline")
     sub.add_parser("status")
+    x = sub.add_parser("extend")
+    x.add_argument("minutes", type=int)
     d = sub.add_parser("down")
     d.add_argument("--all", action="store_true")
     sub.add_parser("ssh")
@@ -176,6 +225,8 @@ if __name__ == "__main__":
     e = sub.add_parser("exec")
     e.add_argument("command")
     sub.add_parser("pull")
+    ap.add_argument("--name", default="main", help="which tracked pod this command refers to")
     a = ap.parse_args()
+    NAME = a.name
     load_key()
     globals()[f"cmd_{a.cmd}"](a)

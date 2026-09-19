@@ -126,3 +126,16 @@ def generate(n, seed=0):
             "labels": {"category": cat, "priority": pri, "needs_human": "yes" if human else "no"},
         })
     return out
+
+
+from brier.questions import Choice, Score, Noul  # noqa: E402
+
+QUESTIONS = [
+    Choice("category", "which team should handle this ticket", ("billing", "bug", "feature", "account", "other")),
+    Score("priority", "how fast this must be handled", ("low", "medium", "high", "urgent")),
+    Noul("needs_human", "the customer is asking for a human agent rather than an automated reply"),
+]
+
+
+def generate_q(n, seed=0):
+    return [{"state": ex["context"], "questions": QUESTIONS, "labels": ex["labels"]} for ex in generate(n, seed)]

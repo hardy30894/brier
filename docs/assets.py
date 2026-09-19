@@ -28,27 +28,24 @@ def outline(text, face="AvenirNext-DemiBold", size=48, tracking=-0.5):
     return "".join(paths), x, lo * k, hi * k
 
 
-def logo(name, text_fill, ring, bars):
-    glyphs, width, ymin, ymax = outline("Brier")
-    mark = 64
-    cy = mark / 2 + 6
+def logo(name, text_fill, tile, accent):
+    glyphs, width, ymin, ymax = outline("brier", face="AvenirNext-DemiBold", size=46, tracking=-1.2)
+    mark = 60
+    cy = 8 + mark / 2
     baseline = cy + (ymax + ymin) / 2
-    bar_svg = "".join(
-        f'<rect x="{18 + i * 12}" y="{54 - h}" width="8" height="{h}" rx="2" fill="{c}"/>'
-        for i, (h, c) in enumerate(zip((12, 22, 32), bars))
-    )
-    total_w = mark + 22 + width + 8
+    total_w = 8 + mark + 18 + width + 6
     svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="{total_w:.0f}" height="76" viewBox="0 0 {total_w:.0f} 76">
-  <rect x="6" y="6" width="{mark}" height="{mark}" rx="15" fill="none" stroke="{ring}" stroke-width="3"/>
-  {bar_svg}
-  <path d="M18 56 L58 16" stroke="{text_fill}" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="0.1 5"/>
-  <g fill="{text_fill}" transform="translate({mark + 22} {baseline:.2f})">{glyphs}</g>
+  <rect x="8" y="8" width="{mark}" height="{mark}" rx="14" fill="{tile}"/>
+  <path d="M20 56 L56 20" stroke="{accent}" stroke-width="3" stroke-linecap="round"/>
+  <path d="M20 56 C 34 50, 40 44, 44 32" stroke="{accent}" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.45"/>
+  <circle cx="44" cy="32" r="5.5" fill="{accent}"/>
+  <g fill="{text_fill}" transform="translate({8 + mark + 18} {baseline:.2f})">{glyphs}</g>
 </svg>'''
     (HERE / f"{name}.svg").write_text(svg)
 
 
-logo("brier", "#1B1F24", "#3557C4", ("#9DB9F5", "#5B8DEF", "#3557C4"))
-logo("brier-dark", "#F5F7FA", "#7FA6F0", ("#9DB9F5", "#5B8DEF", "#7FA6F0"))
+logo("brier", "#1B1F24", "#3557C4", "#FFFFFF")
+logo("brier-dark", "#F5F7FA", "#5B8DEF", "#0D1117")
 
 FONT = "'Helvetica Neue', Helvetica, Arial, sans-serif"
 INK, MUTED, FAINT, BLUE, PALE, VIOLET, LINE = "#1B1F24", "#5B6B7C", "#8A94A0", "#3557C4", "#EEF3FF", "#8A2BE2", "#D8DEE6"
@@ -399,3 +396,173 @@ def fig_components():
 for fn in (fig_next_token, fig_scoring, fig_batch, fig_softmax, fig_reliability, fig_temperature, fig_training, fig_components):
     fn()
 print("figures written")
+
+
+# ---- primer figures ---------------------------------------------------------
+
+import math as _m
+
+
+def fig_distribution():
+    o = _svg(900, 300)
+    _t(o, 450, 34, "A probability distribution: one number per outcome, all non-negative, summing to one", 15, INK, "700", "middle")
+    outcomes = (("billing", 0.07), ("bug", 0.34), ("feature", 0.00), ("account", 0.52), ("other", 0.07))
+    for i, (c, p) in enumerate(outcomes):
+        x = 70 + i * 150
+        h = 160 * p
+        o.append(f'<rect x="{x}" y="{230 - h:.0f}" width="90" height="{h:.0f}" rx="4" fill="{BLUE}"/>')
+        _t(o, x + 45, 250, c, 12, INK, "400", "middle")
+        _t(o, x + 45, 222 - h, f"{p:.2f}", 12, INK, "700", "middle")
+    o.append(f'<line x1="60" y1="230" x2="820" y2="230" stroke="{MUTED}"/>')
+    _t(o, 830, 120, "Σ = 1.00", 13, INK, "700")
+    _t(o, 450, 282, "Reading it: 'account' is the most likely answer, but 'bug' has a third of the mass. The argmax hides that; the distribution shows it.", 11, FAINT, "400", "middle")
+    _write(o, "distribution")
+
+
+def fig_entropy():
+    o = _svg(900, 300)
+    _t(o, 450, 34, "Entropy: how spread out a distribution is. Confidence in Brier is the top probability; entropy is the fuller picture.", 14, INK, "700", "middle")
+    sets = (("certain", (0.97, 0.01, 0.01, 0.01)), ("leaning", (0.52, 0.34, 0.07, 0.07)), ("uniform", (0.25, 0.25, 0.25, 0.25)))
+    for j, (name, ps) in enumerate(sets):
+        x0 = 70 + j * 280
+        H = -sum(p * _m.log(p) for p in ps if p > 0)
+        _t(o, x0 + 90, 76, name, 13, INK, "700", "middle")
+        for i, p in enumerate(ps):
+            h = 120 * p
+            o.append(f'<rect x="{x0 + i * 46}" y="{210 - h:.0f}" width="36" height="{h:.0f}" rx="3" fill="{BLUE}"/>')
+        o.append(f'<line x1="{x0 - 6}" y1="210" x2="{x0 + 186}" y2="210" stroke="{MUTED}"/>')
+        _t(o, x0 + 90, 234, f"top p = {max(ps):.2f}   H = {H:.2f} nats", 11, MUTED, "400", "middle")
+    _t(o, 450, 274, "H = −Σ p·log p. Zero when one outcome has all the mass; log(4) = 1.39 when four outcomes are equally likely.", 11, FAINT, "400", "middle")
+    _write(o, "entropy")
+
+
+def fig_softmax_curve():
+    o = _svg(900, 320)
+    _t(o, 450, 34, "Softmax maps any real-valued scores to a distribution; temperature T controls how sharp", 15, INK, "700", "middle")
+    scores = (-0.62, -1.05, -3.10, -4.20)
+    labels = ("account", "bug", "billing", "other")
+    Ts = (0.5, 1, 2, 4, 8)
+    ox, oy, w, h = 150, 250, 460, 170
+    o.append(f'<line x1="{ox}" y1="{oy}" x2="{ox + w}" y2="{oy}" stroke="{MUTED}"/><line x1="{ox}" y1="{oy}" x2="{ox}" y2="{oy - h}" stroke="{MUTED}"/>')
+    _t(o, ox + w / 2, oy + 28, "temperature T", 11, MUTED, "400", "middle")
+    o.append(f'<text transform="translate({ox - 34} {oy - h / 2}) rotate(-90)" font-size="11" fill="{MUTED}" text-anchor="middle">probability</text>')
+    cols = (BLUE, "#5B8DEF", "#9DB9F5", VIOLET)
+    for li, (lab, col) in enumerate(zip(labels, cols)):
+        pts = []
+        for ti, T in enumerate(Ts):
+            z = [_m.exp((s - max(scores)) / T) for s in scores]
+            p = z[li] / sum(z)
+            pts.append((ox + 40 + ti * (w - 80) / (len(Ts) - 1), oy - h * p))
+        path = " ".join(f"{'M' if i == 0 else 'L'}{x:.1f} {y:.1f}" for i, (x, y) in enumerate(pts))
+        o.append(f'<path d="{path}" fill="none" stroke="{col}" stroke-width="2.2"/>')
+        for x, y in pts:
+            o.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="3" fill="{col}"/>')
+        _t(o, pts[0][0] - 10, pts[0][1] + 4, lab, 11, col, "700", "end")
+    for ti, T in enumerate(Ts):
+        _t(o, ox + 40 + ti * (w - 80) / (len(Ts) - 1), oy + 14, str(T), 10, FAINT, "400", "middle")
+    for v in (0, 0.5, 1):
+        _t(o, ox - 8, oy - h * v + 3, f"{v:.1f}", 10, FAINT, "400", "end")
+    _t(o, 700, 110, "p_i = exp(s_i / T) / Σ_j exp(s_j / T)", 12, INK, "700")
+    _t(o, 700, 134, "T → 0: all mass on the top score", 11, MUTED)
+    _t(o, 700, 150, "T = 1: the raw model distribution", 11, MUTED)
+    _t(o, 700, 166, "T → ∞: uniform", 11, MUTED)
+    _t(o, 700, 196, "The order of the curves never", 11, MUTED)
+    _t(o, 700, 211, "crosses: the argmax is the same", 11, MUTED)
+    _t(o, 700, 226, "at every T.", 11, MUTED)
+    _write(o, "softmax-curve")
+
+
+def fig_scoring_rules():
+    o = _svg(900, 320)
+    _t(o, 450, 34, "Proper scoring rules: the loss you pay for stating probability p when the outcome happens", 15, INK, "700", "middle")
+    ox, oy, w, h = 90, 250, 520, 170
+    o.append(f'<line x1="{ox}" y1="{oy}" x2="{ox + w}" y2="{oy}" stroke="{MUTED}"/><line x1="{ox}" y1="{oy}" x2="{ox}" y2="{oy - h}" stroke="{MUTED}"/>')
+    _t(o, ox + w / 2, oy + 28, "stated probability p of the outcome that occurred", 11, MUTED, "400", "middle")
+    o.append(f'<text transform="translate({ox - 34} {oy - h / 2}) rotate(-90)" font-size="11" fill="{MUTED}" text-anchor="middle">loss</text>')
+    for v in (0, 0.5, 1):
+        _t(o, ox + w * v, oy + 14, f"{v:.1f}", 10, FAINT, "400", "middle")
+    n = 60
+    brier_pts = [(ox + w * i / n, oy - h * ((1 - i / n) ** 2)) for i in range(n + 1)]
+    log_pts = [(ox + w * i / n, oy - h * min(1.0, -_m.log(max(i / n, 1e-3)) / 3)) for i in range(2, n + 1)]
+    o.append('<path d="' + " ".join(f"{'M' if i == 0 else 'L'}{x:.1f} {y:.1f}" for i, (x, y) in enumerate(brier_pts)) + f'" fill="none" stroke="{BLUE}" stroke-width="2.2"/>')
+    o.append('<path d="' + " ".join(f"{'M' if i == 0 else 'L'}{x:.1f} {y:.1f}" for i, (x, y) in enumerate(log_pts)) + f'" fill="none" stroke="{VIOLET}" stroke-width="2.2"/>')
+    _t(o, 700, 100, "Brier: (1 − p)²", 12, BLUE, "700")
+    _t(o, 700, 118, "bounded, gentle near p = 0", 11, MUTED)
+    _t(o, 700, 148, "log loss: −log p", 12, VIOLET, "700")
+    _t(o, 700, 166, "unbounded: p = 0 on the truth", 11, MUTED)
+    _t(o, 700, 181, "costs infinity, so it punishes", 11, MUTED)
+    _t(o, 700, 196, "confident misses hardest", 11, MUTED)
+    _t(o, 700, 226, "Both are minimised in expectation", 11, INK)
+    _t(o, 700, 241, "only by stating your true belief.", 11, INK)
+    _t(o, 700, 256, "That is what 'proper' means.", 11, INK)
+    _write(o, "scoring-rules")
+
+
+def fig_transformer():
+    o = _svg(900, 360)
+    _t(o, 450, 34, "Inside the backbone: what one forward pass does to a sequence of tokens", 15, INK, "700", "middle")
+    stages = (("tokens", "ids from the tokenizer", "#F6F8FB"), ("embeddings", "each id → a vector", "#F6F8FB"),
+              ("N × blocks", "attention, then MLP", PALE), ("hidden states", "one vector per position", "#F6F8FB"),
+              ("LM head", "vector → 150k logits", "#F6F8FB"), ("softmax", "next-token distribution", "#F6F8FB"))
+    for i, (name, what, fill) in enumerate(stages):
+        x = 30 + i * 143
+        o.append(f'<rect x="{x}" y="70" width="128" height="72" rx="10" fill="{fill}" stroke="{BLUE if fill == PALE else LINE}"/>')
+        _t(o, x + 64, 98, name, 11.5, INK, "700", "middle")
+        _t(o, x + 64, 118, what, 9.5, MUTED, "400", "middle")
+        if i < 5:
+            o.append(f'<line x1="{x + 129}" y1="106" x2="{x + 142}" y2="106" stroke="#5B6B7C" stroke-width="2" marker-end="url(#ar)"/>')
+    _t(o, 30, 182, "Inside one block", 12, INK, "700")
+    _t(o, 30, 202, "attention:  for each position, a weighted average of every earlier position's vector, weights = softmax(query · keyᵀ / √d).", 11, MUTED)
+    _t(o, 30, 218, "                   This is how 'account' at the end can look back at 'can't log in' at the start.", 11, MUTED)
+    _t(o, 30, 240, "MLP:  the same small two-layer network applied to every position independently.", 11, MUTED)
+    _t(o, 30, 262, "Each block adds its result to its input (a residual connection), so N blocks refine the same vectors N times.", 11, MUTED)
+    _t(o, 30, 292, "Where Brier reads:", 12, BLUE, "700")
+    _t(o, 30, 312, "today, the softmax output at the candidate positions (milestone 1 and 2). LoRA (milestone 2) adds small trainable matrices inside", 11, MUTED)
+    _t(o, 30, 328, "the attention and MLP weights, leaving the original weights frozen. A future typed head would read the hidden states directly.", 11, MUTED)
+    _write(o, "transformer")
+
+
+def fig_lora():
+    o = _svg(900, 260)
+    _t(o, 450, 34, "LoRA: fine-tune a big matrix by adding a small low-rank one next to it", 15, INK, "700", "middle")
+    o.append(f'<rect x="80" y="70" width="140" height="140" rx="8" fill="#F1F3F6" stroke="{LINE}"/>')
+    _t(o, 150, 145, "W", 22, MUTED, "700", "middle")
+    _t(o, 150, 230, "frozen, d × d (e.g. 2560 × 2560)", 10, MUTED, "400", "middle")
+    _t(o, 260, 145, "+", 26, INK, "700", "middle")
+    o.append(f'<rect x="310" y="70" width="140" height="22" rx="4" fill="{BLUE}"/>')
+    _t(o, 380, 86, "A  (r × d)", 11, "#FFFFFF", "700", "middle")
+    o.append(f'<rect x="310" y="100" width="22" height="110" rx="4" fill="{BLUE}"/>')
+    o.append(f'<text transform="translate(325 155) rotate(-90)" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle">B (d × r)</text>')
+    _t(o, 380, 160, "trained", 12, BLUE, "700", "middle")
+    _t(o, 380, 178, "r = 16", 11, MUTED, "400", "middle")
+    _t(o, 520, 110, "W' = W + B·A", 14, INK, "700")
+    _t(o, 520, 134, "B·A has the same shape as W but only 2·d·r numbers", 11, MUTED)
+    _t(o, 520, 150, "to learn instead of d²: for d = 2560, r = 16 that is", 11, MUTED)
+    _t(o, 520, 166, "82k parameters per matrix instead of 6.5M (1.3%).", 11, MUTED)
+    _t(o, 520, 194, "The base model is untouched and can be restored by", 11, MUTED)
+    _t(o, 520, 210, "deleting the adapter. Fits a 4B model on one 24GB GPU.", 11, MUTED)
+    _write(o, "lora")
+
+
+def fig_gradient():
+    o = _svg(900, 280)
+    _t(o, 450, 34, "Training is one loop: score, compare to the label, nudge the weights downhill, repeat", 15, INK, "700", "middle")
+    steps = (("example", "state, questions, labels"), ("forward pass", "scores per candidate"), ("softmax per question", "probabilities"),
+             ("loss", "−log p(correct answer)"), ("backward pass", "gradient w.r.t. LoRA weights"), ("optimizer step", "weights −= lr · gradient"))
+    for i, (name, what) in enumerate(steps):
+        x = 30 + i * 143
+        o.append(f'<rect x="{x}" y="70" width="128" height="72" rx="10" fill="{PALE if i == 3 else "#F6F8FB"}" stroke="{BLUE if i == 3 else LINE}"/>')
+        _t(o, x + 64, 98, name, 11.5, INK, "700", "middle")
+        _t(o, x + 64, 118, what, 9.5, MUTED, "400", "middle")
+        if i < 5:
+            o.append(f'<line x1="{x + 129}" y1="106" x2="{x + 142}" y2="106" stroke="#5B6B7C" stroke-width="2" marker-end="url(#ar)"/>')
+    o.append(f'<path d="M 830 150 C 830 190, 100 190, 94 150" fill="none" stroke="{MUTED}" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#ar)"/>')
+    _t(o, 450, 198, "1500 steps × 4 examples each, about fifteen minutes for a 0.6B model on a 4090", 11, FAINT, "400", "middle")
+    _t(o, 30, 236, "The loss is the log scoring rule from Part III of the architecture doc. Minimising it makes the correct answer likely AND makes the", 11, MUTED)
+    _t(o, 30, 252, "stated probabilities honest, because a proper scoring rule cannot be minimised by overclaiming.", 11, MUTED)
+    _write(o, "gradient")
+
+
+for fn in (fig_distribution, fig_entropy, fig_softmax_curve, fig_scoring_rules, fig_transformer, fig_lora, fig_gradient):
+    fn()
+print("primer figures written")

@@ -8,11 +8,6 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from .schema import Schema, Decision, FieldDecision
 
-PREFIX = (
-    "You are a decision function. Read the input and answer every field with exactly one of its allowed values.\n\n"
-    "Input:\n{context}\n\nFields:\n{fields}\n\nAnswers:\n"
-)
-
 
 def pick_device():
     if torch.backends.mps.is_available():
@@ -22,17 +17,28 @@ def pick_device():
     return "cpu"
 
 
+def softmax(scores: list[float], T: float = 1.0) -> list[float]:
+    m = max(scores)
+    z = [math.exp((s - m) / T) for s in scores]
+    t = sum(z)
+    return [v / t for v in z]
+
+
 class Scorer:
-    def __init__(self, model_id="Qwen/Qwen3-0.6B", device=None, style="json", debias=False):
+    """Scores candidate continuations with a causal LM. The core is score_groups: one batched
+    forward pass over every candidate of every group, returning summed log-probabilities."""
+
+    def __init__(self, model_id="Qwen/Qwen3-0.6B", device=None, debias=False, model=None, tok=None):
         self.device = device or pick_device()
-        self.style = style
         self.debias = debias
-        self._prior: dict[int, dict[str, list[float]]] = {}
-        self.tok = AutoTokenizer.from_pretrained(model_id)
+        self._prior: dict[str, list[list[float]]] = {}
+        self.tok = tok or AutoTokenizer.from_pretrained(model_id)
         if self.tok.pad_token_id is None:
             self.tok.pad_token = self.tok.eos_token
-        dtype = torch.bfloat16 if self.device != "cpu" else torch.float32
-        self.model = AutoModelForCausalLM.from_pretrained(model_id, dtype=dtype).to(self.device).eval()
+        if model is None:
+            dtype = torch.bfloat16 if self.device != "cpu" else torch.float32
+            model = AutoModelForCausalLM.from_pretrained(model_id, dtype=dtype).to(self.device)
+        self.model = model.eval()
         self._enc_cache: dict[str, list[int]] = {}
 
     def _enc(self, s: str) -> list[int]:
@@ -42,83 +48,77 @@ class Scorer:
             self._enc_cache[s] = ids
         return ids
 
-    def _prefix(self, context: str, schema: Schema) -> str:
-        if self.style == "raw":
-            return PREFIX.format(context=context, fields=schema.render())
-        if self.style == "json":
-            user = (
-                "Read the input and answer every field with exactly one of its allowed values. "
-                "Reply with a single JSON object and nothing else.\n\n"
-                f"Input:\n{context}\n\nFields:\n{schema.render()}"
-            )
-        else:
-            user = (
-                "Read the input and answer every field with exactly one of its allowed values. "
-                "Write one line per field in the form `name: value` and nothing else.\n\n"
-                f"Input:\n{context}\n\nFields:\n{schema.render()}"
-            )
+    def chat_prefix(self, user: str) -> str:
         msgs = [{"role": "user", "content": user}]
         return self.tok.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True, enable_thinking=False)
 
-    def _prior_logits(self, schema: Schema) -> dict[str, list[float]]:
-        key = id(schema)
-        if key not in self._prior:
-            saved, self.debias = self.debias, False
-            runs = [self._score(c, schema) for c in ("N/A", "", "[no input]")]
-            self.debias = saved
-            self._prior[key] = {
-                f.name: [sum(r[f.name][i] for r in runs) / len(runs) for i in range(len(f.choices))]
-                for f in schema.fields
-            }
-        return self._prior[key]
-
-    @torch.no_grad()
-    def _score(self, context: str, schema: Schema) -> dict[str, list[float]]:
-        prefix_ids = self._enc(self._prefix(context, schema))
-        seqs, spans, owner = [], [], []
-        for fi, f in enumerate(schema.fields):
-            head = prefix_ids + self._enc(f'{{"{f.name}": "' if self.style == "json" else f"{f.name}:")
-            for c in f.choices:
-                cand = self._enc(c if self.style == "json" else " " + c)
+    def build_rows(self, prefix: str, groups: list[tuple[str, list[str]]]):
+        prefix_ids = self._enc(prefix)
+        seqs, spans = [], []
+        for header, cands in groups:
+            head = prefix_ids + self._enc(header)
+            for c in cands:
+                cand = self._enc(c)
                 seqs.append(head + cand)
                 spans.append((len(head), len(head) + len(cand)))
-                owner.append(fi)
+        return seqs, spans
+
+    def batch(self, seqs):
         L = max(len(s) for s in seqs)
         pad = self.tok.pad_token_id
         input_ids = torch.tensor([s + [pad] * (L - len(s)) for s in seqs], device=self.device)
         attn = torch.tensor([[1] * len(s) + [0] * (L - len(s)) for s in seqs], device=self.device)
-        logits = self.model(input_ids=input_ids, attention_mask=attn).logits
+        return input_ids, attn
+
+    def candidate_logprobs(self, logits, input_ids, spans):
         rows = torch.cat([torch.full((b - a,), i, device=self.device) for i, (a, b) in enumerate(spans)])
         cols = torch.cat([torch.arange(a - 1, b - 1, device=self.device) for a, b in spans])
         tgt = torch.cat([input_ids[i, a:b] for i, (a, b) in enumerate(spans)])
         lp = torch.log_softmax(logits[rows, cols].float(), dim=-1).gather(1, tgt[:, None]).squeeze(1)
-        lens = torch.tensor([b - a for a, b in spans], device=self.device)
-        scores = torch.split(lp, lens.tolist())
-        scores = [s.sum().item() for s in scores]
-        out, k = {}, 0
-        for f in schema.fields:
-            out[f.name] = scores[k : k + len(f.choices)]
-            k += len(f.choices)
+        return torch.stack([s.sum() for s in torch.split(lp, [b - a for a, b in spans])])
+
+    @torch.no_grad()
+    def score_groups(self, prefix: str, groups: list[tuple[str, list[str]]]) -> list[list[float]]:
+        seqs, spans = self.build_rows(prefix, groups)
+        input_ids, attn = self.batch(seqs)
+        logits = self.model(input_ids=input_ids, attention_mask=attn).logits
+        flat = self.candidate_logprobs(logits, input_ids, spans).tolist()
+        out, k = [], 0
+        for _, cands in groups:
+            out.append(flat[k : k + len(cands)])
+            k += len(cands)
         return out
+
+    # ---- schema interface -------------------------------------------------
+
+    def schema_prompt(self, context: str, schema: Schema) -> str:
+        return self.chat_prefix(
+            "Read the input and answer every field with exactly one of its allowed values. "
+            "Reply with a single JSON object and nothing else.\n\n"
+            f"Input:\n{context}\n\nFields:\n{schema.render()}"
+        )
+
+    def _schema_groups(self, schema: Schema):
+        return [(f'{{"{f.name}": "', list(f.choices)) for f in schema.fields]
+
+    def _prior_scores(self, schema: Schema) -> list[list[float]]:
+        key = "|".join(f"{f.name}:{','.join(f.choices)}" for f in schema.fields)
+        if key not in self._prior:
+            runs = [self.score_groups(self.schema_prompt(c, schema), self._schema_groups(schema)) for c in ("N/A", "", "[no input]")]
+            self._prior[key] = [[sum(r[g][i] for r in runs) / len(runs) for i in range(len(f.choices))] for g, f in enumerate(schema.fields)]
+        return self._prior[key]
 
     def decide(self, context: str, schema: Schema) -> Decision:
         t0 = time.perf_counter()
-        raw_all = self._score(context, schema)
-        prior = self._prior_logits(schema) if self.debias else None
+        raw = self.score_groups(self.schema_prompt(context, schema), self._schema_groups(schema))
+        prior = self._prior_scores(schema) if self.debias else None
         fields = {}
-        for f in schema.fields:
-            raw = raw_all[f.name]
-            if prior:
-                raw = [r - p for r, p in zip(raw, prior[f.name])]
-            m = max(raw)
-            z = [math.exp(r - m) for r in raw]
-            s = sum(z)
-            dist = {c: p / s for c, p in zip(f.choices, z)}
+        for g, f in enumerate(schema.fields):
+            scores = raw[g] if prior is None else [r - p for r, p in zip(raw[g], prior[g])]
+            probs = softmax(scores)
+            dist = dict(zip(f.choices, probs))
             best = max(dist, key=dist.get)
-            fields[f.name] = FieldDecision(
-                value=f.decode(best), choice=best, prob=dist[best], dist=dist,
-                logits={c: r for c, r in zip(f.choices, raw)},
-            )
+            fields[f.name] = FieldDecision(value=f.decode(best), choice=best, prob=dist[best], dist=dist, logits=dict(zip(f.choices, scores)))
         return Decision(fields=fields, latency_ms=(time.perf_counter() - t0) * 1000)
 
     @torch.no_grad()
@@ -130,14 +130,12 @@ class Scorer:
             "giving the probability that all your answers are correct.\n\n"
             f"Input:\n{context}\n\nFields:\n{schema.render()}\n\nExample shape: {schema.json_example()}"
         )
-        msgs = [{"role": "user", "content": prompt}]
-        text = self.tok.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True, enable_thinking=False)
+        text = self.chat_prefix(prompt)
         ids = self.tok(text, return_tensors="pt").to(self.device)
         out = self.model.generate(**ids, max_new_tokens=max_new_tokens, do_sample=False, pad_token_id=self.tok.pad_token_id)
         reply = self.tok.decode(out[0, ids.input_ids.shape[1]:], skip_special_tokens=True)
         lat = (time.perf_counter() - t0) * 1000
-        fields, type_error = {}, False
-        obj = None
+        obj, type_error = None, False
         m = re.search(r"\{.*\}", reply, re.S)
         if m:
             try:
@@ -145,14 +143,12 @@ class Scorer:
             except json.JSONDecodeError:
                 obj = None
         if not isinstance(obj, dict):
-            type_error = True
-            obj = {}
-        conf = obj.get("confidence", 1.0)
+            type_error, obj = True, {}
         try:
-            conf = float(conf)
-            conf = min(max(conf, 0.0), 1.0)
+            conf = min(max(float(obj.get("confidence", 1.0)), 0.0), 1.0)
         except (TypeError, ValueError):
             conf = 1.0
+        fields = {}
         for f in schema.fields:
             choice = f.parse(obj.get(f.name)) if f.name in obj else None
             if choice is None:

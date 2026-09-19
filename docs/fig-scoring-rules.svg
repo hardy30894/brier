@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="320" viewBox="0 0 900 320" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
+<defs><marker id="ar" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5B6B7C"/></marker></defs>
+<rect width="900" height="320" rx="14" fill="#FFFFFF" stroke="#D8DEE6"/>
+<text x="450" y="34" font-size="15" font-weight="700" fill="#1B1F24" text-anchor="middle">Proper scoring rules: the loss you pay for stating probability p when the outcome happens</text>
+<line x1="90" y1="250" x2="610" y2="250" stroke="#5B6B7C"/><line x1="90" y1="250" x2="90" y2="80" stroke="#5B6B7C"/>
+<text x="350.0" y="278" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="middle">stated probability p of the outcome that occurred</text>
+<text transform="translate(56 165.0) rotate(-90)" font-size="11" fill="#5B6B7C" text-anchor="middle">loss</text>
+<text x="90" y="264" font-size="10" font-weight="400" fill="#8A94A0" text-anchor="middle">0.0</text>
+<text x="350.0" y="264" font-size="10" font-weight="400" fill="#8A94A0" text-anchor="middle">0.5</text>
+<text x="610" y="264" font-size="10" font-weight="400" fill="#8A94A0" text-anchor="middle">1.0</text>
+<path d="M90.0 80.0 L98.7 85.6 L107.3 91.1 L116.0 96.6 L124.7 101.9 L133.3 107.2 L142.0 112.3 L150.7 117.4 L159.3 122.3 L168.0 127.2 L176.7 131.9 L185.3 136.6 L194.0 141.2 L202.7 145.7 L211.3 150.1 L220.0 154.4 L228.7 158.6 L237.3 162.7 L246.0 166.7 L254.7 170.6 L263.3 174.4 L272.0 178.2 L280.7 181.8 L289.3 185.4 L298.0 188.8 L306.7 192.2 L315.3 195.4 L324.0 198.6 L332.7 201.6 L341.3 204.6 L350.0 207.5 L358.7 210.3 L367.3 213.0 L376.0 215.6 L384.7 218.1 L393.3 220.5 L402.0 222.8 L410.7 225.0 L419.3 227.1 L428.0 229.2 L436.7 231.1 L445.3 233.0 L454.0 234.7 L462.7 236.4 L471.3 237.9 L480.0 239.4 L488.7 240.7 L497.3 242.0 L506.0 243.2 L514.7 244.3 L523.3 245.3 L532.0 246.2 L540.7 247.0 L549.3 247.7 L558.0 248.3 L566.7 248.8 L575.3 249.2 L584.0 249.6 L592.7 249.8 L601.3 250.0 L610.0 250.0" fill="none" stroke="#3557C4" stroke-width="2.2"/>
+<path d="M107.3 80.0 L116.0 80.2 L124.7 96.5 L133.3 109.2 L142.0 119.5 L150.7 128.3 L159.3 135.8 L168.0 142.5 L176.7 148.5 L185.3 153.9 L194.0 158.8 L202.7 163.3 L211.3 167.5 L220.0 171.4 L228.7 175.1 L237.3 178.5 L246.0 181.8 L254.7 184.8 L263.3 187.7 L272.0 190.5 L280.7 193.1 L289.3 195.7 L298.0 198.1 L306.7 200.4 L315.3 202.6 L324.0 204.8 L332.7 206.8 L341.3 208.8 L350.0 210.7 L358.7 212.6 L367.3 214.4 L376.0 216.1 L384.7 217.8 L393.3 219.5 L402.0 221.1 L410.7 222.6 L419.3 224.1 L428.0 225.6 L436.7 227.0 L445.3 228.4 L454.0 229.8 L462.7 231.1 L471.3 232.4 L480.0 233.7 L488.7 234.9 L497.3 236.2 L506.0 237.4 L514.7 238.5 L523.3 239.7 L532.0 240.8 L540.7 241.9 L549.3 243.0 L558.0 244.0 L566.7 245.1 L575.3 246.1 L584.0 247.1 L592.7 248.1 L601.3 249.0 L610.0 250.0" fill="none" stroke="#8A2BE2" stroke-width="2.2"/>
+<text x="700" y="100" font-size="12" font-weight="700" fill="#3557C4" text-anchor="start">Brier: (1 − p)²</text>
+<text x="700" y="118" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="start">bounded, gentle near p = 0</text>
+<text x="700" y="148" font-size="12" font-weight="700" fill="#8A2BE2" text-anchor="start">log loss: −log p</text>
+<text x="700" y="166" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="start">unbounded: p = 0 on the truth</text>
+<text x="700" y="181" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="start">costs infinity, so it punishes</text>
+<text x="700" y="196" font-size="11" font-weight="400" fill="#5B6B7C" text-anchor="start">confident misses hardest</text>
+<text x="700" y="226" font-size="11" font-weight="400" fill="#1B1F24" text-anchor="start">Both are minimised in expectation</text>
+<text x="700" y="241" font-size="11" font-weight="400" fill="#1B1F24" text-anchor="start">only by stating your true belief.</text>
+<text x="700" y="256" font-size="11" font-weight="400" fill="#1B1F24" text-anchor="start">That is what 'proper' means.</text>
+</svg>

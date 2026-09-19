@@ -79,10 +79,9 @@ if __name__ == "__main__":
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--methods", default="scored,json")
     ap.add_argument("--model", default="Qwen/Qwen3-0.6B")
-    ap.add_argument("--style", default="json")
     ap.add_argument("--debias", action="store_true")
     a = ap.parse_args()
-    scorer = Scorer(a.model, style=a.style, debias=a.debias)
+    scorer = Scorer(a.model, debias=a.debias)
     print(f"device={scorer.device} model={a.model}", file=sys.stderr)
     out = {}
     for t in a.tasks.split(","):

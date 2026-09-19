@@ -67,3 +67,15 @@ def generate(n, seed=0, size=5):
         )
         out.append({"context": context, "labels": {"move": tuple(best), "danger": "yes" if danger else "no"}})
     return out
+
+
+from brier.questions import Choice, Noul  # noqa: E402
+
+QUESTIONS = [
+    Choice("move", "the single step that gets the player closer to the exit along the shortest safe path", ("up", "down", "left", "right")),
+    Noul("danger", "a monster is in one of the four cells directly next to the player"),
+]
+
+
+def generate_q(n, seed=0, size=5):
+    return [{"state": ex["context"], "questions": QUESTIONS, "labels": ex["labels"]} for ex in generate(n, seed, size)]

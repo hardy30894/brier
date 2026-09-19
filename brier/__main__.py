@@ -1,0 +1,66 @@
+"""python3 -m brier calibrate --task tickets --model Qwen/Qwen3-4B --n 300 [--adapter path]"""
+import argparse
+import os
+import sys
+import time
+
+from . import Scorer
+from .calibrate import collect, calibrate, report, Calibration
+from .report import reliability_svg
+
+
+def load_scorer(model_id, adapter=None):
+    if not adapter:
+        return Scorer(model_id)
+    import torch
+    from peft import PeftModel
+    from transformers import AutoModelForCausalLM, AutoTokenizer
+    tok = AutoTokenizer.from_pretrained(model_id)
+    base = AutoModelForCausalLM.from_pretrained(model_id, dtype=torch.bfloat16)
+    model = PeftModel.from_pretrained(base, adapter)
+    sc = Scorer(model_id, model=model, tok=tok)
+    sc.model = sc.model.to(sc.device)
+    return sc
+
+
+def cmd_calibrate(a):
+    from tasks import examples
+    scorer = load_scorer(a.model, a.adapter)
+    tag = (a.adapter.rstrip("/").split("/")[-1] if a.adapter else a.model.split("/")[-1])
+    os.makedirs(a.out, exist_ok=True)
+    for task in a.task.split(","):
+        exs = examples(task, a.n, seed=a.seed)
+        questions = exs[0]["questions"]
+        per_example = [(e["state"], e["labels"]) for e in exs]
+        if task == "toolcall":
+            records = {"tool": []}
+            t0 = time.perf_counter()
+            for i, e in enumerate(exs):
+                r = collect(scorer, e["questions"], [(e["state"], e["labels"])], log_every=0)
+                records["tool"] += r["tool"]
+                if (i + 1) % 50 == 0:
+                    print(f"  collected {i + 1}/{len(exs)} ({time.perf_counter() - t0:.0f}s)", file=sys.stderr)
+            questions = [e["questions"][0] for e in exs[:1]]
+            cal = calibrate(questions, records, model=tag)
+        else:
+            records = collect(scorer, questions, per_example)
+            cal = calibrate(questions, records, model=tag)
+        print(f"\n== {task} ==")
+        print(report(cal))
+        cal.save(f"{a.out}/cal_{task}_{tag}.json")
+        with open(f"{a.out}/rel_{task}_{tag}.svg", "w") as f:
+            f.write(reliability_svg(cal, f"{task} · {tag}"))
+
+
+if __name__ == "__main__":
+    ap = argparse.ArgumentParser()
+    sub = ap.add_subparsers(dest="cmd", required=True)
+    c = sub.add_parser("calibrate")
+    c.add_argument("--task", default="tickets,gridworld,toolcall,passages,frustration")
+    c.add_argument("--model", default="Qwen/Qwen3-4B")
+    c.add_argument("--adapter", default=None)
+    c.add_argument("--n", type=int, default=300)
+    c.add_argument("--seed", type=int, default=7)
+    c.add_argument("--out", default="results")
+    a = ap.parse_args()
+    cmd_calibrate(a)
