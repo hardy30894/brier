@@ -1,0 +1,34 @@
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00, 68.36it/s]
+Repo card metadata block was not found. Setting CardData to empty.
+9000 training examples from tickets,gridworld,toolcall,passages,matching,ag_news,dbpedia,sst5,yelp,snli,qqp,civil,msmarco,massive,banking
+`use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`.
+/usr/local/lib/python3.11/dist-packages/torch/utils/checkpoint.py:295: FutureWarning: `torch.cpu.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cpu', args...)` instead.
+  with torch.enable_grad(), device_autocast_ctx, torch.cpu.amp.autocast(**ctx.cpu_autocast_kwargs):  # type: ignore[attr-defined]
+step 50/2000 loss 0.7923 lr 9.75e-05 (64s)
+step 100/2000 loss 0.7397 lr 9.50e-05 (124s)
+step 150/2000 loss 0.5551 lr 9.25e-05 (186s)
+step 200/2000 loss 0.6310 lr 9.00e-05 (244s)
+step 250/2000 loss 0.5060 lr 8.75e-05 (301s)
+step 300/2000 loss 0.4400 lr 8.50e-05 (359s)
+step 350/2000 loss 0.4659 lr 8.25e-05 (420s)
+step 400/2000 loss 0.5035 lr 8.00e-05 (477s)
+step 450/2000 loss 0.4960 lr 7.75e-05 (536s)
+step 500/2000 loss 0.4982 lr 7.50e-05 (592s)
+step 550/2000 loss 0.5176 lr 7.25e-05 (652s)
+step 600/2000 loss 0.5878 lr 7.00e-05 (711s)
+step 650/2000 loss 0.4981 lr 6.75e-05 (763s)
+step 700/2000 loss 0.4769 lr 6.50e-05 (820s)
+step 750/2000 loss 0.3705 lr 6.25e-05 (875s)
+step 800/2000 loss 0.4164 lr 6.00e-05 (940s)
+step 850/2000 loss 0.3300 lr 5.75e-05 (1002s)
+step 900/2000 loss 0.4540 lr 5.50e-05 (1064s)
+step 950/2000 loss 0.4375 lr 5.25e-05 (1118s)
+step 1000/2000 loss 0.3631 lr 5.00e-05 (1173s)
+step 1050/2000 loss 0.5677 lr 4.75e-05 (1236s)
+step 1100/2000 loss 0.4231 lr 4.50e-05 (1295s)
+step 1150/2000 loss 0.3725 lr 4.25e-05 (1357s)
+step 1200/2000 loss 0.4629 lr 4.00e-05 (1421s)
+step 1250/2000 loss 0.2979 lr 3.75e-05 (1484s)
+step 1300/2000 loss 0.4236 lr 3.50e-05 (1551s)
+step 1350/2000 loss 0.2966 lr 3.25e-05 (1611s)
+step 1400/2000 loss 0.4935 lr 3.00e-05 (1667s)

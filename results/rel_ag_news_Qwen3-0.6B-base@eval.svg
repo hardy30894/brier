@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="340" viewBox="0 0 320 340" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
+<rect width="320" height="340" rx="14" fill="#FFFFFF" stroke="#D8DEE6"/>
+<text x="160.0" y="28" text-anchor="middle" font-size="14" font-weight="700" fill="#1B1F24">ag_news · Qwen3-0.6B-base@eval</text>
+<text x="300" y="28" text-anchor="end" font-size="11" fill="#8A94A0"><tspan fill="#8A2BE2">●</tspan> raw   <tspan fill="#3557C4">●</tspan> calibrated</text>
+<line x1="60" y1="230" x2="230" y2="230" stroke="#5B6B7C"/><line x1="60" y1="230" x2="60" y2="60" stroke="#5B6B7C"/>
+<line x1="60" y1="230" x2="230" y2="60" stroke="#8A94A0" stroke-dasharray="4 4"/>
+<text x="60" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.0</text>
+<text x="54" y="233" font-size="9" fill="#8A94A0" text-anchor="end">0.0</text>
+<text x="145.0" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.5</text>
+<text x="54" y="148.0" font-size="9" fill="#8A94A0" text-anchor="end">0.5</text>
+<text x="230" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">1.0</text>
+<text x="54" y="63" font-size="9" fill="#8A94A0" text-anchor="end">1.0</text>
+<path d="M144.0 145.0 L153.5 230.0 L173.0 116.7 L187.1 168.2 L205.1 145.0 L228.7 96.2" fill="none" stroke="#8A2BE2" stroke-width="2"/><circle cx="144.0" cy="145.0" r="3.5" fill="#8A2BE2"/><circle cx="153.5" cy="230.0" r="3.5" fill="#8A2BE2"/><circle cx="173.0" cy="116.7" r="3.5" fill="#8A2BE2"/><circle cx="187.1" cy="168.2" r="3.5" fill="#8A2BE2"/><circle cx="205.1" cy="145.0" r="3.5" fill="#8A2BE2"/><circle cx="228.7" cy="96.2" r="3.5" fill="#8A2BE2"/>
+<path d="M126.5 145.0 L138.0 184.7 L154.4 142.3 L170.7 129.7 L188.7 100.2 L206.1 81.4 L216.9 75.1" fill="none" stroke="#3557C4" stroke-width="2"/><circle cx="126.5" cy="145.0" r="3.5" fill="#3557C4"/><circle cx="138.0" cy="184.7" r="3.5" fill="#3557C4"/><circle cx="154.4" cy="142.3" r="3.5" fill="#3557C4"/><circle cx="170.7" cy="129.7" r="3.5" fill="#3557C4"/><circle cx="188.7" cy="100.2" r="3.5" fill="#3557C4"/><circle cx="206.1" cy="81.4" r="3.5" fill="#3557C4"/><circle cx="216.9" cy="75.1" r="3.5" fill="#3557C4"/>
+<text x="145.0" y="260" text-anchor="middle" font-size="12" font-weight="700" fill="#1B1F24">topic</text>
+<text x="145.0" y="276" text-anchor="middle" font-size="10" fill="#5B6B7C">acc 0.75 · ECE 0.21 → 0.03 · T 4.3</text>
+<text x="145.0" y="290" text-anchor="middle" font-size="10" fill="#3557C4">auto ≥ 0.95 covers 2% at 1.00</text>
+</svg>

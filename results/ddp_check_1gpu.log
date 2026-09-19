@@ -1,0 +1,8 @@
+600 training examples from tickets,gridworld
+`use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`.
+/usr/local/lib/python3.11/dist-packages/torch/utils/checkpoint.py:1399: FutureWarning: `torch.cpu.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cpu', args...)` instead.
+  with device_autocast_ctx, torch.cpu.amp.autocast(**cpu_autocast_kwargs), recompute_context:  # type: ignore[attr-defined]
+step 50/100 loss 0.9797 lr 5.00e-05 (29s)
+step 100/100 loss 0.5365 lr 5.00e-06 (57s)
+trainable params: 10,092,544 || all params: 606,142,464 || trainable%: 1.6650
+saved adapters/ddpcheck1/Qwen3-0.6B-brier-r16-s100  (1 GPU, 57s)

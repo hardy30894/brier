@@ -496,6 +496,41 @@ fix and the next item on the outcome-reward list. Training took 45 minutes on on
 against 11 for single-step, because each step plays out six sequential forward passes.
 
 
+## Round four: the generic corpus
+
+The question this round asks is the one the project rests on: does the objective learn
+real decisions in general, or only the synthetic ones it was built on? The answer needs
+real labelled data from many domains, whole domains held out, and one adapter trained
+on the mixture.
+
+**The corpus.** Twelve public datasets, streamed from the Hub, each mapped onto one or
+two questions in our three kinds (`tasks/public.py`):
+
+| kind | datasets |
+|---|---|
+| Pick | AG News topics, DBpedia entity types, SNLI and MNLI relation, Emotion, MASSIVE intents (ten), banking77 intents (ten) |
+| Grade | SST-5 sentiment, Yelp star rating |
+| Claim | SNLI and MNLI entailment, Quora duplicate questions, Civil Comments toxicity, MS MARCO passage relevance, IMDB recommendation |
+
+Civil Comments carries the fraction of annotators who flagged a comment, which becomes a
+soft label in training: the first real source of irreducible uncertainty in the data.
+
+**The protocol.** Training mixes the five synthetic tasks with ten of the public sets,
+600 examples each, 30% ambiguous synthetic examples as before. Three whole public
+datasets (MNLI, Emotion, IMDB) and the two synthetic unseen tasks (frustration,
+duplicates) are never trained on. Every task is evaluated on 300 examples from its own
+evaluation split, raw, and the adapter is compared with the untrained backbone and the
+synthetic-only adapter from round three on exactly the same examples.
+
+**The runs.** One adapter per backbone at 0.6B and Phi-4-mini on single GPUs, and the
+Phi adapter again on four GPUs with the distributed trainer, same examples, to measure
+the speedup: 8,000 examples in 16 minutes on four L40S against about 39 minutes for the
+same job on one 4090.
+
+ROUND4_TABLES
+
+ROUND4_LESSONS
+
 ## Next
 
 - **Outcome rewards.** Gridworld is an environment, not just a dataset. The same

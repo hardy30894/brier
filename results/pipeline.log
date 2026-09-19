@@ -1,13 +1,8 @@
 + cd /workspace/brier
 + mkdir -p results adapters
-+ pip install -q 'transformers>=4.51,<4.57' accelerate numpy huggingface_hub peft
-+ ALL=tickets,gridworld,toolcall,passages,matching,frustration,duplicates,banking
-+ TR=tickets,gridworld,toolcall,passages,matching
-+ python3 dbg_head.py
-+ python3 train.py --model Qwen/Qwen3-0.6B --tasks tickets,gridworld,toolcall,passages,matching --steps 1500 --split train --uncertain 0.3 --batch 2 --accum 2
-+ python3 -m brier calibrate --model Qwen/Qwen3-0.6B --adapter adapters/Qwen3-0.6B-brier-r16-s1500-u0.3-train --tag Qwen3-0.6B-r3 --split eval --task tickets,gridworld,toolcall,passages,matching,frustration,duplicates,banking --n 300
-+ python3 -m brier calibrate --model Qwen/Qwen3-0.6B --split eval --task matching --n 300
-+ python3 train.py --model Qwen/Qwen3-4B --tasks tickets,gridworld,toolcall,passages,matching --steps 1200 --split train --uncertain 0.3
-+ python3 -m brier calibrate --model Qwen/Qwen3-4B --adapter adapters/Qwen3-4B-brier-r16-s1200-u0.3-train --tag Qwen3-4B-r3 --split eval --task tickets,gridworld,toolcall,passages,matching,frustration,duplicates,banking --n 300
-+ python3 -m brier calibrate --model Qwen/Qwen3-4B --split eval --task matching --n 300
-+ echo DONE
++ pip install -q 'transformers>=4.51,<4.57' accelerate numpy huggingface_hub peft datasets
++ MIX=tickets,gridworld,toolcall,passages,matching,ag_news,dbpedia,sst5,yelp,snli,qqp,civil,msmarco,massive,banking
++ ALL=tickets,gridworld,toolcall,passages,matching,ag_news,dbpedia,sst5,yelp,snli,qqp,civil,msmarco,massive,banking,mnli,emotion,imdb,frustration,duplicates
++ python3 -m brier calibrate --model microsoft/Phi-4-mini-instruct --split eval --task tickets,gridworld,toolcall,passages,matching,ag_news,dbpedia,sst5,yelp,snli,qqp,civil,msmarco,massive,banking,mnli,emotion,imdb,frustration,duplicates --n 300 --tag Phi-4-mini-base
++ python3 -m brier calibrate --model microsoft/Phi-4-mini-instruct --adapter adapters/Phi-4-mini-instruct-brier-r16-s1200-u0.3-train --split eval --task tickets,gridworld,toolcall,passages,matching,ag_news,dbpedia,sst5,yelp,snli,qqp,civil,msmarco,massive,banking,mnli,emotion,imdb,frustration,duplicates --n 300 --tag Phi-4-mini-synthetic
++ python3 train.py --model microsoft/Phi-4-mini-instruct --tasks tickets,gridworld,toolcall,passages,matching,ag_news,dbpedia,sst5,yelp,snli,qqp,civil,msmarco,massive,banking --n 600 --steps 2000 --split train --uncertain 0.3 --out adapters/mix

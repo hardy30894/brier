@@ -1,0 +1,362 @@
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00, 70.13it/s]
+  collected 50/300 (4s)
+  collected 100/300 (8s)
+  collected 150/300 (13s)
+  collected 200/300 (17s)
+  collected 250/300 (21s)
+  collected 300/300 (25s)
+Repo card metadata block was not found. Setting CardData to empty.
+  collected 50/300 (8s)
+  collected 100/300 (15s)
+  collected 150/300 (23s)
+  collected 200/300 (30s)
+  collected 250/300 (37s)
+  collected 300/300 (44s)
+
+== tickets ==
+calibration report  model=Phi-4-mini-synthetic@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+category           300  0.957    0.032    0.023     0.036     0.034    0.929    0.954   0.78
+priority           300  0.813    0.172    0.171     0.173     0.174    0.744    0.748   0.98
+needs_human        300  1.000    0.000    0.000     0.000     0.000    1.000    1.000   0.05
+
+decision policy (calibrated confidence cutoffs, held-out):
+  category         auto    target 0.95: act when confidence >= 0.503  -> precision 0.957, covers 100% of decisions
+  category         review  target 0.80: act when confidence >= 0.503  -> precision 0.957, covers 100% of decisions
+  category         human   everything below
+  priority         auto    target 0.95: act when confidence >= 0.982  -> precision 0.966, covers 19% of decisions
+  priority         review  target 0.80: act when confidence >= 0.456  -> precision 0.813, covers 100% of decisions
+  priority         human   everything below
+  needs_human      auto    target 0.95: act when confidence >= 1.000  -> precision 1.000, covers 100% of decisions
+  needs_human      review  target 0.80: act when confidence >= 1.000  -> precision 1.000, covers 100% of decisions
+  needs_human      human   everything below
+  collected 50/300 (5s)
+  collected 100/300 (10s)
+  collected 150/300 (15s)
+  collected 200/300 (20s)
+  collected 250/300 (24s)
+  collected 300/300 (29s)
+
+== gridworld ==
+calibration report  model=Phi-4-mini-synthetic@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+move               300  0.853    0.135    0.166     0.154     0.165    0.791    0.726   1.38
+danger             300  0.993    0.007    0.002     0.007     0.007    0.999    0.993   1.60
+
+decision policy (calibrated confidence cutoffs, held-out):
+  move             auto    target 0.95: act when confidence >= 0.947  -> precision 0.952, covers 14% of decisions
+  move             review  target 0.80: act when confidence >= 0.386  -> precision 0.853, covers 100% of decisions
+  move             human   everything below
+  danger           auto    target 0.95: act when confidence >= 0.680  -> precision 0.993, covers 100% of decisions
+  danger           review  target 0.80: act when confidence >= 0.680  -> precision 0.993, covers 100% of decisions
+  danger           human   everything below
+
+== toolcall ==
+calibration report  model=Phi-4-mini-synthetic@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+tool               300  1.000    0.001    0.000     0.000     0.000    0.999    1.000   0.05
+
+decision policy (calibrated confidence cutoffs, held-out):
+  tool             auto    target 0.95: act when confidence >= 1.000  -> precision 1.000, covers 100% of decisions
+  tool             review  target 0.80: act when confidence >= 1.000  -> precision 1.000, covers 100% of decisions
+  tool             human   everything below
+  collected 50/300 (2s)
+  collected 100/300 (4s)
+  collected 150/300 (6s)
+  collected 200/300 (8s)
+  collected 250/300 (11s)
+  collected 300/300 (13s)
+
+== passages ==
+calibration report  model=Phi-4-mini-synthetic@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+answers            300  0.877    0.122    0.105     0.122     0.088    0.999    0.911   4.43
+
+decision policy (calibrated confidence cutoffs, held-out):
+  answers          auto    target 0.95: act when confidence >= 0.851  -> precision 0.951, covers 89% of decisions
+  answers          review  target 0.80: act when confidence >= 0.661  -> precision 0.877, covers 100% of decisions
+  answers          human   everything below
+  collected 50/300 (2s)
+  collected 100/300 (5s)
+  collected 150/300 (7s)
+  collected 200/300 (9s)
+  collected 250/300 (11s)
+  collected 300/300 (14s)
+
+== matching ==
+calibration report  model=Phi-4-mini-synthetic@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+matches            300  1.000    0.000    0.000     0.000     0.000    1.000    1.000   0.05
+
+decision policy (calibrated confidence cutoffs, held-out):
+  matches          auto    target 0.95: act when confidence >= 1.000  -> precision 1.000, covers 100% of decisions
+  matches          review  target 0.80: act when confidence >= 1.000  -> precision 1.000, covers 100% of decisions
+  matches          human   everything below
+  collected 50/300 (4s)
+  collected 100/300 (7s)
+  collected 150/300 (10s)
+  collected 200/300 (13s)
+  collected 250/300 (16s)
+  collected 300/300 (18s)
+
+== ag_news ==
+calibration report  model=Phi-4-mini-synthetic@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+topic              300  0.787    0.164    0.047     0.182     0.151    0.950    0.778   3.40
+
+decision policy (calibrated confidence cutoffs, held-out):
+  topic            auto    target 0.95: unreachable on this data
+  topic            review  target 0.80: act when confidence >= 0.436  -> precision 0.802, covers 98% of decisions
+  topic            human   everything below
+  collected 50/300 (11s)
+  collected 100/300 (21s)
+  collected 150/300 (32s)
+  collected 200/300 (43s)
+  collected 250/300 (53s)
+  collected 300/300 (64s)
+
+== dbpedia ==
+calibration report  model=Phi-4-mini-synthetic@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+kind               300  0.917    0.043    0.033     0.062     0.061    0.956    0.907   1.93
+
+decision policy (calibrated confidence cutoffs, held-out):
+  kind             auto    target 0.95: act when confidence >= 0.575  -> precision 0.953, covers 93% of decisions
+  kind             review  target 0.80: act when confidence >= 0.283  -> precision 0.917, covers 100% of decisions
+  kind             human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (5s)
+  collected 150/300 (8s)
+  collected 200/300 (10s)
+  collected 250/300 (13s)
+  collected 300/300 (16s)
+
+== sst5 ==
+calibration report  model=Phi-4-mini-synthetic@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+sentiment          300  0.453    0.218    0.060     0.307     0.250    0.663    0.465   2.42
+
+decision policy (calibrated confidence cutoffs, held-out):
+  sentiment        auto    target 0.95: unreachable on this data
+  sentiment        review  target 0.80: unreachable on this data
+  sentiment        human   everything below
+  collected 50/300 (5s)
+  collected 100/300 (10s)
+  collected 150/300 (15s)
+  collected 200/300 (19s)
+  collected 250/300 (24s)
+  collected 300/300 (29s)
+
+== yelp ==
+calibration report  model=Phi-4-mini-synthetic@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+stars              300  0.617    0.139    0.072     0.226     0.208    0.747    0.626   1.79
+
+decision policy (calibrated confidence cutoffs, held-out):
+  stars            auto    target 0.95: act when confidence >= 0.945  -> precision 0.962, covers 9% of decisions
+  stars            review  target 0.80: act when confidence >= 0.726  -> precision 0.802, covers 35% of decisions
+  stars            human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (6s)
+  collected 150/300 (9s)
+  collected 200/300 (11s)
+  collected 250/300 (14s)
+  collected 300/300 (17s)
+
+== snli ==
+calibration report  model=Phi-4-mini-synthetic@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+relation           300  0.843    0.069    0.039     0.114     0.113    0.895    0.834   1.73
+entailed           300  0.930    0.021    0.029     0.047     0.048    0.936    0.923   1.23
+
+decision policy (calibrated confidence cutoffs, held-out):
+  relation         auto    target 0.95: act when confidence >= 0.844  -> precision 0.950, covers 60% of decisions
+  relation         review  target 0.80: act when confidence >= 0.413  -> precision 0.843, covers 100% of decisions
+  relation         human   everything below
+  entailed         auto    target 0.95: act when confidence >= 0.553  -> precision 0.952, covers 96% of decisions
+  entailed         review  target 0.80: act when confidence >= 0.500  -> precision 0.930, covers 100% of decisions
+  entailed         human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (5s)
+  collected 150/300 (7s)
+  collected 200/300 (9s)
+  collected 250/300 (11s)
+  collected 300/300 (13s)
+
+== qqp ==
+calibration report  model=Phi-4-mini-synthetic@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+duplicate          300  0.860    0.050    0.035     0.105     0.104    0.900    0.851   1.54
+
+decision policy (calibrated confidence cutoffs, held-out):
+  duplicate        auto    target 0.95: act when confidence >= 0.835  -> precision 0.952, covers 62% of decisions
+  duplicate        review  target 0.80: act when confidence >= 0.500  -> precision 0.860, covers 100% of decisions
+  duplicate        human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (5s)
+  collected 150/300 (7s)
+  collected 200/300 (9s)
+  collected 250/300 (11s)
+  collected 300/300 (13s)
+
+== civil ==
+calibration report  model=Phi-4-mini-synthetic@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+toxic              300  0.840    0.062    0.039     0.116     0.114    0.886    0.837   1.54
+
+decision policy (calibrated confidence cutoffs, held-out):
+  toxic            auto    target 0.95: act when confidence >= 0.899  -> precision 0.951, covers 47% of decisions
+  toxic            review  target 0.80: act when confidence >= 0.500  -> precision 0.840, covers 100% of decisions
+  toxic            human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (5s)
+  collected 150/300 (7s)
+  collected 200/300 (9s)
+  collected 250/300 (11s)
+  collected 300/300 (14s)
+
+== msmarco ==
+calibration report  model=Phi-4-mini-synthetic@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+answers            300  0.300    0.587    0.245     0.583     0.275    0.872    0.545  20.00
+
+decision policy (calibrated confidence cutoffs, held-out):
+  answers          auto    target 0.95: unreachable on this data
+  answers          review  target 0.80: unreachable on this data
+  answers          human   everything below
+  collected 50/300 (5s)
+  collected 100/300 (10s)
+  collected 150/300 (14s)
+  collected 200/300 (19s)
+  collected 250/300 (24s)
+  collected 300/300 (29s)
+
+== massive ==
+calibration report  model=Phi-4-mini-synthetic@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+intent             300  0.797    0.124    0.043     0.137     0.113    0.920    0.818   2.25
+
+decision policy (calibrated confidence cutoffs, held-out):
+  intent           auto    target 0.95: act when confidence >= 0.852  -> precision 0.952, covers 62% of decisions
+  intent           review  target 0.80: act when confidence >= 0.230  -> precision 0.802, covers 99% of decisions
+  intent           human   everything below
+  collected 50/300 (8s)
+  collected 100/300 (16s)
+  collected 150/300 (25s)
+  collected 200/300 (33s)
+  collected 250/300 (41s)
+  collected 300/300 (49s)
+
+== banking ==
+calibration report  model=Phi-4-mini-synthetic@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+intent             300  0.917    0.050    0.035     0.056     0.047    0.967    0.917   1.93
+
+decision policy (calibrated confidence cutoffs, held-out):
+  intent           auto    target 0.95: act when confidence >= 0.556  -> precision 0.951, covers 94% of decisions
+  intent           review  target 0.80: act when confidence >= 0.257  -> precision 0.917, covers 100% of decisions
+  intent           human   everything below
+  collected 50/300 (4s)
+  collected 100/300 (7s)
+  collected 150/300 (10s)
+  collected 200/300 (13s)
+  collected 250/300 (16s)
+  collected 300/300 (19s)
+
+== mnli ==
+calibration report  model=Phi-4-mini-synthetic@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+relation           300  0.807    0.112    0.086     0.158     0.152    0.853    0.779   1.73
+entailed           300  0.897    0.039    0.040     0.085     0.085    0.906    0.888   1.23
+
+decision policy (calibrated confidence cutoffs, held-out):
+  relation         auto    target 0.95: act when confidence >= 0.889  -> precision 0.956, covers 45% of decisions
+  relation         review  target 0.80: act when confidence >= 0.347  -> precision 0.807, covers 100% of decisions
+  relation         human   everything below
+  entailed         auto    target 0.95: act when confidence >= 0.844  -> precision 0.953, covers 71% of decisions
+  entailed         review  target 0.80: act when confidence >= 0.500  -> precision 0.897, covers 100% of decisions
+  entailed         human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (6s)
+  collected 150/300 (9s)
+  collected 200/300 (12s)
+  collected 250/300 (15s)
+  collected 300/300 (18s)
+
+== emotion ==
+calibration report  model=Phi-4-mini-synthetic@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+emotion            300  0.633    0.243    0.031     0.264     0.201    0.865    0.622   2.93
+
+decision policy (calibrated confidence cutoffs, held-out):
+  emotion          auto    target 0.95: act when confidence >= 0.921  -> precision 0.963, covers 9% of decisions
+  emotion          review  target 0.80: act when confidence >= 0.634  -> precision 0.800, covers 50% of decisions
+  emotion          human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (6s)
+  collected 150/300 (9s)
+  collected 200/300 (12s)
+  collected 250/300 (15s)
+  collected 300/300 (18s)
+
+== imdb ==
+calibration report  model=Phi-4-mini-synthetic@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+positive           300  0.963    0.023    0.021     0.028     0.028    0.976    0.955   1.86
+
+decision policy (calibrated confidence cutoffs, held-out):
+  positive         auto    target 0.95: act when confidence >= 0.500  -> precision 0.963, covers 100% of decisions
+  positive         review  target 0.80: act when confidence >= 0.500  -> precision 0.963, covers 100% of decisions
+  positive         human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (5s)
+  collected 150/300 (7s)
+  collected 200/300 (9s)
+  collected 250/300 (12s)
+  collected 300/300 (14s)
+
+== frustration ==
+calibration report  model=Phi-4-mini-synthetic@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+frustration        300  0.620    0.244    0.202     0.196     0.144    0.810    0.651   2.25
+
+decision policy (calibrated confidence cutoffs, held-out):
+  frustration      auto    target 0.95: act when confidence >= 0.597  -> precision 0.955, covers 52% of decisions
+  frustration      review  target 0.80: act when confidence >= 0.476  -> precision 0.801, covers 74% of decisions
+  frustration      human   everything below
+  collected 50/300 (2s)
+  collected 100/300 (4s)
+  collected 150/300 (6s)
+  collected 200/300 (8s)
+  collected 250/300 (10s)
+  collected 300/300 (13s)
+
+== duplicates ==
+calibration report  model=Phi-4-mini-synthetic@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+same               300  0.983    0.029    0.022     0.017     0.017    0.960    0.977   0.50
+
+decision policy (calibrated confidence cutoffs, held-out):
+  same             auto    target 0.95: act when confidence >= 0.500  -> precision 0.983, covers 100% of decisions
+  same             review  target 0.80: act when confidence >= 0.500  -> precision 0.983, covers 100% of decisions
+  same             human   everything below
