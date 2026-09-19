@@ -213,4 +213,4 @@ class Scorer:
                 fields[f.name] = FieldDecision(value=None, choice="", prob=conf, dist={})
             else:
                 fields[f.name] = FieldDecision(value=f.decode(choice), choice=choice, prob=conf, dist={choice: conf})
-        return Decision(fields=fields, latency_ms=lat, type_error=type_error)
+        return Decision(fields=fields, latency_ms=lat, type_error=type_error, text=reply)

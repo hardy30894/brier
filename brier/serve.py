@@ -83,6 +83,25 @@ class Engine:
                 "margin": a.margin, "expected": a.expected, "tier": a.tier} for a in ans]
         return {"answers": out, "latency_ms": ans.latency_ms, "model": self.names["questions"]}
 
+    def generate(self, state, items):
+        """The baseline, for the race: the same weights writing the answers as JSON."""
+        from .schema import Schema, Enum, Bool
+        from .questions import render_state
+        fields = []
+        for it in items:
+            kind = it.get("kind", "choice")
+            if kind == "claim":
+                fields.append(Bool(it["id"], it.get("instructions", "")))
+            else:
+                fields.append(Enum(it["id"], tuple(it.get("options") or it.get("levels")), it.get("instructions", "")))
+        schema = Schema(tuple(fields))
+        if self.mock:
+            time.sleep(1.2)
+            text = "{" + ", ".join(f'"{f.name}": "{f.choices[0]}"' for f in fields) + ', "confidence": 0.9}'
+            return {"text": text, "latency_ms": 1200.0, "type_error": False, "model": self.names["questions"]}
+        d = self.q_scorer.generate_json(render_state(state), schema)
+        return {"text": d.text, "latency_ms": d.latency_ms, "type_error": d.type_error, "model": self.names["questions"]}
+
     def grid_new(self):
         sys.path.insert(0, str(ROOT))
         from tasks import gridworld
@@ -157,6 +176,8 @@ def make_handler(engine, page):
                 data = json.loads(self.rfile.read(n) or b"{}")
                 if self.path == "/ask":
                     self._json(200, engine.ask(data.get("state", ""), data.get("questions", [])))
+                elif self.path == "/generate":
+                    self._json(200, engine.generate(data.get("state", ""), data.get("questions", [])))
                 elif self.path == "/grid/new":
                     self._json(200, engine.grid_new())
                 elif self.path == "/grid/step":

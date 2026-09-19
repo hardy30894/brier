@@ -3,172 +3,294 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Brier live</title>
+<title>Brier · live</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root { --ink:#0B0F1D; --muted:#5C6473; --faint:#8E95A3; --line:#E6E8EE; --bg:#FFFFFF; --panel:#F6F7FB; --accent:#4F46E5; --accent-2:#8B7BFF; --accent-soft:#EEF0FF; --grad:linear-gradient(135deg,#3F39B8 0%,#5B52EA 45%,#A9A6FA 100%); --base:#B45309; --good:#0E7C3A; --bad:#B42318; --shadow:0 1px 2px rgba(11,15,29,.04), 0 8px 24px -12px rgba(11,15,29,.12); }
-  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ink:#F2F3F8; --muted:#A6ADBD; --faint:#6E7686; --line:#1E2433; --bg:#0B0F1D; --panel:#10152A; --accent:#8B85F5; --accent-2:#B8B3FF; --accent-soft:#1A1F3F; --grad:linear-gradient(135deg,#4F46E5 0%,#8B7BFF 50%,#C9C5FF 100%); --base:#E0912E; --good:#3DBB6B; --bad:#F0655B; --shadow:none; } }
-  :root[data-theme="dark"] { --ink:#F2F3F8; --muted:#A6ADBD; --faint:#6E7686; --line:#1E2433; --bg:#0B0F1D; --panel:#10152A; --accent:#8B85F5; --accent-2:#B8B3FF; --accent-soft:#1A1F3F; --grad:linear-gradient(135deg,#4F46E5 0%,#8B7BFF 50%,#C9C5FF 100%); --base:#E0912E; --good:#3DBB6B; --bad:#F0655B; --shadow:none; }
+  :root { --ink:#0B0F1D; --ink-2:#2A3142; --muted:#5C6473; --faint:#8E95A3; --line:#E6E8EE; --bg:#FFFFFF; --panel:#F6F7FB; --panel-2:#EEF0F6; --accent:#4F46E5; --accent-2:#8B7BFF; --accent-soft:#EEF0FF; --grad:linear-gradient(135deg,#3F39B8 0%,#5B52EA 45%,#A9A6FA 100%); --base:#B45309; --base-soft:#FDF1E4; --good:#0E7C3A; --bad:#B42318; --shadow:0 1px 2px rgba(11,15,29,.04), 0 12px 32px -16px rgba(11,15,29,.16); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ink:#F2F3F8; --ink-2:#C9CEDA; --muted:#A6ADBD; --faint:#6E7686; --line:#1E2433; --bg:#0B0F1D; --panel:#10152A; --panel-2:#171D33; --accent:#8B85F5; --accent-2:#B8B3FF; --accent-soft:#1A1F3F; --grad:linear-gradient(135deg,#4F46E5 0%,#8B7BFF 50%,#C9C5FF 100%); --base:#E0912E; --base-soft:#2A2113; --good:#3DBB6B; --bad:#F0655B; --shadow:none; } }
+  :root[data-theme="dark"] { --ink:#F2F3F8; --ink-2:#C9CEDA; --muted:#A6ADBD; --faint:#6E7686; --line:#1E2433; --bg:#0B0F1D; --panel:#10152A; --panel-2:#171D33; --accent:#8B85F5; --accent-2:#B8B3FF; --accent-soft:#1A1F3F; --grad:linear-gradient(135deg,#4F46E5 0%,#8B7BFF 50%,#C9C5FF 100%); --base:#E0912E; --base-soft:#2A2113; --good:#3DBB6B; --bad:#F0655B; --shadow:none; }
   * { box-sizing:border-box; }
-  html, body { height:100%; }
-  body { margin:0; background:var(--bg); color:var(--ink); font:14px/1.55 Inter,'Helvetica Neue',Helvetica,Arial,sans-serif; -webkit-font-smoothing:antialiased; font-feature-settings:"cv11","ss01"; }
-  header { display:flex; align-items:center; gap:14px; padding:18px 28px; border-bottom:1px solid var(--line); position:sticky; top:0; background:color-mix(in srgb, var(--bg) 86%, transparent); backdrop-filter:blur(10px); z-index:2; }
-  header::after { content:""; position:absolute; left:0; right:0; bottom:-1px; height:2px; background:var(--grad); opacity:.9; }
-  header img { height:26px; width:auto; }
-  header h1 { font-size:16px; font-weight:600; margin:0; letter-spacing:-0.2px; }
-  header h1 span { color:var(--muted); font-weight:500; margin-left:8px; }
-  header .status { margin-left:auto; font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums; display:flex; align-items:center; gap:8px; }
+  html { scroll-behavior:smooth; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.55 Inter,'Helvetica Neue',Helvetica,Arial,sans-serif; -webkit-font-smoothing:antialiased; font-feature-settings:"cv11","ss01"; }
+  .mono { font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace; }
+  a { color:inherit; }
+  /* top bar */
+  .topbar { position:sticky; top:0; z-index:5; display:flex; align-items:center; gap:14px; padding:14px 32px; background:color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); }
+  .topbar::after { content:""; position:absolute; left:0; right:0; bottom:-1px; height:2px; background:var(--grad); }
+  .topbar img { height:24px; }
+  .topbar .name { font-weight:600; letter-spacing:-0.2px; }
+  .topbar nav { display:flex; gap:18px; margin-left:22px; font-size:13px; color:var(--muted); }
+  .topbar nav a { text-decoration:none; } .top nav a:hover { color:var(--ink); }
+  .topbar .status { margin-left:auto; font-size:12px; color:var(--muted); display:flex; align-items:center; gap:8px; font-variant-numeric:tabular-nums; }
   .dot { width:8px; height:8px; border-radius:50%; background:var(--faint); box-shadow:0 0 0 3px color-mix(in srgb, var(--faint) 18%, transparent); }
   .dot.on { background:var(--good); box-shadow:0 0 0 3px color-mix(in srgb, var(--good) 22%, transparent); }
-  main { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:24px; padding:24px 28px 40px; max-width:1360px; margin:0 auto; }
-  @media (max-width: 960px) { main { grid-template-columns:1fr; } }
-  section { background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:24px 26px 28px; min-width:0; box-shadow:var(--shadow); }
-  .caps { font-size:10.5px; font-weight:600; letter-spacing:1.6px; text-transform:uppercase; color:var(--accent); margin:0 0 10px; }
-  h2 { font-size:20px; font-weight:600; margin:0 0 6px; letter-spacing:-0.4px; }
-  .sub { color:var(--muted); font-size:13.5px; margin:0 0 18px; max-width:56ch; }
+  .theme { border:1px solid var(--line); background:var(--panel); color:var(--muted); border-radius:8px; padding:4px 8px; font-size:12px; cursor:pointer; }
+  /* layout */
+  .wrap { max-width:1240px; margin:0 auto; padding:0 32px; }
+  section.wrap { padding:76px 32px 28px; }
+  .caps { font-size:11px; font-weight:600; letter-spacing:1.8px; text-transform:uppercase; color:var(--accent); margin:0 0 12px; }
+  h1 { font-size:clamp(34px, 5vw, 56px); line-height:1.05; letter-spacing:-1.6px; font-weight:700; margin:0 0 16px; }
+  h1 em { font-style:normal; background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  h2 { font-size:26px; letter-spacing:-0.6px; font-weight:600; margin:0 0 8px; }
+  .lead { font-size:17px; color:var(--muted); max-width:62ch; margin:0 0 22px; }
+  .sub { font-size:14px; color:var(--muted); max-width:64ch; margin:0 0 18px; }
+  .stats { display:flex; gap:36px; flex-wrap:wrap; margin-top:26px; }
+  .stat b { display:block; font-size:34px; font-weight:600; letter-spacing:-1px; font-variant-numeric:tabular-nums; line-height:1.1; }
+  .stat span { font-size:12.5px; color:var(--muted); }
+  /* cards & controls */
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:22px 24px; box-shadow:var(--shadow); }
   textarea, input, select { width:100%; font:inherit; color:var(--ink); background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:10px 12px; transition:border-color .15s, box-shadow .15s; }
-  textarea { min-height:96px; resize:vertical; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12.5px; line-height:1.5; }
+  textarea { resize:vertical; font-family:'JetBrains Mono',ui-monospace,Menlo,monospace; font-size:12.5px; line-height:1.55; }
   textarea:focus, input:focus, select:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
   .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-  .presets { display:flex; gap:6px; flex-wrap:wrap; margin:0 0 14px; }
+  .chips { display:flex; gap:6px; flex-wrap:wrap; }
   .chip { font-size:12.5px; font-weight:500; padding:5px 12px; border:1px solid var(--line); border-radius:999px; background:var(--bg); color:var(--muted); cursor:pointer; transition:all .15s; }
   .chip:hover { color:var(--ink); border-color:var(--faint); }
   .chip.on { color:#fff; border-color:transparent; background:var(--grad); }
-  button { font:inherit; font-weight:500; padding:8px 16px; border-radius:10px; border:1px solid var(--line); background:var(--bg); color:var(--ink); cursor:pointer; transition:all .15s; }
+  button { font:inherit; font-weight:500; padding:9px 16px; border-radius:10px; border:1px solid var(--line); background:var(--bg); color:var(--ink); cursor:pointer; transition:all .15s; }
   button:hover { border-color:var(--faint); }
-  button.primary { background:var(--grad); border-color:transparent; color:#fff; box-shadow:0 6px 16px -8px rgba(79,70,229,.6); }
+  button.primary { background:var(--grad); border-color:transparent; color:#fff; box-shadow:0 8px 20px -10px rgba(79,70,229,.7); }
   button.primary:hover { filter:brightness(1.06); }
-  button:disabled { opacity:.5; cursor:default; }
-  .q { border-top:1px solid var(--line); padding:10px 0; display:grid; grid-template-columns:92px 1fr 1fr auto; gap:8px; align-items:start; }
-  .q input, .q select { padding:7px 10px; font-size:13px; border-radius:8px; }
-  .q .x { color:var(--faint); cursor:pointer; padding:6px 4px; }
-  .q .x:hover { color:var(--bad); }
-  .results { margin-top:20px; }
-  .ans { padding:14px 0; border-top:1px solid var(--line); }
-  .ans .head { display:flex; align-items:baseline; gap:10px; margin-bottom:8px; }
-  .ans .id { font-weight:600; }
-  .ans .val { color:var(--accent); font-weight:600; font-variant-numeric:tabular-nums; }
-  .ans .tier { margin-left:auto; font-size:11px; font-weight:600; letter-spacing:.3px; padding:3px 9px; border-radius:999px; background:var(--accent-soft); color:var(--accent); }
-  .ans .tier.review { background:color-mix(in srgb, var(--base) 14%, transparent); color:var(--base); }
-  .ans .tier.human { background:transparent; color:var(--muted); border:1px solid var(--line); }
-  .bar { display:grid; grid-template-columns:116px 1fr 46px; gap:10px; align-items:center; font-size:13px; margin:4px 0; }
+  button:disabled { opacity:.5; cursor:default; box-shadow:none; }
+  .kbd { font-size:11px; color:var(--faint); border:1px solid var(--line); border-radius:6px; padding:2px 6px; }
+  .toggle { display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--muted); cursor:pointer; user-select:none; }
+  .toggle input { width:auto; margin:0; accent-color:var(--accent); }
+  /* hero */
+  .hero { display:grid; grid-template-columns:1.05fr 1fr; gap:20px; margin-top:8px; align-items:start; }
+  @media (max-width: 960px) { .hero { grid-template-columns:1fr; } }
+  .hint { font-size:12.5px; color:var(--faint); margin-top:10px; }
+  .hero-out { display:flex; flex-direction:column; }
+  .hero-lat { display:flex; align-items:baseline; gap:12px; margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid var(--line); }
+  .hero-lat b { font-size:40px; font-weight:700; letter-spacing:-1.4px; font-variant-numeric:tabular-nums; line-height:1; background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .hero-lat span { font-size:13px; color:var(--muted); }
+  .hero-lat b.pulse { animation:pulse .45s ease; }
+  @keyframes pulse { 0% { opacity:.3 } 100% { opacity:1 } }
+  .hero-out .foot { font-size:12.5px; color:var(--muted); margin-top:auto; padding-top:12px; border-top:1px solid var(--line); }
+  .hero-out .foot b { color:var(--ink); font-weight:600; }
+  /* race (unused) */
+  .race { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:16px; }
+  @media (max-width: 900px) { .race { grid-template-columns:1fr; } }
+  .lane { background:var(--bg); border:1px solid var(--line); border-radius:14px; padding:18px 20px; min-height:300px; display:flex; flex-direction:column; position:relative; overflow:hidden; }
+  .lane .head { display:flex; align-items:baseline; gap:10px; margin-bottom:12px; }
+  .lane .head .t { font-weight:600; }
+  .lane .head .m { font-size:12px; color:var(--muted); }
+  .lane .clock { margin-left:auto; font-size:24px; font-weight:600; letter-spacing:-0.6px; font-variant-numeric:tabular-nums; }
+  .lane.brier .clock { background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .lane.gen .clock { color:var(--base); }
+  .lane .body { flex:1; }
+  .lane .foot { font-size:12.5px; color:var(--muted); margin-top:12px; padding-top:10px; border-top:1px solid var(--line); min-height:34px; }
+  .lane .foot b { color:var(--ink); font-weight:600; }
+  .lane.gen .stream { white-space:pre-wrap; word-break:break-word; font-size:14px; line-height:1.7; color:var(--ink-2); min-height:120px; padding:6px 0; }
+  .lane.gen .stream .cursor { display:inline-block; width:8px; height:15px; background:var(--base); vertical-align:-2px; margin-left:1px; animation:blink 1s steps(2) infinite; }
+  @keyframes blink { 50% { opacity:0 } }
+  .lane.gen.done .stream .cursor { display:none; }
+  .lane .band { position:absolute; left:0; right:0; top:0; height:3px; background:var(--grad); transform:scaleX(0); transform-origin:left; }
+  .lane.brier.running .band { animation:sweep .6s ease-out forwards; }
+  @keyframes sweep { to { transform:scaleX(1) } }
+  .lane.gen .band { background:var(--base); transition:transform linear; }
+  .qa { padding:8px 0; border-top:1px solid var(--line); }
+  .qa:first-child { border-top:0; padding-top:0; }
+  .qa .h { display:flex; align-items:baseline; gap:10px; margin-bottom:4px; font-size:13.5px; }
+  .qa .h .id { font-weight:600; }
+  .qa .h .val { color:var(--accent); font-weight:600; font-variant-numeric:tabular-nums; }
+  .qa .h .tier { margin-left:auto; font-size:10.5px; font-weight:600; letter-spacing:.4px; padding:2px 8px; border-radius:999px; background:var(--accent-soft); color:var(--accent); text-transform:uppercase; }
+  .qa .h .tier.review { background:var(--base-soft); color:var(--base); }
+  .qa .h .tier.human, .qa .h .tier.uncalibrated { background:transparent; color:var(--faint); border:1px solid var(--line); }
+  .bar { display:grid; grid-template-columns:104px 1fr 42px; gap:10px; align-items:center; font-size:12.5px; margin:3px 0; }
   .bar .lab { color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .bar .track { height:9px; background:var(--line); border-radius:5px; overflow:hidden; }
-  .bar .fill { height:100%; background:var(--accent); opacity:.38; border-radius:5px; width:0; transition:width .4s cubic-bezier(.2,.8,.2,1), opacity .2s; }
+  .bar .track { height:8px; background:var(--panel-2); border-radius:4px; overflow:hidden; }
+  .bar .fill { height:100%; background:var(--accent); opacity:.35; border-radius:4px; width:0; transition:width .45s cubic-bezier(.2,.8,.2,1), opacity .2s; }
   .bar.top .fill { background:var(--grad); opacity:1; }
   .bar.top .lab { color:var(--ink); font-weight:500; }
   .bar .pct { text-align:right; font-variant-numeric:tabular-nums; color:var(--faint); }
   .bar.top .pct { color:var(--ink); font-weight:600; }
-  .meta { font-size:12px; color:var(--faint); margin-top:12px; font-variant-numeric:tabular-nums; }
-  .toggle { display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--muted); cursor:pointer; user-select:none; }
-  .toggle input { width:auto; margin:0; accent-color:var(--accent); }
-  .kbd { font-size:11px; color:var(--faint); border:1px solid var(--line); border-radius:6px; padding:2px 6px; }
-  .lat { display:flex; align-items:baseline; gap:14px; margin-top:14px; padding-top:12px; border-top:1px solid var(--line); }
-  .lat b { font-size:26px; font-weight:600; letter-spacing:-0.6px; font-variant-numeric:tabular-nums; background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; }
-  .lat span { font-size:12px; color:var(--muted); }
-  .pulse { animation:pulse .5s ease; }
-  @keyframes pulse { 0% { opacity:.35 } 100% { opacity:1 } }
-  /* arrows on the grid */
-  .cell .arrow { position:absolute; font-size:11px; font-weight:600; color:var(--accent); opacity:0; transition:opacity .25s; pointer-events:none; }
-  .cell .arrow.show { opacity:1; }
-  .cell.trail { box-shadow:inset 0 0 0 2px color-mix(in srgb, var(--accent) 35%, transparent); }
-  .cell { position:relative; }
+  .verdict { margin-top:14px; font-size:14px; color:var(--muted); }
+  .verdict b { color:var(--ink); font-weight:600; }
+  /* builder */
+  .builder { display:grid; grid-template-columns:1.1fr 1fr; gap:22px; }
+  @media (max-width: 960px) { .builder { grid-template-columns:1fr; } }
+  .q { border-top:1px solid var(--line); padding:9px 0; display:grid; grid-template-columns:92px 1fr 1fr auto; gap:8px; align-items:start; }
+  .q input, .q select { padding:7px 10px; font-size:13px; border-radius:8px; }
+  .q .x { color:var(--faint); cursor:pointer; padding:6px 4px; } .q .x:hover { color:var(--bad); }
   .err { color:var(--bad); font-size:13px; margin-top:8px; }
-  .gw { display:grid; grid-template-columns:auto 1fr; gap:28px; align-items:start; }
-  @media (max-width: 1180px) { .gw { grid-template-columns:1fr; } }
-  .grid { display:grid; grid-template-columns:repeat(5,50px); gap:5px; padding:8px; background:var(--bg); border:1px solid var(--line); border-radius:14px; }
-  .cell { width:50px; height:50px; border-radius:9px; background:var(--panel); display:flex; align-items:center; justify-content:center; font-weight:600; font-size:15px; transition:background .18s, transform .18s; }
+  .meta { font-size:12px; color:var(--faint); margin-top:10px; font-variant-numeric:tabular-nums; }
+  /* gridworld */
+  .gw { display:grid; grid-template-columns:auto 1fr; gap:36px; align-items:start; }
+  @media (max-width: 1000px) { .gw { grid-template-columns:1fr; } }
+  .grid { display:grid; grid-template-columns:repeat(5,64px); gap:6px; padding:10px; background:var(--bg); border:1px solid var(--line); border-radius:16px; }
+  .cell { width:64px; height:64px; border-radius:11px; background:var(--panel); display:flex; align-items:center; justify-content:center; font-weight:600; font-size:16px; position:relative; transition:background .2s, box-shadow .2s, transform .25s cubic-bezier(.2,.8,.2,1); }
   .cell.wall { background:var(--line); }
-  .cell.exit { color:var(--good); box-shadow:inset 0 0 0 1.5px var(--good); }
-  .cell.monster { color:var(--bad); box-shadow:inset 0 0 0 1.5px var(--bad); }
-  .cell.player { background:var(--grad); color:#fff; transform:scale(1.04); box-shadow:0 6px 14px -6px rgba(79,70,229,.7); }
+  .cell.exit { color:var(--good); box-shadow:inset 0 0 0 2px var(--good); }
+  .cell.monster { color:var(--bad); box-shadow:inset 0 0 0 2px var(--bad); }
+  .cell.trail { box-shadow:inset 0 0 0 2px color-mix(in srgb, var(--accent) 30%, transparent); }
+  .cell.player { background:var(--grad); color:#fff; transform:scale(1.05); box-shadow:0 10px 22px -10px rgba(79,70,229,.8); }
+  .cell.player.dead { background:var(--bad); } .cell.player.won { background:var(--good); }
   .cell .txt { position:relative; z-index:1; }
-  .cell.player.dead { background:var(--bad); box-shadow:none; }
-  .cell.player.won { background:var(--good); box-shadow:none; }
+  .cell .arrow { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-weight:600; color:var(--accent); opacity:0; transition:opacity .25s; pointer-events:none; font-variant-numeric:tabular-nums; }
+  .cell .arrow.show { opacity:1; }
   .legend { font-size:12px; color:var(--faint); margin-top:10px; }
-  .stats { display:grid; grid-template-columns:repeat(3,auto); gap:22px; margin-top:16px; font-size:12px; color:var(--muted); }
-  .stats b { display:block; font-size:22px; font-weight:600; color:var(--ink); font-variant-numeric:tabular-nums; letter-spacing:-0.5px; }
+  .gstats { display:grid; grid-template-columns:repeat(3,auto); gap:26px; margin-top:18px; font-size:12px; color:var(--muted); }
+  .gstats b { display:block; font-size:24px; font-weight:600; color:var(--ink); font-variant-numeric:tabular-nums; letter-spacing:-0.5px; }
   .speed { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted); }
-  input[type=range] { width:110px; padding:0; accent-color:var(--accent); }
+  input[type=range] { width:120px; padding:0; accent-color:var(--accent); }
+  footer { padding:40px 0 60px; color:var(--faint); font-size:12.5px; border-top:1px solid var(--line); margin-top:40px; }
+  footer a { color:var(--muted); }
 </style>
 </head>
 <body>
-<header>
+<div class="topbar">
   <picture><source media="(prefers-color-scheme: dark)" srcset="/static/brier-mark-dark.png"><img src="/static/brier-mark.png" alt=""></picture>
-  <h1>Brier<span>live · every answer is one forward pass, no text generated</span></h1>
-  <span class="status"><span class="dot" id="dot"></span><span id="status">connecting…</span></span>
-</header>
-<main>
-  <section>
-    <p class="caps">Ask</p>
-    <h2>Any state, any typed questions</h2>
-    <p class="sub">Write the state, define the questions, and get a distribution per question from a single pass. Tiers come from a calibration file when the server has one.</p>
-    <div class="presets" id="presets"></div>
-    <textarea id="state" spellcheck="false"></textarea>
-    <div id="qs"></div>
-    <div class="row" style="margin-top:10px">
-      <button id="addq">+ question</button>
-      <label class="toggle"><input type="checkbox" id="live" checked> decide as I type</label>
-      <span style="flex:1"></span>
-      <span class="kbd">⌘↩</span>
-      <button id="askb" class="primary">Decide</button>
+  <span class="name">Brier</span>
+  <nav><a href="#hero">Live</a><a href="#ask">Ask</a><a href="#grid">Gridworld</a></nav>
+  <span class="status"><span class="dot" id="dot"></span><span id="status">connecting…</span><button class="theme" id="themeb" title="toggle theme">◐</button></span>
+</div>
+
+<section class="wrap" id="hero" style="padding-top:64px">
+  <p class="caps">Live · one forward pass</p>
+  <h1>Decisions, <em>not text.</em></h1>
+  <p class="lead">Every allowed answer to every question, scored at once in a single pass of an open model. Edit the ticket and watch the model change its mind.</p>
+  <div class="hero">
+    <div class="card">
+      <div class="chips" id="racechips" style="margin-bottom:12px"></div>
+      <textarea id="racestate" rows="5" spellcheck="false"></textarea>
+      <div class="hint">Try: change “today” to “whenever”, add “I want to talk to a person”, or describe a different problem.</div>
     </div>
-    <div class="err" id="askerr"></div>
-    <div class="results" id="results"></div>
-    <div class="lat" id="asklat" hidden><b id="latnum">–</b><span id="latcmp"></span></div>
-    <div class="meta" id="askmeta"></div>
-  </section>
-  <section>
-    <p class="caps">Gridworld, live</p>
-    <h2>The model plays, one pass per move</h2>
-    <p class="sub">Trained from the environment's own outcomes with no labels. Four moves scored at once; the bars are the model's distribution before it moves.</p>
-    <div class="row" style="margin-bottom:14px">
-      <button id="newg" class="primary">New game</button>
-      <button id="stepg">Step</button>
-      <button id="playg">Auto-play</button>
-      <span class="speed">speed <input type="range" id="speed" min="120" max="1200" value="550"></span>
+    <div class="card hero-out">
+      <div class="hero-lat"><b id="clk-b">–</b><span>for <span id="hero-n">3 questions, 11 candidates</span> in one pass</span></div>
+      <div id="race-answers"></div>
+      <div class="foot" id="foot-b"></div>
+    </div>
+  </div>
+  <div class="stats">
+    <div class="stat"><b id="s-lat">–</b><span>last decision, ms</span></div>
+    <div class="stat"><b id="s-cand">–</b><span>candidates scored in that pass</span></div>
+    <div class="stat"><b id="s-n">–</b><span>decisions this session</span></div>
+    <div class="stat"><b id="s-won">0</b><span>gridworld games won</span></div>
+  </div>
+</section>
+
+<section class="wrap" id="ask">
+  <p class="caps">Ask</p>
+  <h2>Any state, any typed questions</h2>
+  <p class="sub">Write a state, define Choice, Score and Claim questions, and watch the distributions move as you type. Tiers come from a calibration file when the server has one.</p>
+  <div class="card builder">
+    <div>
+      <div class="chips" id="presets" style="margin-bottom:12px"></div>
+      <textarea id="state" rows="6" spellcheck="false"></textarea>
+      <div id="qs" style="margin-top:8px"></div>
+      <div class="row" style="margin-top:10px">
+        <button id="addq">+ question</button>
+        <label class="toggle"><input type="checkbox" id="live" checked> decide as I type</label>
+        <span style="flex:1"></span><span class="kbd">⌘↩</span>
+        <button id="askb" class="primary">Decide</button>
+      </div>
+      <div class="err" id="askerr"></div>
+    </div>
+    <div>
+      <div id="results"></div>
+      <div class="meta" id="askmeta"></div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap" id="grid">
+  <p class="caps">Gridworld · live</p>
+  <h2>The model plays. One pass per move.</h2>
+  <p class="sub">Trained from the environment's own outcomes with no labels. Before each move, the four probabilities appear on the board; then it moves.</p>
+  <div class="card">
+    <div class="row" style="margin-bottom:16px">
+      <button id="newg" class="primary">New game</button><button id="stepg">Step</button><button id="playg">Auto-play</button>
+      <span class="speed">speed <input type="range" id="speed" min="120" max="1200" value="650"></span>
     </div>
     <div class="gw">
-      <div><div class="grid" id="grid"></div><div class="legend">P player · E exit · M monster · # wall</div></div>
+      <div><div class="grid" id="gridel"></div><div class="legend">P player · E exit · M monster · # wall · arrows: the distribution before the move</div></div>
       <div>
         <div id="gbars"></div>
         <div class="meta" id="gmeta"></div>
-        <div class="stats"><div>games won<b id="won">0</b></div><div>games lost<b id="lost">0</b></div><div>latency p50<b id="lat">–</b></div></div>
+        <div class="gstats"><div>games won<b id="won">0</b></div><div>games lost<b id="lost">0</b></div><div>latency p50<b id="lat">–</b></div></div>
       </div>
     </div>
-  </section>
-</main>
+  </div>
+</section>
+
+<footer class="wrap">Brier · every number on this page is measured on the model named in the top bar. <a href="https://github.com/hardy30894/brier">Repository</a></footer>
+
 <script>
 const $ = id => document.getElementById(id);
 const api = async (path, body) => { const r = await fetch(path, { method: body ? "POST" : "GET", headers: { "Content-Type": "application/json" }, body: body ? JSON.stringify(body) : undefined }); const j = await r.json(); if (!r.ok) throw new Error(j.error || r.statusText); return j; };
+const fmt = ms => ms >= 1000 ? (ms / 1000).toFixed(2) + " s" : ms.toFixed(0) + " ms";
+$("themeb").onclick = () => { const r = document.documentElement; const cur = r.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"); r.dataset.theme = cur === "dark" ? "light" : "dark"; };
 
-// ---------- presets & question builder ----------
+// ---------- shared: render a list of answers into a container, morphing in place ----------
+function renderAnswers(root, answers, compact) {
+  const seen = new Set();
+  for (const a of answers) {
+    seen.add(a.id);
+    let el = root.querySelector(`[data-id="${CSS.escape(a.id)}"]`);
+    if (!el) { el = document.createElement("div"); el.className = "qa"; el.dataset.id = a.id; el.innerHTML = `<div class="h"><span class="id"></span><span class="val"></span><span class="tier"></span></div><div class="bars"></div>`; root.appendChild(el); }
+    el.querySelector(".id").textContent = a.id;
+    el.querySelector(".val").textContent = a.kind === "claim" ? `p(true) ${a.value.toFixed(2)}` : (a.kind === "score" && a.expected != null ? `${a.value} · E ${a.expected.toFixed(2)}` : a.value);
+    const t = el.querySelector(".tier"); t.textContent = a.tier || "uncalibrated"; t.className = "tier " + (a.tier || "uncalibrated");
+    const bars = el.querySelector(".bars"); const order = Object.entries(a.probabilities).sort((x, y) => y[1] - x[1]); const top = order[0][0];
+    const shown = compact ? order.slice(0, 3) : order;
+    for (const [lab, p] of shown) {
+      let b = bars.querySelector(`[data-lab="${CSS.escape(lab)}"]`);
+      if (!b) { b = document.createElement("div"); b.className = "bar"; b.dataset.lab = lab; b.innerHTML = `<span class="lab"></span><div class="track"><div class="fill"></div></div><span class="pct"></span>`; bars.appendChild(b); }
+      b.classList.toggle("top", lab === top); b.querySelector(".lab").textContent = lab; b.querySelector(".fill").style.width = (p * 100).toFixed(1) + "%"; b.querySelector(".pct").textContent = (p * 100).toFixed(0) + "%";
+      bars.appendChild(b);
+    }
+    const keep = new Set(shown.map(x => x[0])); [...bars.children].forEach(b => { if (!keep.has(b.dataset.lab)) b.remove(); });
+  }
+  [...root.children].forEach(el => { if (!seen.has(el.dataset.id)) el.remove(); });
+}
+const TICKET_QS = [ { kind: "choice", id: "category", instructions: "which team should handle this ticket", options: ["billing", "bug", "feature", "account", "other"] },
+                    { kind: "score", id: "priority", instructions: "how fast this must be handled", levels: ["low", "medium", "high", "urgent"] },
+                    { kind: "claim", id: "needs_human", instructions: "the customer is asking for a human agent rather than an automated reply" } ];
+
+// ---------- the race ----------
+const RACE_PRESETS = {
+  "Webhooks bug": "Webhooks are firing twice for every event since around 3am UTC. I need this sorted today if at all possible. We're on the Team plan.",
+  "Double charge": "I was charged twice for my Pro subscription this month. Not an emergency but it's getting annoying. I'd like to speak to an actual person about this.",
+  "Feature ask": "Any plans to add a Slack integration for report notifications? No rush at all, just flagging it.",
+  "Locked out": "I lost my phone and can't get past two-factor authentication. Production is down for us because of this.",
+};
+let heroSeq = 0, heroTimer = null, decisions = 0;
+async function runHero() {
+  const seq = ++heroSeq; const state = $("racestate").value;
+  try {
+    const r = await api("/ask", { state, questions: TICKET_QS });
+    if (seq !== heroSeq) return;
+    renderAnswers($("race-answers"), r.answers, false);
+    const nc = r.answers.reduce((n, a) => n + Object.keys(a.probabilities).length, 0);
+    const clk = $("clk-b"); clk.textContent = fmt(r.latency_ms); clk.classList.remove("pulse"); void clk.offsetWidth; clk.classList.add("pulse");
+    $("hero-n").textContent = `${r.answers.length} questions, ${nc} candidates`;
+    $("foot-b").innerHTML = `<b>${r.model}</b> · every answer is one of the allowed values, by construction`;
+    decisions++; $("s-lat").textContent = r.latency_ms.toFixed(0); $("s-cand").textContent = nc; $("s-n").textContent = decisions;
+  } catch (e) { $("foot-b").textContent = e.message; }
+}
+function scheduleHero() { clearTimeout(heroTimer); heroTimer = setTimeout(runHero, 300); }
+$("racestate").addEventListener("input", scheduleHero);
+Object.keys(RACE_PRESETS).forEach((n, i) => { const c = document.createElement("span"); c.className = "chip" + (i === 0 ? " on" : ""); c.textContent = n; c.onclick = () => { $("racestate").value = RACE_PRESETS[n]; [...$("racechips").children].forEach(x => x.classList.toggle("on", x === c)); runHero(); }; $("racechips").appendChild(c); });
+$("racestate").value = RACE_PRESETS["Webhooks bug"];
+
+// ---------- ask: builder ----------
 const PRESETS = {
-  "Support ticket": { state: "Webhooks are firing twice for every event since around 3am UTC. I need this sorted today if at all possible. We're on the Team plan.",
-    questions: [ { kind: "choice", id: "category", instructions: "which team should handle this ticket", options: "billing, bug, feature, account, other" },
-                 { kind: "score", id: "priority", instructions: "how fast this must be handled", options: "low, medium, high, urgent" },
-                 { kind: "claim", id: "needs_human", instructions: "the customer is asking for a human agent rather than an automated reply", options: "" } ] },
+  "Support ticket": { state: RACE_PRESETS["Webhooks bug"], questions: TICKET_QS.map(q => ({ ...q, options: (q.options || q.levels || []).join(", ") })) },
   "Tool call": { state: JSON.stringify({ request: "send me the invoice for September and then cancel my plan", tools: { get_invoice: "Fetch a billing invoice by month", cancel_subscription: "Cancel the current subscription", reset_password: "Send a password reset email", schedule_call: "Book a call with a human agent", none: "No tool applies" } }, null, 1),
-    questions: [ { kind: "choice", id: "tool", instructions: "which tool should be called first", options: "get_invoice, cancel_subscription, reset_password, schedule_call, none" },
-                 { kind: "claim", id: "two_tools", instructions: "the request needs more than one tool", options: "" } ] },
+    questions: [ { kind: "choice", id: "tool", instructions: "which tool should be called first", options: "get_invoice, cancel_subscription, reset_password, schedule_call, none" }, { kind: "claim", id: "two_tools", instructions: "the request needs more than one tool", options: "" } ] },
   "Same person?": { state: JSON.stringify({ record_a: { name: "Priya Raman", email: "priya.raman@northwind.io", phone: "+1 415 555 0142", company: "Northwind" }, record_b: { name: "P. Raman", email: "praman@northwind.io", company: "Northwind" } }, null, 1),
     questions: [ { kind: "claim", id: "same", instructions: "the two records describe the same person", options: "" } ] },
   "Passage relevance": { state: JSON.stringify({ question: "What is the refund window?", passage: "Customers receive a 15% discount when paying annually. The support team works in two shifts." }, null, 1),
-    questions: [ { kind: "claim", id: "answers", instructions: "the passage contains the information needed to answer the question", options: "" },
-                 { kind: "score", id: "relevance", instructions: "how related the passage is to the question", options: "unrelated, tangential, related, answers it" } ] },
+    questions: [ { kind: "claim", id: "answers", instructions: "the passage contains the information needed to answer the question", options: "" }, { kind: "score", id: "relevance", instructions: "how related the passage is to the question", options: "unrelated, tangential, related, answers it" } ] },
 };
 function qRow(q) {
   const d = document.createElement("div"); d.className = "q";
-  d.innerHTML = `<select><option value="choice">Choice</option><option value="score">Score</option><option value="claim">Claim</option></select>
-    <input placeholder="id · instructions" value="">
-    <input placeholder="options, comma separated (levels low → high for Score)" value="">
-    <span class="x" title="remove">✕</span>`;
+  d.innerHTML = `<select><option value="choice">Choice</option><option value="score">Score</option><option value="claim">Claim</option></select><input placeholder="id · instructions"><input placeholder="options, comma separated (levels low → high for Score)"><span class="x" title="remove">✕</span>`;
   const [sel, idin, optin] = d.querySelectorAll("select, input");
-  sel.value = q.kind; idin.value = q.id + (q.instructions ? " · " + q.instructions : ""); optin.value = q.options || "";
-  optin.style.visibility = q.kind === "claim" ? "hidden" : "visible";
-  sel.onchange = () => { optin.style.visibility = sel.value === "claim" ? "hidden" : "visible"; };
-  d.querySelector(".x").onclick = () => d.remove();
+  sel.value = q.kind; idin.value = q.id + (q.instructions ? " · " + q.instructions : ""); optin.value = q.options || ""; optin.style.visibility = q.kind === "claim" ? "hidden" : "visible";
+  sel.onchange = () => { optin.style.visibility = sel.value === "claim" ? "hidden" : "visible"; scheduleDecide(); };
+  d.querySelector(".x").onclick = () => { d.remove(); scheduleDecide(); };
   return d;
 }
 function readQuestions() {
@@ -184,58 +306,30 @@ function readQuestions() {
 function loadPreset(name) {
   const p = PRESETS[name]; $("state").value = p.state; $("qs").innerHTML = ""; p.questions.forEach(q => $("qs").appendChild(qRow(q)));
   [...$("presets").children].forEach(c => c.classList.toggle("on", c.textContent === name));
-  $("results").innerHTML = ""; $("askmeta").textContent = ""; $("asklat").hidden = true; scheduleDecide();
+  $("results").innerHTML = ""; $("askmeta").textContent = ""; decide();
 }
 Object.keys(PRESETS).forEach(n => { const c = document.createElement("span"); c.className = "chip"; c.textContent = n; c.onclick = () => loadPreset(n); $("presets").appendChild(c); });
 $("addq").onclick = () => $("qs").appendChild(qRow({ kind: "choice", id: "q", instructions: "", options: "" }));
-
-// ---------- results: morph in place, keyed by question id ----------
-function renderAnswers(res) {
-  const root = $("results");
-  const seen = new Set();
-  for (const a of res.answers) {
-    seen.add(a.id);
-    let el = root.querySelector(`[data-id="${CSS.escape(a.id)}"]`);
-    if (!el) { el = document.createElement("div"); el.className = "ans"; el.dataset.id = a.id; el.innerHTML = `<div class="head"><span class="id"></span><span class="val"></span><span class="tier"></span></div><div class="bars"></div>`; root.appendChild(el); }
-    el.querySelector(".id").textContent = a.id;
-    el.querySelector(".val").textContent = a.kind === "claim" ? `p(true) = ${a.value.toFixed(2)}` : (a.kind === "score" && a.expected != null ? `${a.value} · expected level ${a.expected.toFixed(2)}` : a.value);
-    const t = el.querySelector(".tier"); t.textContent = a.tier || "uncalibrated"; t.className = "tier " + (a.tier || "human");
-    const bars = el.querySelector(".bars"); const order = Object.entries(a.probabilities).sort((x, y) => y[1] - x[1]);
-    const top = order[0][0];
-    for (const [lab, p] of order) {
-      let b = bars.querySelector(`[data-lab="${CSS.escape(lab)}"]`);
-      if (!b) { b = document.createElement("div"); b.className = "bar"; b.dataset.lab = lab; b.innerHTML = `<span class="lab"></span><div class="track"><div class="fill"></div></div><span class="pct"></span>`; bars.appendChild(b); }
-      b.classList.toggle("top", lab === top); b.querySelector(".lab").textContent = lab; b.querySelector(".fill").style.width = (p * 100).toFixed(1) + "%"; b.querySelector(".pct").textContent = (p * 100).toFixed(0) + "%";
-      bars.appendChild(b);
-    }
-    [...bars.children].forEach(b => { if (!(b.dataset.lab in a.probabilities)) b.remove(); });
-  }
-  [...root.children].forEach(el => { if (!seen.has(el.dataset.id)) el.remove(); });
-  const nc = res.answers.reduce((n, a) => n + Object.keys(a.probabilities).length, 0);
-  $("asklat").hidden = false; $("latnum").textContent = `${res.latency_ms.toFixed(0)} ms`; $("latnum").classList.remove("pulse"); void $("latnum").offsetWidth; $("latnum").classList.add("pulse");
-  $("latcmp").textContent = `${res.answers.length} question${res.answers.length === 1 ? "" : "s"}, ${nc} candidates, one forward pass · generating the same answers as JSON takes about ${Math.round(res.answers.length * 400)} ms on the same weights`;
-  $("askmeta").textContent = res.model;
-}
 let askTimer = null, askSeq = 0;
 async function decide() {
   const seq = ++askSeq; $("askerr").textContent = "";
-  try { let state = $("state").value; try { state = JSON.parse(state); } catch (e) {} const res = await api("/ask", { state, questions: readQuestions() }); if (seq === askSeq) renderAnswers(res); }
+  try { let state = $("state").value; try { state = JSON.parse(state); } catch (e) {} const res = await api("/ask", { state, questions: readQuestions() });
+    if (seq !== askSeq) return; renderAnswers($("results"), res.answers, false);
+    const nc = res.answers.reduce((n, a) => n + Object.keys(a.probabilities).length, 0);
+    $("askmeta").textContent = `${fmt(res.latency_ms)} · ${res.answers.length} question${res.answers.length === 1 ? "" : "s"}, ${nc} candidates, one pass · ${res.model}`;
+    decisions++; $("s-lat").textContent = res.latency_ms.toFixed(0); $("s-cand").textContent = nc; $("s-n").textContent = decisions; }
   catch (e) { if (seq === askSeq) $("askerr").textContent = e.message; }
 }
 function scheduleDecide() { if (!$("live").checked) return; clearTimeout(askTimer); askTimer = setTimeout(decide, 350); }
-$("state").addEventListener("input", scheduleDecide);
-$("qs").addEventListener("input", scheduleDecide);
+$("state").addEventListener("input", scheduleDecide); $("qs").addEventListener("input", scheduleDecide);
 document.addEventListener("keydown", e => { if ((e.metaKey || e.ctrlKey) && e.key === "Enter") { e.preventDefault(); decide(); } });
 $("askb").onclick = decide;
 
 // ---------- gridworld ----------
-let game = null, timer = null, lats = [], won = 0, lost = 0, busy = false;
-const MOVES = ["up", "down", "left", "right"];
-let trail = [];
-const DIRV = { up: [-1, 0], down: [1, 0], left: [0, -1], right: [0, 1] };
-const GLYPH = { up: "↑", down: "↓", left: "←", right: "→" };
+let game = null, timer = null, lats = [], won = 0, lost = 0, busy = false, trail = [];
+const MOVES = ["up", "down", "left", "right"], DIRV = { up: [-1, 0], down: [1, 0], left: [0, -1], right: [0, 1] }, GLYPH = { up: "↑", down: "↓", left: "←", right: "→" };
 function drawGrid(probs) {
-  const g = $("grid");
+  const g = $("gridel");
   if (g.children.length !== 25) { g.innerHTML = ""; for (let i = 0; i < 25; i++) { const d = document.createElement("div"); d.className = "cell"; d.innerHTML = `<span class="txt"></span><span class="arrow"></span>`; g.appendChild(d); } }
   if (!game) return;
   const [pr, pc] = game.player;
@@ -249,12 +343,10 @@ function drawGrid(probs) {
     d.className = cls; d.querySelector(".txt").textContent = txt;
     const ar = d.querySelector(".arrow"); ar.className = "arrow"; ar.textContent = "";
   }
-  if (probs && game.status === "ok") {
-    for (const [m, [dr, dc]] of Object.entries(DIRV)) {
-      const r = pr + dr, c = pc + dc; if (r < 0 || r > 4 || c < 0 || c > 4) continue;
-      const ar = g.children[r * 5 + c].querySelector(".arrow"); const p = probs[m];
-      ar.textContent = `${GLYPH[m]} ${(p * 100).toFixed(0)}`; ar.style.fontSize = (9 + 9 * p).toFixed(1) + "px"; ar.style.opacity = 0.35 + 0.65 * p; ar.classList.add("show");
-    }
+  if (probs && game.status === "ok") for (const [m, [dr, dc]] of Object.entries(DIRV)) {
+    const r = pr + dr, c = pc + dc; if (r < 0 || r > 4 || c < 0 || c > 4) continue;
+    const ar = g.children[r * 5 + c].querySelector(".arrow"); const p = probs[m];
+    ar.textContent = `${GLYPH[m]} ${(p * 100).toFixed(0)}`; ar.style.fontSize = (10 + 12 * p).toFixed(1) + "px"; ar.style.opacity = 0.3 + 0.7 * p; ar.classList.add("show");
   }
 }
 function drawBars(probs, move) {
@@ -265,31 +357,30 @@ function drawBars(probs, move) {
 function p50() { if (!lats.length) return "–"; const s = [...lats].sort((a, b) => a - b); return s[Math.floor(s.length / 2)].toFixed(0) + " ms"; }
 async function newGame() { stop(); game = await api("/grid/new", {}); trail = []; drawGrid(); drawBars(null); $("gmeta").textContent = "new game"; }
 async function step() {
-  if (!game || busy || game.status === "exit" || game.status === "dead") return;
-  busy = true;
+  if (!game || busy || game.status !== "ok") return; busy = true;
   try {
     const r = await api("/grid/step", { game });
     lats.push(r.latency_ms); if (lats.length > 200) lats.shift();
     drawBars(r.probabilities, r.move); drawGrid(r.probabilities);
-    await new Promise(res => setTimeout(res, 260));
+    await new Promise(res => setTimeout(res, 320));
     trail.push(game.player); game = r.game; drawGrid();
-    $("gmeta").textContent = `chose ${r.move} (${(r.probabilities[r.move] * 100).toFixed(0)}%) · ${r.optimal ? "optimal" : "not optimal"} · ${r.latency_ms.toFixed(0)} ms · ${r.model}`;
+    $("gmeta").textContent = `chose ${r.move} at ${(r.probabilities[r.move] * 100).toFixed(0)}% · ${r.optimal ? "optimal" : "not optimal"} · ${fmt(r.latency_ms)} · ${r.model}`;
     $("lat").textContent = p50();
-    if (game.status === "exit") { won++; $("won").textContent = won; $("gmeta").textContent += " · reached the exit"; stop(); }
+    if (game.status === "exit") { won++; $("won").textContent = won; $("s-won").textContent = won; $("gmeta").textContent += " · reached the exit"; stop(); }
     else if (game.status === "dead") { lost++; $("lost").textContent = lost; $("gmeta").textContent += " · walked into the monster"; stop(); }
     else if (game.steps >= 12) { lost++; $("lost").textContent = lost; $("gmeta").textContent += " · out of moves"; game.status = "dead"; stop(); }
   } catch (e) { $("gmeta").textContent = e.message; stop(); } finally { busy = false; }
 }
-function play() { stop(); $("playg").textContent = "Pause"; timer = setInterval(async () => { if (!game || game.status !== "ok") { await newGame(); $("playg").textContent = "Pause"; timer = timer || null; } await step(); }, 1320 - +$("speed").value); }
+function play() { stop(); $("playg").textContent = "Pause"; timer = setInterval(async () => { if (!game || game.status !== "ok") { game = await api("/grid/new", {}); trail = []; drawGrid(); } await step(); }, 1320 - +$("speed").value); }
 function stop() { if (timer) clearInterval(timer); timer = null; $("playg").textContent = "Auto-play"; }
-$("newg").onclick = newGame; $("stepg").onclick = () => { stop(); step(); }; $("playg").onclick = () => timer ? stop() : play();
-$("speed").oninput = () => { if (timer) play(); };
+$("newg").onclick = newGame; $("stepg").onclick = () => { stop(); step(); }; $("playg").onclick = () => timer ? stop() : play(); $("speed").oninput = () => { if (timer) play(); };
 
 // ---------- boot ----------
 (async () => {
-  drawGrid(); drawBars(null); loadPreset("Support ticket");
-  try { const h = await api("/health"); $("dot").classList.add("on"); $("status").textContent = (h.mock ? "mock server" : h.models.questions) + (h.calibrated ? " · calibrated" : " · no calibration file"); await newGame(); $("askb").click(); await step(); }
-  catch (e) { $("status").textContent = "server not reachable"; }
+  drawGrid(); drawBars(null);
+  try { const h = await api("/health"); $("dot").classList.add("on"); $("status").textContent = (h.mock ? "mock server" : h.models.questions) + (h.calibrated ? " · calibrated" : ""); }
+  catch (e) { $("status").textContent = "server not reachable"; return; }
+  runHero(); loadPreset("Support ticket"); await newGame(); await step();
 })();
 </script>
 </body>

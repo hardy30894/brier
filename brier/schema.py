@@ -68,6 +68,7 @@ class Decision:
     fields: dict[str, FieldDecision]
     latency_ms: float
     type_error: bool = False
+    text: str = ""
 
     def __getitem__(self, k):
         return self.fields[k].value
