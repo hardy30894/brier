@@ -220,7 +220,7 @@ function render(root, answers) {
     if (!el) { el = document.createElement("div"); el.className = "q"; el.dataset.id = a.id; el.innerHTML = `<div class="h"><span class="id"></span><span class="kind"></span><span class="val"></span><span class="tier"></span></div><div class="rows"></div>`; root.appendChild(el); }
     el.querySelector(".id").textContent = a.id; el.querySelector(".kind").textContent = a.kind;
     el.querySelector(".val").textContent = a.kind === "claim" ? `p = ${a.value.toFixed(3)}` : (a.kind === "score" && a.expected != null ? `${a.value}  E[level] ${a.expected.toFixed(2)}` : a.value);
-    const t = el.querySelector(".tier"); t.textContent = a.tier || "uncalibrated"; t.className = "tier " + (a.tier || "none");
+    const t = el.querySelector(".tier"); t.textContent = a.tier ? `${a.tier}${calApplied.startsWith("built-in") ? " · synthetic" : ""}` : "uncalibrated"; t.title = a.tier ? `tier from calibration on ${calApplied}; the precision target holds for inputs like those` : "no calibration for this question: raw model probabilities"; t.className = "tier " + (a.tier || "none");
     const rows = el.querySelector(".rows"); const order = Object.entries(a.probabilities).sort((x, y) => y[1] - x[1]); const top = order[0][0];
     for (const [lab, p] of order) {
       let r = rows.querySelector(`[data-lab="${CSS.escape(lab)}"]`);
@@ -311,11 +311,12 @@ function readExamples() {
   lines.forEach((l, i) => { try { const o = JSON.parse(l); if (!("state" in o) || !("labels" in o)) throw new Error("needs state and labels"); out.push(o); } catch (e) { errs.push(`line ${i + 1}: ${e.message}`); } });
   return { examples: out, errs };
 }
+let calSource = "", calApplied = "";
 function countExamples() { $("cn").textContent = readExamples().examples.length; }
-$("cexamples").addEventListener("input", countExamples);
+$("cexamples").addEventListener("input", () => { countExamples(); [...$("cload").children].forEach(x => x.classList.remove("on")); calSource = `${readExamples().examples.length} pasted examples`; });
 [["tickets", 200], ["gridworld", 200], ["passages", 200], ["duplicates", 200]].forEach(([t, n]) => {
   const b = document.createElement("button"); b.textContent = `${t} ×${n}`;
-  b.onclick = async () => { try { const r = await api(`/examples?task=${t}&n=${n}`); $("cquestions").value = r.questions; $("questions").value = r.questions; $("cexamples").value = r.examples.map(e => JSON.stringify(e)).join("\n"); countExamples(); [...$("cload").children].forEach(x => x.classList.toggle("on", x === b)); } catch (e) { $("cerr").textContent = e.message; } };
+  b.onclick = async () => { try { const r = await api(`/examples?task=${t}&n=${n}`); $("cquestions").value = r.questions; $("questions").value = r.questions; $("cexamples").value = r.examples.map(e => JSON.stringify(e)).join("\n"); calSource = `built-in ${t} ×${n}, synthetic`; countExamples(); [...$("cload").children].forEach(x => x.classList.toggle("on", x === b)); } catch (e) { $("cerr").textContent = e.message; } };
   $("cload").appendChild(b);
 });
 function reliabilitySvg(q) {
@@ -336,14 +337,14 @@ $("crun").onclick = async () => {
   $("cerr").textContent = [...errs, ...ex.errs.slice(0, 3)].join("\n"); if (!questions.length || !ex.examples.length) return;
   $("questions").value = $("cquestions").value;
   $("crun").disabled = true; $("cstatus").textContent = `running ${ex.examples.length} examples through the model…`; const t0 = performance.now();
-  try { const r = await api("/calibrate", { questions, examples: ex.examples, targets: [["auto", +$("tauto").value], ["review", +$("treview").value]] }); renderCal(r); $("cstatus").textContent = `done in ${((performance.now() - t0) / 1000).toFixed(1)} s · Decide now applies these temperatures and tiers`; $("cal").textContent = "calibrated"; decide(); }
+  try { const r = await api("/calibrate", { questions, examples: ex.examples, targets: [["auto", +$("tauto").value], ["review", +$("treview").value]] }); renderCal(r); calApplied = calSource || `${ex.examples.length} examples`; $("cstatus").textContent = `done in ${((performance.now() - t0) / 1000).toFixed(1)} s · Decide now applies these temperatures and tiers, valid for inputs like these`; $("cal").textContent = `calibrated on ${calApplied}`; decide(); }
   catch (e) { $("cerr").textContent = e.message; $("cstatus").textContent = ""; } finally { $("crun").disabled = false; }
 };
 
 // ---- boot ----
 (async () => {
   drawGrid(); drawBars(null);
-  try { const h = await api("/health"); $("dot").classList.add("on"); modelName = h.mock ? "mock" : h.models.questions; $("model").textContent = modelName; $("cal").textContent = h.calibrated ? "calibrated" : "no calibration file"; }
+  try { const h = await api("/health"); $("dot").classList.add("on"); modelName = h.mock ? "mock" : h.models.questions; $("model").textContent = modelName; $("cal").textContent = h.calibrated ? "calibrated (server file)" : "no calibration file"; if (h.calibrated) calApplied = "the server's calibration file"; }
   catch (e) { $("model").textContent = "server not reachable"; return; }
   decide();
   if (location.hash === "#gridworld") setMode("m-play"); if (location.hash.startsWith("#calibrate")) setMode("m-cal");
