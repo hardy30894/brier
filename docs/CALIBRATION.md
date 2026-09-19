@@ -50,7 +50,9 @@ open("rel_tickets.svg", "w").write(reliability_svg(cal))
 ```
 
 Labels may be a single value, a boolean for a Claim, or a tuple of acceptable values
-when several answers are correct.
+when several answers are correct. Soft labels (a dict of answer to probability) are a
+training-time concept; evaluation and calibration use hard labels only, because "was it
+right" has to be answerable per decision to measure calibration.
 
 ## Reading the report
 

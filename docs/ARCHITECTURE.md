@@ -448,10 +448,26 @@ checkable outcome.
 number, and it must improve on a task the model never trained on. If training cannot
 beat a one-parameter fix, it is not earning its keep.
 
-**Typed heads**, which replace the LM head with a small per-field-type output layer
-reading the hidden states directly, are the second stage. They remove the dependence on
-tokenization and prompt format at the cost of starting from nothing rather than from the
-backbone's good prior; the primer's last section discusses the trade.
+**The typed head.** Round three adds the first component that reads the backbone's
+hidden states rather than its vocabulary: two zero-initialised corrections over the
+LM-head scores, an input-conditional temperature computed from the state's
+representation and a per-candidate residual from the candidate's. Untrained it is
+exactly the plain scorer; trained jointly with LoRA it lets the model be sharp on easy
+inputs and flat on hard ones, which a single temperature cannot express. The
+[primer's section 17](PRIMER.md#17-the-typed-head) gives the equation.
+
+**Outcome rewards.** Gridworld is an environment, not just a dataset. `rl.py` trains
+with no labels at all: the model states a distribution over moves, one is sampled and
+executed, and the environment reports the outcome, either "got closer" for a single step
+or "reached the exit" for a whole episode. The loss is a policy-gradient term on the
+outcome plus the Brier score of the stated probability against it, so the fixed point is
+still honesty. [Primer section 18](PRIMER.md#18-outcome-rewards-the-policy-gradient-form)
+derives it; [TRAINING.md](TRAINING.md) has the numbers, including the six-step episodes
+whose delayed reward is the first signal that is not equivalent to a label.
+
+**The demo.** `record.py` plays episodes with any model or adapter and writes every
+step's distribution; [demo.html](demo.html) replays them with the grid, the four
+probabilities, the chosen move and its latency, tick by tick.
 
 ### 4.4 What this is, in one sentence
 
@@ -562,16 +578,27 @@ labelled examples and keeps raw scores; `calibrate` cross-fits a temperature per
 question, measures ECE and Brier held-out, and derives the decision policy;
 `Calibration` saves, loads and applies; `report` prints; `reliability_svg` draws.
 
-**`train.py`.** Milestone 2: LoRA fine-tuning with the per-question cross-entropy loss,
-using the scorer's own `build_rows`, `batch` and `candidate_logprobs` so that training
-and inference score candidates identically.
+**`train.py`.** LoRA fine-tuning with the per-question cross-entropy loss, hard or soft
+targets, using the scorer's own `build_rows`, `batch` and `scores_from_rows` so that
+training and inference score candidates identically. `--head` trains the typed head
+jointly; `--split train --uncertain 0.3` selects held-out templates and ambiguous
+examples.
+
+**`brier/head.py`.** The typed head: input-conditional temperature plus per-candidate
+residual over hidden states, zero-initialised.
+
+**`rl.py`, `record.py`, `demo.html`.** Outcome-reward training on gridworld
+(single-step or `--episode N`), trajectory recording, and the replay page.
 
 The measurement path is everything else.
 
-**`tasks/`.** Five generators (tickets, gridworld, tool-call selection, passage
-relevance, frustration), each producing `{state, questions, labels}` examples with
-ground truth the generator chose. `tasks.examples(name, n, seed)` is the one entry
-point used by the bench, the calibration CLI and the trainer.
+**`tasks/`.** Eight tasks, each producing `{state, questions, labels}` examples:
+tickets, gridworld, tool-call selection, passage relevance and invoice matching for
+training; frustration and duplicates held out; banking77, a real dataset, held out. Every
+templated generator takes `split` (train or eval template halves) and `uncertain` (the
+fraction of genuinely ambiguous examples with soft labels). `tasks.examples(name, n,
+seed, split, uncertain)` is the one entry point used by the bench, the calibration CLI
+and the trainers.
 
 **`brier/metrics.py`.** ECE with its per-bin table, Brier score, latency percentiles,
 and `fit_temperature`, a grid search over T minimising negative log-likelihood on the

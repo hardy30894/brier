@@ -28,24 +28,7 @@ def outline(text, face="AvenirNext-DemiBold", size=48, tracking=-0.5):
     return "".join(paths), x, lo * k, hi * k
 
 
-def logo(name, text_fill, tile, accent):
-    glyphs, width, ymin, ymax = outline("brier", face="AvenirNext-DemiBold", size=46, tracking=-1.2)
-    mark = 60
-    cy = 8 + mark / 2
-    baseline = cy + (ymax + ymin) / 2
-    total_w = 8 + mark + 18 + width + 6
-    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="{total_w:.0f}" height="76" viewBox="0 0 {total_w:.0f} 76">
-  <rect x="8" y="8" width="{mark}" height="{mark}" rx="14" fill="{tile}"/>
-  <path d="M20 56 L56 20" stroke="{accent}" stroke-width="3" stroke-linecap="round"/>
-  <path d="M20 56 C 34 50, 40 44, 44 32" stroke="{accent}" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.45"/>
-  <circle cx="44" cy="32" r="5.5" fill="{accent}"/>
-  <g fill="{text_fill}" transform="translate({8 + mark + 18} {baseline:.2f})">{glyphs}</g>
-</svg>'''
-    (HERE / f"{name}.svg").write_text(svg)
-
-
-logo("brier", "#1B1F24", "#3557C4", "#FFFFFF")
-logo("brier-dark", "#F5F7FA", "#5B8DEF", "#0D1117")
+# The logo is a supplied image (docs/brier.png, docs/brier-dark.png); it is not generated here.
 
 FONT = "'Helvetica Neue', Helvetica, Arial, sans-serif"
 INK, MUTED, FAINT, BLUE, PALE, VIOLET, LINE = "#1B1F24", "#5B6B7C", "#8A94A0", "#3557C4", "#EEF3FF", "#8A2BE2", "#D8DEE6"

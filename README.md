@@ -1,8 +1,8 @@
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/brier-dark.svg">
-  <img alt="Brier" src="docs/brier.svg" width="340">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/brier-dark.png">
+  <img alt="Brier" src="docs/brier.png" width="260">
 </picture>
 
 **Decisions, not text. Typed, in one pass, with a probability you can trust.**

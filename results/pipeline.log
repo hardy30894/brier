@@ -1,24 +1,10 @@
 + cd /workspace/brier
 + mkdir -p results adapters
-+ ALL=tickets,gridworld,toolcall,passages,frustration,duplicates,banking
-+ for m in Qwen/Qwen3-0.6B Qwen/Qwen3-1.7B HuggingFaceTB/SmolLM2-1.7B-Instruct
-++ basename Qwen/Qwen3-0.6B
-+ t=Qwen3-0.6B
-+ python3 -m brier calibrate --model Qwen/Qwen3-0.6B --split eval --task tickets,gridworld,toolcall,passages,frustration,duplicates,banking --n 300
-+ for m in Qwen/Qwen3-0.6B Qwen/Qwen3-1.7B HuggingFaceTB/SmolLM2-1.7B-Instruct
-++ basename Qwen/Qwen3-1.7B
-+ t=Qwen3-1.7B
-+ python3 -m brier calibrate --model Qwen/Qwen3-1.7B --split eval --task tickets,gridworld,toolcall,passages,frustration,duplicates,banking --n 300
-+ for m in Qwen/Qwen3-0.6B Qwen/Qwen3-1.7B HuggingFaceTB/SmolLM2-1.7B-Instruct
-++ basename HuggingFaceTB/SmolLM2-1.7B-Instruct
-+ t=SmolLM2-1.7B-Instruct
-+ python3 -m brier calibrate --model HuggingFaceTB/SmolLM2-1.7B-Instruct --split eval --task tickets,gridworld,toolcall,passages,frustration,duplicates,banking --n 300
-+ python3 train.py --model Qwen/Qwen3-0.6B --steps 1500 --split train --uncertain 0.3 --batch 2 --accum 2
-+ python3 -m brier calibrate --model Qwen/Qwen3-0.6B --adapter adapters/Qwen3-0.6B-brier-r16-s1500-u0.3-train --split eval --task tickets,gridworld,toolcall,passages,frustration,duplicates,banking --n 300
-+ python3 rl.py --model Qwen/Qwen3-0.6B --steps 600
-+ python3 -m brier calibrate --model Qwen/Qwen3-0.6B --adapter adapters/Qwen3-0.6B-brier-rl-s600 --split eval --task gridworld,frustration --n 300
-+ python3 rl.py --model Qwen/Qwen3-0.6B --steps 400 --init adapters/Qwen3-0.6B-brier-r16-s1500-u0.3-train
-+ python3 -m brier calibrate --model Qwen/Qwen3-0.6B --adapter adapters/Qwen3-0.6B-brier-rl-s400-from-sup --split eval --task gridworld,frustration --n 300
-+ python3 train.py --model Qwen/Qwen3-1.7B --steps 1500 --split train --uncertain 0.3 --batch 2 --accum 2
-+ python3 -m brier calibrate --model Qwen/Qwen3-1.7B --adapter adapters/Qwen3-1.7B-brier-r16-s1500-u0.3-train --split eval --task tickets,gridworld,toolcall,passages,frustration,duplicates,banking --n 300
-+ echo DONE
++ pip install -q 'transformers>=4.51,<4.57' accelerate numpy huggingface_hub peft
++ ALL=tickets,gridworld,toolcall,passages,matching,frustration,duplicates,banking
++ TR=tickets,gridworld,toolcall,passages,matching
++ python3 dbg_head.py
++ python3 train.py --model Qwen/Qwen3-0.6B --tasks tickets,gridworld,toolcall,passages,matching --steps 1500 --split train --uncertain 0.3 --batch 2 --accum 2
++ python3 -m brier calibrate --model Qwen/Qwen3-0.6B --adapter adapters/Qwen3-0.6B-brier-r16-s1500-u0.3-train --tag Qwen3-0.6B-r3 --split eval --task tickets,gridworld,toolcall,passages,matching,frustration,duplicates,banking --n 300
++ python3 -m brier calibrate --model Qwen/Qwen3-0.6B --split eval --task matching --n 300
++ python3 train.py --model Qwen/Qwen3-4B --tasks tickets,gridworld,toolcall,passages,matching --steps 1200 --split train --uncertain 0.3

@@ -1,0 +1,17 @@
+  collected 50/300 (2s)
+  collected 100/300 (4s)
+  collected 150/300 (5s)
+  collected 200/300 (7s)
+  collected 250/300 (9s)
+  collected 300/300 (10s)
+
+== matching ==
+calibration report  model=Qwen3-0.6B@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+matches            300  0.627    0.213    0.224     0.173     0.163    0.801    0.767   1.33
+
+decision policy (calibrated confidence cutoffs, held-out):
+  matches          auto    target 0.95: act when confidence >= 0.731  -> precision 0.952, covers 55% of decisions
+  matches          review  target 0.80: act when confidence >= 0.643  -> precision 0.800, covers 67% of decisions
+  matches          human   everything below

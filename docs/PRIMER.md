@@ -26,7 +26,9 @@ Where the [architecture doc](ARCHITECTURE.md) says *what* Brier does, this docum
 14. [Fine-tuning and LoRA](#14-fine-tuning-and-lora)
 15. [The Brier training objective](#15-the-brier-training-objective)
 16. [Why it generalises, and when it will not](#16-why-it-generalises-and-when-it-will-not)
-17. [Beyond: outcome rewards, typed heads, and open questions](#17-beyond-outcome-rewards-typed-heads-and-open-questions)
+17. [The typed head](#17-the-typed-head)
+18. [Outcome rewards: the policy-gradient form](#18-outcome-rewards-the-policy-gradient-form)
+19. [Beyond: open questions](#19-beyond-open-questions)
 
 ---
 
@@ -53,15 +55,26 @@ Two facts to hold on to:
 
 ## 2. Expectation, entropy, and what "confidence" can mean
 
-**Expectation.** If outcomes have numeric values *v₁ … vₙ* and probabilities
-*p₁ … pₙ*, the expected value is Σ pᵢ vᵢ, the probability-weighted average. Brier uses
-it for `Score` questions: levels `calm < annoyed < angry < furious` are given positions
-0, 1, 2, 3, and `expected` is Σ pᵢ · i. A distribution of 0.5 on `annoyed` and 0.5 on
-`angry` has expected level 1.5, which correctly says "between the two" where the argmax
-would have to pick one.
+**Expectation.** If outcomes have numeric values $v_1, \dots, v_n$ and probabilities
+$p_1, \dots, p_n$, the expected value is the probability-weighted average:
 
-**Entropy.** *H = −Σ pᵢ log pᵢ* measures how spread out a distribution is. It is 0 when
-one outcome has all the mass, and *log n* when all *n* outcomes are equal.
+```math
+\mathbb{E}[v] = \sum_{i=1}^{n} p_i\, v_i
+```
+
+Brier uses it for `Score` questions: levels `calm < annoyed < angry < furious` are given
+positions $0, 1, 2, 3$, and `expected` is $\sum_i p_i \cdot i$. A distribution of 0.5 on
+`annoyed` and 0.5 on `angry` has expected level 1.5, which correctly says "between the
+two" where the argmax would have to pick one.
+
+**Entropy** measures how spread out a distribution is:
+
+```math
+H(p) = -\sum_{i=1}^{n} p_i \log p_i
+```
+
+It is $0$ when one outcome has all the mass, and $\log n$ when all $n$ outcomes are
+equal.
 
 <p align="center"><img src="fig-entropy.svg" width="900" alt="three distributions: certain, leaning, uniform, with their top probability and entropy"></p>
 
@@ -75,9 +88,16 @@ that is a function of probabilities can be calibrated by fixing the probabilitie
 
 ## 3. Logarithms and log-probabilities
 
-The natural logarithm *log x* (base *e* ≈ 2.718) turns multiplication into addition:
-*log(ab) = log a + log b*. For probabilities, which lie in (0, 1], the log is ≤ 0: *log 1
-= 0*, *log 0.5 ≈ −0.69*, *log 0.01 ≈ −4.6*, and *log p → −∞* as *p → 0*.
+The natural logarithm $\log x$ (base $e \approx 2.718$) turns multiplication into
+addition:
+
+```math
+\log(ab) = \log a + \log b
+```
+
+For probabilities, which lie in $(0, 1]$, the log is $\le 0$: $\log 1 = 0$,
+$\log 0.5 \approx -0.69$, $\log 0.01 \approx -4.6$, and $\log p \to -\infty$ as
+$p \to 0$.
 
 Models work in log-probabilities for two reasons. Numerically, a product of two hundred
 probabilities each around 0.1 is 10⁻²⁰⁰, which underflows to zero in floating point,
@@ -85,60 +105,85 @@ while the sum of their logs, −460, is a perfectly ordinary number. Algebraical
 sequences are scored by *multiplying* per-token probabilities (section 5), which becomes
 *adding* per-token log-probabilities.
 
-Some anchors used throughout `results/`: a log-probability of −0.62 is a probability of
-0.54; −1.05 is 0.35; −3.1 is 0.045; −6.4 is 0.0017.
+Some anchors used throughout `results/`:
+
+| log-probability | probability |
+|---|---|
+| $-0.62$ | $0.54$ |
+| $-1.05$ | $0.35$ |
+| $-3.1$ | $0.045$ |
+| $-6.4$ | $0.0017$ |
 
 ## 4. Softmax and temperature
 
-Softmax turns any list of real numbers *s₁ … sₙ* (called **scores** or **logits**) into
-a distribution:
+Softmax turns any list of real numbers $s_1, \dots, s_n$ (called **scores** or
+**logits**) into a distribution:
 
-> pᵢ = exp(sᵢ / T) / Σⱼ exp(sⱼ / T)
+```math
+p_i \;=\; \frac{\exp(s_i / T)}{\sum_{j=1}^{n} \exp(s_j / T)}
+```
 
-with *T* > 0 the **temperature**. Exponentiation makes every term positive; dividing by
-the sum makes them add to one. Because *exp* is increasing, the order of the *p*s is the
-order of the *s*s: the argmax never changes with *T*.
+with $T > 0$ the **temperature**. Exponentiation makes every term positive; dividing by
+the sum makes them add to one. Because $\exp$ is increasing, the order of the $p_i$ is
+the order of the $s_i$: the argmax never changes with $T$.
 
 <p align="center"><img src="fig-softmax-curve.svg" width="900" alt="probabilities of four candidates plotted against temperature: sharp at low T, uniform at high T, never crossing"></p>
 
-*T* controls sharpness. As *T* → 0 all mass goes to the top score; at *T* = 1 the
-distribution is whatever the scores say; as *T* → ∞ it becomes uniform. Two details
-worth knowing:
+$T$ controls sharpness. As $T \to 0$ all mass goes to the top score; at $T = 1$ the
+distribution is whatever the scores say; as $T \to \infty$ it becomes uniform. Two
+details worth knowing:
 
 - Softmax is **shift-invariant**: adding a constant to every score leaves the output
   unchanged, because it cancels in the ratio. Implementations subtract the maximum score
   before exponentiating so that the largest exponent is 0 and nothing overflows. That is
   the `m = max(scores)` line in `scorer.py`.
-- If the scores are already log-probabilities *log qᵢ*, softmax at *T* = 1 is just
-  renormalisation: *pᵢ = qᵢ / Σ qⱼ*. This is what Brier does to a question's candidates:
+- If the scores are already log-probabilities $\log q_i$, softmax at $T = 1$ is just
+  renormalisation: $p_i = q_i / \sum_j q_j$. This is what Brier does to a question's
+  candidates:
   the scores in section 8 are log-probabilities of sequences, and softmax over them is
   the conditional distribution over the allowed answers given that the answer is one of
   them.
 
 ## 5. Conditional probability and the chain rule
 
-*P(A | B)* is the probability of *A* given that *B* is known. The **chain rule** writes
-the probability of a whole sequence as a product of conditionals:
+$P(A \mid B)$ is the probability of $A$ given that $B$ is known. The **chain rule**
+writes the probability of a whole sequence as a product of conditionals:
 
-> P(x₁, x₂, …, xₙ) = P(x₁) · P(x₂ | x₁) · P(x₃ | x₁, x₂) · … · P(xₙ | x₁ … xₙ₋₁)
+```math
+P(x_1, x_2, \dots, x_n) \;=\; P(x_1)\, P(x_2 \mid x_1)\, P(x_3 \mid x_1, x_2) \cdots P(x_n \mid x_1, \dots, x_{n-1})
+\;=\; \prod_{t=1}^{n} P(x_t \mid x_{<t})
+```
 
 This is not an approximation; it is an identity. Its importance is that a system which
-can compute *P(next | everything so far)* can, by multiplying, compute the probability of
-any sequence. In logs, by adding.
+can compute $P(\text{next} \mid \text{everything so far})$ can, by multiplying, compute
+the probability of any sequence. In logs, by adding:
+
+```math
+\log P(x_1, \dots, x_n) \;=\; \sum_{t=1}^{n} \log P(x_t \mid x_{<t})
+```
 
 ## 6. What a language model is, mathematically
 
-A language model is a function that takes a sequence of tokens *x₁ … xₜ* and returns
-*P(xₜ₊₁ = v | x₁ … xₜ)* for every token *v* in the vocabulary. That is all. It is a
-next-token conditional distribution, and by the chain rule, therefore a distribution
-over all sequences.
+A language model is a function with parameters $\theta$ that takes a sequence of
+tokens $x_1, \dots, x_t$ and returns, for every token $v$ in the vocabulary,
 
-**Training** a language model means choosing its parameters *θ* (the weights, billions
-of numbers) to make the training text likely: maximise Σ log P_θ(xₜ₊₁ | x₁ … xₜ) over
-every position of every document. Equivalently, minimise the **cross-entropy** between
-the model's prediction and the actual next token, which is −log P_θ(actual). Section 10
-shows this is a proper scoring rule, which is why a pretrained model's next-token
-distribution is reasonably honest *as a model of text*.
+```math
+P_\theta(x_{t+1} = v \mid x_1, \dots, x_t)
+```
+
+That is all. It is a next-token conditional distribution, and by the chain rule,
+therefore a distribution over all sequences.
+
+**Training** a language model means choosing $\theta$ (the weights, billions of numbers)
+to make the training text likely, that is, to minimise the **cross-entropy** between
+the model's prediction and the actual next token at every position of every document:
+
+```math
+\mathcal{L}_{\text{LM}}(\theta) \;=\; -\sum_{\text{docs}} \sum_{t} \log P_\theta(x_{t+1} \mid x_{\le t})
+```
+
+Section 10 shows this is a proper scoring rule, which is why a pretrained model's
+next-token distribution is reasonably honest *as a model of text*.
 
 Two consequences shape everything Brier does:
 
@@ -163,14 +208,20 @@ understand what LoRA modifies and where a typed head would attach.
    Qwen3-0.6B, 36 for 4B). Each block has two parts.
    - **Attention.** For each position, compute a *query* vector, and for every position
      at or before it a *key* and a *value* vector (all by multiplying the hidden vector
-     by learned matrices *W_q, W_k, W_v*). The output at a position is the average of
-     the values, weighted by softmax(query · keyᵀ / √d). This is how information moves
+     by learned matrices $W_q, W_k, W_v$). The output at a position is the average of
+     the values, weighted by the softmax of scaled dot products:
+
+     ```math
+     \text{Attention}(Q, K, V) \;=\; \text{softmax}\!\left(\frac{Q K^{\top}}{\sqrt{d}}\right) V
+     ```
+
+     This is how information moves
      between positions: the vector at the candidate token can look back at the input.
      Causal masking ensures positions only look backward, which is what makes the model
      a valid *next*-token predictor and what makes batched scoring correct (a candidate
      cannot see other rows or its own future).
    - **MLP.** The same two-layer network applied to every position independently, with
-     matrices *W_gate, W_up, W_down*.
+     matrices $W_{\text{gate}}, W_{\text{up}}, W_{\text{down}}$.
    Each part adds its output to its input (**residual connection**) and is preceded by a
    normalisation. So the block is a refinement, not a replacement, of the vectors.
 3. **Hidden states.** After the last block, one vector per position. This is the
@@ -178,26 +229,32 @@ understand what LoRA modifies and where a typed head would attach.
 4. **LM head.** A final matrix maps each hidden vector to one score per vocabulary
    entry (150k scores). Softmax over them is the next-token distribution.
 
-The seven matrices named above, *W_q, W_k, W_v, W_o* in attention and *W_gate, W_up,
-W_down* in the MLP, are exactly the ones LoRA adapts in section 14. The hidden states
+The seven matrices named above, $W_q, W_k, W_v, W_o$ in attention and
+$W_{\text{gate}}, W_{\text{up}}, W_{\text{down}}$ in the MLP, are exactly the ones LoRA
+adapts in section 14. The hidden states
 in step 3 are where a typed head (section 17) would read.
 
 ## 8. Scoring a candidate: the chain rule applied
 
-Now the core of Brier in one line. Given a prompt *c* (the state, the questions, the
-chat template) and a candidate answer whose tokens are *a₁ … aₖ*, its score is
+Now the core of Brier in one line. Given a prompt $c$ (the state, the questions, the
+chat template) and a candidate answer whose tokens are $a_1, \dots, a_k$, its score is
 
-> score(a) = log P(a₁ … aₖ | c) = Σᵢ log P(aᵢ | c, a₁ … aᵢ₋₁)
+```math
+s(a) \;=\; \log P_\theta(a_1, \dots, a_k \mid c) \;=\; \sum_{i=1}^{k} \log P_\theta(a_i \mid c, a_1, \dots, a_{i-1})
+```
 
 by the chain rule (section 5), with each term read directly from the model's next-token
 distribution (section 6) at the corresponding position. One forward pass over the
-sequence *c · a* yields all *k* terms at once, because the model produces a distribution
-at every position.
+sequence $c \cdot a$ yields all $k$ terms at once, because the model produces a
+distribution at every position.
 
-For a question with allowed answers *a⁽¹⁾ … a⁽ⁿ⁾*, softmax over their scores (section 4,
-*T* = 1) gives
+For a question with allowed answers $a^{(1)}, \dots, a^{(n)}$, softmax over their scores
+(section 4, $T = 1$) gives
 
-> P(answer = a⁽ʲ⁾ | c, answer ∈ allowed) = exp(score(a⁽ʲ⁾)) / Σᵢ exp(score(a⁽ⁱ⁾))
+```math
+P\big(\text{answer} = a^{(j)} \,\big|\, c,\ \text{answer} \in \{a^{(1)}, \dots, a^{(n)}\}\big)
+\;=\; \frac{\exp s(a^{(j)})}{\sum_{i=1}^{n} \exp s(a^{(i)})}
+```
 
 which is precisely the model's conditional distribution over the allowed set. Nothing
 outside the set can receive probability. That is the type guarantee, stated as an
@@ -218,53 +275,89 @@ Two subtleties that bit during development and are worth understanding:
 
 ## 9. Calibration, formally
 
-Let a model report confidence *c* for a decision and let *y* ∈ {0, 1} record whether the
-decision was correct. The model is **calibrated** if, for every value *c*,
+Let a model report confidence $c$ for a decision and let $y \in \{0, 1\}$ record
+whether the decision was correct. The model is **calibrated** if, for every value $c$,
 
-> P(y = 1 | confidence = c) = c
+```math
+P(y = 1 \mid \text{confidence} = c) \;=\; c
+```
 
 Among all decisions where it said 0.8, 80% are right. This is a statement about
 *aggregates*: it says nothing about any single decision, and a calibrated model can be
 wrong on a 0.99 (it should be, about 1% of the time).
 
-Because *c* is continuous, the definition is checked by binning. Split [0, 1] into *M*
-bins; in bin *m* let *conf(m)* be the mean reported confidence and *acc(m)* the fraction
-correct. The **expected calibration error** is
+Because $c$ is continuous, the definition is checked by binning. Split $[0, 1]$ into
+$M$ bins; in bin $m$ with $n_m$ decisions, let $\text{conf}(m)$ be the mean reported
+confidence and $\text{acc}(m)$ the fraction correct. The **expected calibration
+error** is
 
-> ECE = Σₘ (nₘ / N) · |acc(m) − conf(m)|
+```math
+\text{ECE} \;=\; \sum_{m=1}^{M} \frac{n_m}{N}\,\big|\,\text{acc}(m) - \text{conf}(m)\,\big|
+```
 
 the average gap between what was claimed and what was delivered, weighted by how many
-decisions fell in each bin. Brier uses *M* = 10 equal-width bins. The reliability
+decisions fell in each bin. Brier uses $M = 10$ equal-width bins. The reliability
 diagram in the architecture doc is the plot of *acc(m)* against *conf(m)*; ECE is the
 weighted distance from the diagonal.
 
-A model can be miscalibrated in two directions. **Overconfident**: *conf > acc*, the
-curve below the diagonal. This is the near-universal failure of language models used as
-classifiers. **Underconfident**: *conf < acc*, above the diagonal; rarer, and it appears
-when temperature is set too high.
+A model can be miscalibrated in two directions. **Overconfident**: $\text{conf} >
+\text{acc}$, the curve below the diagonal. This is the near-universal failure of
+language models used as classifiers. **Underconfident**: $\text{conf} < \text{acc}$,
+above the diagonal; rarer, and it appears when temperature is set too high.
 
 ## 10. Proper scoring rules
 
 How do you train or evaluate a probability, when the truth is a single outcome rather
-than a probability? With a **scoring rule**: a loss *L(p, y)* charged for stating
-distribution *p* when outcome *y* occurs. A rule is **proper** if the expected loss,
-under any true distribution *q*, is minimised by stating *p = q*. It is **strictly
-proper** if *q* is the *unique* minimiser. Under a strictly proper rule, honesty is the
-only optimal policy: there is no way to game the score by overclaiming or hedging.
+than a probability? With a **scoring rule**: a loss $L(p, y)$ charged for stating
+distribution $p$ when outcome $y$ occurs. A rule is **proper** if the expected loss
+under any true distribution $q$,
+
+```math
+\mathbb{E}_{y \sim q}\,[L(p, y)],
+```
+
+is minimised by stating $p = q$. It is **strictly proper** if $q$ is the *unique*
+minimiser. Under a strictly proper rule, honesty is the only optimal policy: there is no
+way to game the score by overclaiming or hedging.
 
 Two rules matter here.
 
-**Log loss** (cross-entropy): *L = −log p(y)*. Stating probability *p* on the outcome
-that happened costs −log *p*: nothing for *p* = 1, unbounded as *p* → 0. To see it is
-proper, take a binary outcome with true probability *q*; the expected loss of stating
-*p* is *−q log p − (1−q) log(1−p)*, whose derivative in *p* is zero exactly at *p = q*.
+**Log loss** (cross-entropy):
+
+```math
+L_{\log}(p, y) \;=\; -\log p(y)
+```
+
+Stating probability $p$ on the outcome that happened costs $-\log p$: nothing for
+$p = 1$, unbounded as $p \to 0$. To see it is proper, take a binary outcome with true
+probability $q$. The expected loss of stating $p$ is
+
+```math
+\mathbb{E}[L_{\log}] \;=\; -q \log p \;-\; (1 - q)\log(1 - p),
+\qquad
+\frac{\partial}{\partial p}\,\mathbb{E}[L_{\log}] \;=\; -\frac{q}{p} + \frac{1-q}{1-p} \;=\; 0
+\;\iff\; p = q .
+```
+
 This is the training loss of every language model and, in section 15, of Brier.
 
-**Brier score**: *L = Σᵢ (pᵢ − 𝟙[y = i])²*, the squared distance between the stated
-distribution and the one-hot truth. For the binary case it is *(p − y)²*. Bounded,
+**Brier score**:
+
+```math
+L_{\text{Brier}}(p, y) \;=\; \sum_{i=1}^{n} \big(p_i - \mathbb{1}[y = i]\big)^2,
+\qquad \text{binary case: } (p - y)^2
+```
+
+the squared distance between the stated distribution and the one-hot truth. Bounded,
 gentler than log loss on confident misses, and also strictly proper by the same
-derivative argument. Brier reports it in `metrics.py` alongside ECE and uses it as the
-outcome reward in section 17.
+derivative argument:
+
+```math
+\frac{\partial}{\partial p}\,\mathbb{E}\big[(p - y)^2\big] \;=\; 2(p - q) \;=\; 0 \;\iff\; p = q .
+```
+
+Brier reports it in `metrics.py` alongside ECE and uses it as the outcome reward in
+section 18.
 
 <p align="center"><img src="fig-scoring-rules.svg" width="900" alt="loss as a function of the stated probability of the outcome that occurred, for the Brier score and for log loss"></p>
 
@@ -285,24 +378,27 @@ raw model is too sharp. So: find the *T* that makes the model honest, on data wi
 answers.
 
 "Honest" is operationalised with the log scoring rule (section 10). Given held-out
-decisions with scores *s* and correct index *y*, choose *T* to minimise
+decisions $d = 1, \dots, D$, each with scores $s^{(d)}$ and correct index $y^{(d)}$,
+choose $T$ to minimise the negative log-likelihood
 
-> NLL(T) = −Σ_decisions log softmax(s / T)[y]
+```math
+\text{NLL}(T) \;=\; -\sum_{d=1}^{D} \log \frac{\exp\big(s^{(d)}_{y^{(d)}} / T\big)}{\sum_{j} \exp\big(s^{(d)}_{j} / T\big)}
+```
 
-This is one-dimensional, so a grid search over *T* (Brier uses 160 log-spaced values
-from 0.05 to 20) is exact enough. The resulting *T* is the maximum-likelihood
+This is one-dimensional, so a grid search over $T$ (Brier uses 160 log-spaced values
+from 0.05 to 20) is exact enough. The resulting $T$ is the maximum-likelihood
 temperature.
 
-Fitting *T* on the same data you evaluate on would overstate the improvement, so
-`calibrate.py` uses **cross-fitting**: split the data into *k* folds, fit *T* on *k−1*,
+Fitting $T$ on the same data you evaluate on would overstate the improvement, so
+`calibrate.py` uses **cross-fitting**: split the data into $k$ folds, fit $T$ on $k-1$,
 score the held-out fold, rotate, and pool the held-out confidences to compute ECE and the
-thresholds. The final *T* shipped in the calibration file is fit on all the data. Every
+thresholds. The final $T$ shipped in the calibration file is fit on all the data. Every
 "ECE after temp" number in `results/` is a held-out number.
 
 Temperature scaling has one parameter per question. It can fix a *global* miscalibration
 (the model is uniformly too sure) and cannot fix a *conditional* one (the model is too
-sure on hard inputs and appropriately sure on easy ones). Section 15 is what fixes the
-latter.
+sure on hard inputs and appropriately sure on easy ones). Sections 15 and 17 are what
+fix the latter.
 
 ## 12. Decision thresholds: precision, coverage, and the policy
 
@@ -310,21 +406,30 @@ Calibrated probabilities are the input to a decision policy, not the output. The
 question a system actually asks is: *above what confidence can I act automatically and
 still be right at least 95% of the time?*
 
-Sort the held-out decisions by calibrated confidence, descending. For each cutoff *t*
-consider the set *S(t)* of decisions with confidence ≥ *t*:
+Sort the held-out decisions by calibrated confidence, descending. For each cutoff $t$
+consider the set $S(t)$ of decisions with confidence $\ge t$:
 
-- **precision(t)** = fraction of *S(t)* that are correct
-- **coverage(t)** = |*S(t)*| / *N*
+```math
+\text{precision}(t) \;=\; \frac{1}{|S(t)|}\sum_{d \in S(t)} y_d,
+\qquad
+\text{coverage}(t) \;=\; \frac{|S(t)|}{N}
+```
 
-Precision is generally non-increasing as *t* falls (you admit less confident decisions),
-coverage is non-decreasing. For a target precision *π*, the policy chooses the **lowest
-*t* whose precision is still ≥ π**, which maximises coverage subject to the guarantee.
+Precision is generally non-increasing as $t$ falls (you admit less confident decisions),
+coverage is non-decreasing. For a target precision $\pi$, the policy chooses
+
+```math
+t^\ast \;=\; \min\{\, t : \text{precision}(t) \ge \pi \,\}
+```
+
+the lowest cutoff whose precision is still at least $\pi$, which maximises coverage
+subject to the guarantee.
 Brier requires the set to contain at least 5 decisions or 2% of the data, whichever is
 larger, so a threshold is never set on a handful of lucky examples, and reports the tier
 as *unreachable* if no cutoff meets the target.
 
-The tiers are then: **auto** if confidence ≥ *t_auto* (π = 0.95 by default), **review**
-if ≥ *t_review* (π = 0.80), else **human**. This is the three-band policy every
+The tiers are then: **auto** if confidence $\ge t^\ast_{0.95}$, **review** if
+$\ge t^\ast_{0.80}$, else **human**. This is the three-band policy every
 decision-model vendor tells you to invent; `calibrate.py` derives it from your own data
 and tells you what coverage you get at each band.
 
@@ -334,14 +439,16 @@ examples; the tool is cheap enough to run routinely.
 
 ## 13. Gradient descent
 
-Training changes the model's parameters *θ* to reduce a loss *L(θ)*. The **gradient**
-*∇L* is the vector of partial derivatives of *L* with respect to every parameter; it
-points in the direction of steepest increase. Gradient descent takes a step the other
-way:
+Training changes the model's parameters $\theta$ to reduce a loss $L(\theta)$. The
+**gradient** $\nabla_\theta L$ is the vector of partial derivatives of $L$ with respect to
+every parameter; it points in the direction of steepest increase. Gradient descent takes
+a step the other way:
 
-> θ ← θ − η ∇L(θ)
+```math
+\theta \;\leftarrow\; \theta \;-\; \eta\, \nabla_\theta L(\theta)
+```
 
-with **learning rate** *η* controlling step size. Brier uses AdamW, which rescales each
+with **learning rate** $\eta$ controlling step size. Brier uses AdamW, which rescales each
 parameter's step by a running estimate of its gradient's magnitude so that parameters
 with consistently small gradients still move, and a schedule that warms *η* up over the
 first 50 steps and decays it linearly after.
@@ -364,37 +471,57 @@ gradients, and the optimizer's running estimates in memory at once: roughly 16 b
 parameter, 64 GB, plus activations. It does not fit a consumer GPU, and it risks
 overwriting what pretraining learned.
 
-**LoRA** (low-rank adaptation) sidesteps both. For a weight matrix *W* (say *d × d*),
-it freezes *W* and adds a trainable product *B·A* where *A* is *r × d* and *B* is
-*d × r*, with *r* small (16 here):
+**LoRA** (low-rank adaptation) sidesteps both. For a weight matrix $W \in
+\mathbb{R}^{d \times d}$, it freezes $W$ and adds a trainable product $BA$ where
+$A \in \mathbb{R}^{r \times d}$ and $B \in \mathbb{R}^{d \times r}$, with $r$ small (16
+here):
 
-> W′ = W + B·A
+```math
+W' \;=\; W + BA, \qquad \text{trainable parameters: } 2dr \ \text{instead of}\ d^2
+```
 
 <p align="center"><img src="fig-lora.svg" width="900" alt="a large frozen matrix W plus a thin trainable pair B and A"></p>
 
-*B·A* has the same shape as *W* but only 2·*d*·*r* parameters instead of *d*². For
-*d* = 2560 and *r* = 16 that is 82k against 6.5M, about 1.3%. *B* starts at zero so
+$BA$ has the same shape as $W$ but only $2dr$ parameters instead of $d^2$. For
+$d = 2560$ and $r = 16$ that is 82k against 6.5M, about 1.3%. $B$ starts at zero so
 training begins exactly at the pretrained model. Brier attaches adapters to the seven
 matrices named in section 7, in every block. The adapter is saved separately from the
 base model (a few tens of megabytes), can be loaded onto the base at inference, and can
 be deleted to recover the original exactly.
 
-The **rank** *r* bounds how much the adapter can change the matrix. Low rank is a
+The **rank** $r$ bounds how much the adapter can change the matrix. Low rank is a
 regulariser: it can steer the model toward a new behaviour but cannot rewrite it, which
 is what you want when the goal is "same knowledge, better calibrated decisions."
 
 ## 15. The Brier training objective
 
-Everything is now in place. For a training example with prompt *c*, a question with
-allowed answers *a⁽¹⁾ … a⁽ⁿ⁾*, and a correct set *Y* (usually one answer; sometimes
-several, as in gridworld ties):
+Everything is now in place. For a training example with prompt $c$, a question with
+allowed answers $a^{(1)}, \dots, a^{(n)}$, and a correct set $Y$ (usually one answer;
+sometimes several, as in gridworld ties):
 
-1. Score every allowed answer: *sᵢ = log P_θ(a⁽ⁱ⁾ | c)* (section 8). One batched forward
-   pass, same code as inference.
-2. Softmax over the scores: *pᵢ = exp(sᵢ) / Σⱼ exp(sⱼ)* (section 4).
-3. Loss: *L = −log Σ_{i ∈ Y} pᵢ* (section 10, log scoring rule, summed over acceptable
-   answers). Averaged over the questions in the example.
+1. Score every allowed answer, $s_i = \log P_\theta(a^{(i)} \mid c)$ (section 8). One
+   batched forward pass, same code as inference.
+2. Softmax over the scores, $p_i = \exp(s_i) / \sum_j \exp(s_j)$ (section 4).
+3. Loss, the log scoring rule summed over acceptable answers (section 10):
+
+   ```math
+   L(\theta) \;=\; -\log \sum_{i \in Y} p_i
+   \;=\; -\log \sum_{i \in Y} \frac{\exp s_i}{\sum_{j} \exp s_j}
+   ```
+
+   averaged over the questions in the example.
 4. Backward pass into the LoRA parameters only (sections 13, 14). AdamW step.
+
+When the label is a **soft target** $t = (t_1, \dots, t_n)$ with $\sum_i t_i = 1$
+(the ambiguous examples of round two, whose target is the generator's own posterior),
+the loss is the cross-entropy against that target:
+
+```math
+L(\theta) \;=\; -\sum_{i=1}^{n} t_i \log p_i
+```
+
+which is minimised by $p = t$, so the model is explicitly taught to say 0.5 when the
+input supports two answers equally.
 
 This is `example_loss` in `train.py`, and it is deliberately the same function as
 `ask()` with a loss attached. There is no separate training-time architecture.
@@ -442,23 +569,80 @@ pass with no chain of thought cannot do. These are the same failure modes every
 single-pass decision model publishes, and Brier will document its own on real data
 rather than claim otherwise.
 
-## 17. Beyond: outcome rewards, typed heads, and open questions
+## 17. The typed head
 
-**Outcome rewards.** Section 15 needs labels. For tasks where the right answer is only
-known after acting (choose an action, see what happens), the same objective can be run
-with the Brier score (section 10) of the stated probability against the observed outcome
-as a reward, and the adapter updated by a policy-gradient step. Because the Brier score
-is strictly proper, the fixed point is still honesty. This is the next training stage
-and the reason the project keeps a gridworld: it is an environment, not just a dataset.
+The scorer reads the LM head's distribution (section 8). `brier/head.py` adds the first
+component that reads the backbone's hidden states (section 7, step 3) instead. For a
+candidate $i$, let $h_{\text{state}}$ be the hidden vector at the last position before
+the candidate begins (the model's summary of the state and the question) and
+$h_{\text{cand},i}$ the hidden vector at the candidate's last token. The head computes
 
-**Typed heads.** Today the scores are read from the LM head's distribution (section 8).
-`brier/head.py` adds the first head that reads the hidden states (section 7, step 3)
-instead: *score_i = lm_i · exp(τ·h_state) + w·h_cand,i + b*. The first term is an
-input-conditional temperature, the second a per-candidate residual, and all parameters
-start at zero so the untrained head is exactly the plain scorer. It keeps the backbone's
-good prior and learns where to deviate from it. A head that drops the LM term entirely,
-removing the tokenization dependence of section 8, is the next step and needs more data
-than the residual form because it starts from nothing.
+```math
+s'_i \;=\; s_i \cdot \exp\!\big(\tau^{\top} h_{\text{state}}\big) \;+\; w^{\top} h_{\text{cand},i} \;+\; b
+```
+
+with trainable $\tau, w \in \mathbb{R}^{d}$ and $b \in \mathbb{R}$, all initialised to
+zero, so the untrained head is exactly the plain scorer ($s'_i = s_i$; verified to a
+difference of 0.0).
+
+The two terms have different jobs. The first is an **input-conditional temperature**:
+$1/T$ in section 11 was one number per question; here it is
+$\exp(\tau^{\top} h_{\text{state}})$, a function of the input, so the model can be
+sharp on easy states and flat on hard ones. That is the *conditional* calibration a
+single temperature cannot provide. The second is a per-candidate **residual** that lets
+the head re-rank answers using information the vocabulary distribution compresses away.
+Both are trained jointly with the LoRA adapters by the same loss as section 15.
+
+## 18. Outcome rewards: the policy-gradient form
+
+Section 15 needs the correct answer. Environments provide something weaker and more
+honest: an **outcome** $y \in \{0, 1\}$ for the action actually taken. In gridworld the
+model states a distribution $p$ over the four moves, one move $a$ is sampled, it is
+executed, and the environment reports whether the player got closer to the exit (single
+step) or whether the episode reached the exit at all (multi-step, the same $y$ for every
+move in the episode).
+
+Two gradients are combined. The **policy-gradient** term raises the probability of
+actions that led to good outcomes:
+
+```math
+\nabla_\theta\, \mathbb{E}_{a \sim p_\theta}[y]
+\;=\; \mathbb{E}_{a \sim p_\theta}\big[\, y \,\nabla_\theta \log p_\theta(a) \,\big]
+\;\approx\; (y - \bar{y})\,\nabla_\theta \log p_\theta(a)
+```
+
+where $\bar{y}$ is a running mean of past outcomes, the **baseline**, which lowers the
+variance of the estimate without changing its expectation. The identity in the middle is
+the log-derivative trick, $\nabla p = p\,\nabla \log p$. The **calibration** term is the
+Brier score of the stated probability against the outcome, differentiated directly:
+
+```math
+L_{\text{cal}} \;=\; \big(p_\theta(a) - y\big)^2
+```
+
+The loss minimised per step is
+
+```math
+L_{\text{RL}} \;=\; -(y - \bar{y})\,\log p_\theta(a) \;+\; \lambda\,\big(p_\theta(a) - y\big)^2
+```
+
+with $\lambda = 1$. Because the second term is a strictly proper scoring rule
+(section 10), its fixed point is $p_\theta(a) = P(y = 1 \mid \text{state}, a)$: the
+model states the true probability that its chosen action works. This is what "trained
+for calibrated decisions" means in the reinforcement form; the supervised objective of
+section 15 is its special case where the outcome of every action is known.
+
+## 19. Beyond: open questions
+
+**A head without the LM term.** Section 17 keeps $s_i$ from the vocabulary. Dropping it
+and scoring from $h_{\text{cand},i}$ alone would remove the tokenization dependence of
+section 8 entirely, at the cost of starting from nothing rather than from the backbone's
+prior; it needs more data than the residual form and is the natural next experiment.
+
+**Multi-step credit.** Section 18 assigns the episode outcome to every move in the
+episode. Discounting later moves less, or learning a value function to estimate each
+move's contribution, are the standard refinements and would matter for longer
+episodes.
 
 **Dependent questions.** Every question is answered from the same prompt independently.
 A second pass conditioned on the first pass's answers would recover dependencies at
@@ -473,5 +657,8 @@ calibration best is an experiment the calibration kit can run in an afternoon.
 finite answer set by the chain rule and softmax, is a valid decision distribution with
 a structural type guarantee; its calibration is poor out of the box and is repaired by
 maximum-likelihood temperature or, more thoroughly, by minimising a proper scoring rule
-over the answer set; and the resulting thresholds give a precision guarantee on data like
-the calibration data. Everything in `results/` is one of those statements measured.
+over the answer set, with labels (section 15) or with outcomes (section 18); an
+input-conditional temperature (section 17) gives the model a way to be sure on easy
+inputs and not on hard ones; and the resulting thresholds give a precision guarantee on
+data like the calibration data. Everything in `results/` is one of those statements
+measured.
