@@ -28,9 +28,10 @@ class Scorer:
     """Scores candidate continuations with a causal LM. The core is score_groups: one batched
     forward pass over every candidate of every group, returning summed log-probabilities."""
 
-    def __init__(self, model_id="Qwen/Qwen3-0.6B", device=None, debias=False, model=None, tok=None):
+    def __init__(self, model_id="Qwen/Qwen3-0.6B", device=None, debias=False, model=None, tok=None, shared_prefix=False):
         self.device = device or pick_device()
         self.debias = debias
+        self.shared_prefix = shared_prefix
         self._prior: dict[str, list[list[float]]] = {}
         self.tok = tok or AutoTokenizer.from_pretrained(model_id)
         if self.tok.pad_token_id is None:
@@ -79,15 +80,50 @@ class Scorer:
 
     @torch.no_grad()
     def score_groups(self, prefix: str, groups: list[tuple[str, list[str]]]) -> list[list[float]]:
-        seqs, spans = self.build_rows(prefix, groups)
-        input_ids, attn = self.batch(seqs)
-        logits = self.model(input_ids=input_ids, attention_mask=attn).logits
-        flat = self.candidate_logprobs(logits, input_ids, spans).tolist()
+        flat = (self._score_cached if self.shared_prefix else self._score_full)(prefix, groups)
         out, k = [], 0
         for _, cands in groups:
             out.append(flat[k : k + len(cands)])
             k += len(cands)
         return out
+
+    def _score_full(self, prefix, groups):
+        seqs, spans = self.build_rows(prefix, groups)
+        input_ids, attn = self.batch(seqs)
+        logits = self.model(input_ids=input_ids, attention_mask=attn).logits
+        return self.candidate_logprobs(logits, input_ids, spans).tolist()
+
+    def _score_cached(self, prefix, groups):
+        """The prompt is run once; its key/value cache is shared by every candidate row, so the
+        cost of a decision is one prompt pass plus a batch of short tails."""
+        from transformers import DynamicCache
+        prefix_ids = self._enc(prefix)
+        n_pre = len(prefix_ids)
+        tails, spans = [], []
+        for header, cands in groups:
+            h = self._enc(header)
+            for c in cands:
+                t = h + self._enc(c)
+                tails.append(t)
+                spans.append((len(h), len(t)))
+        B = len(tails)
+        pre = torch.tensor([prefix_ids], device=self.device)
+        out = self.model(input_ids=pre, use_cache=True)
+        cache = out.past_key_values
+        last_logits = out.logits[0, -1]
+        cache.batch_repeat_interleave(B)
+        L = max(len(t) for t in tails)
+        pad = self.tok.pad_token_id
+        tail_ids = torch.tensor([t + [pad] * (L - len(t)) for t in tails], device=self.device)
+        attn = torch.tensor([[1] * n_pre + [1] * len(t) + [0] * (L - len(t)) for t in tails], device=self.device)
+        pos = torch.arange(n_pre, n_pre + L, device=self.device)[None].expand(B, -1)
+        logits = self.model(input_ids=tail_ids, attention_mask=attn, past_key_values=cache, position_ids=pos, use_cache=True).logits
+        full = torch.cat([last_logits[None, None].expand(B, 1, -1), logits[:, :-1]], dim=1)
+        rows = torch.cat([torch.full((b - a,), i, device=self.device) for i, (a, b) in enumerate(spans)])
+        cols = torch.cat([torch.arange(a, b, device=self.device) for a, b in spans])
+        tgt = torch.cat([tail_ids[i, a:b] for i, (a, b) in enumerate(spans)])
+        lp = torch.log_softmax(full[rows, cols].float(), dim=-1).gather(1, tgt[:, None]).squeeze(1)
+        return torch.stack([x.sum() for x in torch.split(lp, [b - a for a, b in spans])]).tolist()
 
     # ---- schema interface -------------------------------------------------
 

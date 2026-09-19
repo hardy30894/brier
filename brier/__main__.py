@@ -26,25 +26,26 @@ def load_scorer(model_id, adapter=None):
 def cmd_calibrate(a):
     from tasks import examples
     scorer = load_scorer(a.model, a.adapter)
-    tag = (a.adapter.rstrip("/").split("/")[-1] if a.adapter else a.model.split("/")[-1])
+    tag = a.tag or (a.adapter.rstrip("/").split("/")[-1] if a.adapter else a.model.split("/")[-1])
+    if a.split != "all":
+        tag += f"@{a.split}"
     os.makedirs(a.out, exist_ok=True)
     for task in a.task.split(","):
-        exs = examples(task, a.n, seed=a.seed)
+        exs = examples(task, a.n, seed=a.seed, split=a.split)
         questions = exs[0]["questions"]
-        per_example = [(e["state"], e["labels"]) for e in exs]
-        if task == "toolcall":
-            records = {"tool": []}
+        fixed = all(e["questions"] is questions or [q.id for q in e["questions"]] == [q.id for q in questions] and all(x.labels == y.labels for x, y in zip(e["questions"], questions)) for e in exs)
+        if fixed:
+            records = collect(scorer, questions, [(e["state"], e["labels"]) for e in exs])
+        else:
+            records = {q.id: [] for q in questions}
             t0 = time.perf_counter()
             for i, e in enumerate(exs):
                 r = collect(scorer, e["questions"], [(e["state"], e["labels"])], log_every=0)
-                records["tool"] += r["tool"]
+                for k, v in r.items():
+                    records[k] += v
                 if (i + 1) % 50 == 0:
                     print(f"  collected {i + 1}/{len(exs)} ({time.perf_counter() - t0:.0f}s)", file=sys.stderr)
-            questions = [e["questions"][0] for e in exs[:1]]
-            cal = calibrate(questions, records, model=tag)
-        else:
-            records = collect(scorer, questions, per_example)
-            cal = calibrate(questions, records, model=tag)
+        cal = calibrate(questions, records, model=tag)
         print(f"\n== {task} ==")
         print(report(cal))
         cal.save(f"{a.out}/cal_{task}_{tag}.json")
@@ -61,6 +62,8 @@ if __name__ == "__main__":
     c.add_argument("--adapter", default=None)
     c.add_argument("--n", type=int, default=300)
     c.add_argument("--seed", type=int, default=7)
+    c.add_argument("--split", default="all", help="all | eval (templates held out from training)")
+    c.add_argument("--tag", default=None, help="override the results tag")
     c.add_argument("--out", default="results")
     a = ap.parse_args()
     cmd_calibrate(a)

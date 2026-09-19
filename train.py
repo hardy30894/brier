@@ -13,7 +13,7 @@ from peft import LoraConfig, get_peft_model
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from brier import Scorer
-from brier.calibrate import acceptable
+from brier.calibrate import acceptable, target
 from brier.questions import build_prompt, groups_for
 from tasks import examples
 
@@ -41,8 +41,12 @@ def batch_loss(scorer, exs):
             if q.id not in ex["labels"]:
                 continue
             logp = torch.log_softmax(s, dim=0)
-            acc = sorted(acceptable(q, ex["labels"][q.id]))
-            loss = loss - torch.logsumexp(logp[acc], dim=0)
+            t = target(q, ex["labels"][q.id])
+            if t is not None:
+                loss = loss - (torch.tensor(t, device=logp.device) * logp).sum()
+            else:
+                acc = sorted(acceptable(q, ex["labels"][q.id]))
+                loss = loss - torch.logsumexp(logp[acc], dim=0)
             n += 1
     return loss / max(n, 1)
 
@@ -51,6 +55,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", default="Qwen/Qwen3-0.6B")
     ap.add_argument("--tasks", default="tickets,gridworld,toolcall,passages")
+    ap.add_argument("--split", default="all", help="template split: all | train (eval templates held out)")
+    ap.add_argument("--uncertain", type=float, default=0.0, help="fraction of examples generated as genuinely ambiguous with soft labels")
     ap.add_argument("--n", type=int, default=600, help="training examples per task")
     ap.add_argument("--steps", type=int, default=1500)
     ap.add_argument("--lr", type=float, default=1e-4)
@@ -75,7 +81,7 @@ def main():
 
     data = []
     for t in a.tasks.split(","):
-        data += examples(t, a.n, seed=a.seed)
+        data += examples(t, a.n, seed=a.seed, split=a.split, uncertain=a.uncertain)
     random.shuffle(data)
     print(f"{len(data)} training examples from {a.tasks}", file=sys.stderr)
 
@@ -97,7 +103,7 @@ def main():
         if (step + 1) % 50 == 0:
             print(f"step {step + 1}/{a.steps} loss {running / 50:.4f} lr {sched.get_last_lr()[0]:.2e} ({time.perf_counter() - t0:.0f}s)", file=sys.stderr)
             running = 0.0
-    name = f"{a.model.split('/')[-1]}-brier-r{a.rank}-s{a.steps}"
+    name = f"{a.model.split('/')[-1]}-brier-r{a.rank}-s{a.steps}" + (f"-u{a.uncertain:g}" if a.uncertain else "") + (f"-{a.split}" if a.split != "all" else "")
     path = os.path.join(a.out, name)
     model.save_pretrained(path)
     json.dump(vars(a), open(os.path.join(path, "train_args.json"), "w"), indent=1)

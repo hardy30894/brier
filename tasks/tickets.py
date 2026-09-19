@@ -101,30 +101,53 @@ FILL = {
 }
 
 
+def _pool(items, split):
+    """Template hold-out: train and eval draw from disjoint halves of every template list."""
+    if split == "train":
+        return items[0::2]
+    if split == "eval":
+        return items[1::2]
+    return list(items)
+
+
 def _fill(s, rng):
     for k, vs in FILL.items():
         s = s.replace("{" + k + "}", rng.choice(vs))
     return s
 
 
-def generate(n, seed=0):
+PRIORITY_WEIGHTS = {"low": 3, "medium": 4, "high": 2, "urgent": 1}
+
+
+def generate(n, seed=0, split="all", uncertain=0.0):
+    """`uncertain` is the fraction of examples built to be genuinely ambiguous, with soft labels
+    equal to the generator's own posterior: two categories' sentences mixed (0.5 each), or no
+    priority sentence at all (the prior over priorities)."""
     rng = random.Random(seed)
     out = []
     for _ in range(n):
         cat = rng.choice(list(CATEGORY_TEMPLATES))
-        pri = rng.choices(["low", "medium", "high", "urgent"], weights=[3, 4, 2, 1])[0]
+        pri = rng.choices(list(PRIORITY_WEIGHTS), weights=list(PRIORITY_WEIGHTS.values()))[0]
         human = rng.random() < 0.3
-        parts = [_fill(rng.choice(CATEGORY_TEMPLATES[cat]), rng)]
-        parts.append(rng.choice(PRIORITY_PHRASES[pri]))
+        parts = [_fill(rng.choice(_pool(CATEGORY_TEMPLATES[cat], split)), rng)]
+        labels = {"category": cat, "priority": pri, "needs_human": "yes" if human else "no"}
+        if rng.random() < uncertain:
+            if rng.random() < 0.5:
+                cat2 = rng.choice([c for c in CATEGORY_TEMPLATES if c != cat])
+                parts.append(_fill(rng.choice(_pool(CATEGORY_TEMPLATES[cat2], split)), rng))
+                labels["category"] = {cat: 0.5, cat2: 0.5}
+                parts.append(rng.choice(_pool(PRIORITY_PHRASES[pri], split)))
+            else:
+                z = sum(PRIORITY_WEIGHTS.values())
+                labels["priority"] = {k: v / z for k, v in PRIORITY_WEIGHTS.items()}
+        else:
+            parts.append(rng.choice(_pool(PRIORITY_PHRASES[pri], split)))
         if human:
-            parts.append(rng.choice(HUMAN_PHRASES))
+            parts.append(rng.choice(_pool(HUMAN_PHRASES, split)))
         if rng.random() < 0.35:
             parts.append(_fill(rng.choice(NOISE), rng))
         rng.shuffle(parts)
-        out.append({
-            "context": " ".join(parts),
-            "labels": {"category": cat, "priority": pri, "needs_human": "yes" if human else "no"},
-        })
+        out.append({"context": " ".join(parts), "labels": labels})
     return out
 
 
@@ -137,5 +160,5 @@ QUESTIONS = [
 ]
 
 
-def generate_q(n, seed=0):
-    return [{"state": ex["context"], "questions": QUESTIONS, "labels": ex["labels"]} for ex in generate(n, seed)]
+def generate_q(n, seed=0, split="all", uncertain=0.0):
+    return [{"state": ex["context"], "questions": QUESTIONS, "labels": ex["labels"]} for ex in generate(n, seed, split, uncertain)]

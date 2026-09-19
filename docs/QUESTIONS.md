@@ -155,6 +155,24 @@ probabilities, where it is explicit.
 - **No arithmetic.** Counting, comparing numbers, and date arithmetic are not things a
   single forward pass does. Compute them in code and ask the model the semantic part.
 
+## Backbones
+
+Brier needs the model's weights in memory: it reads the log-probability of each
+candidate answer at specific positions of one forward pass, and training pushes
+gradients into those weights. Any open-weight causal language model from the Hugging
+Face hub qualifies. A hosted API model does not, because an API returns generated text,
+not the probabilities of continuations you specify, and cannot be adapted.
+
+```python
+Scorer("Qwen/Qwen3-4B")
+Scorer("HuggingFaceTB/SmolLM2-1.7B-Instruct")
+Scorer("microsoft/Phi-4-mini-instruct")
+```
+
+Instruction-tuned models work best out of the box because the JSON answer prefix is in
+their training distribution. Nothing in the code is specific to one family; the
+[training doc](TRAINING.md) reports the same evaluation on three families.
+
 ## Limits
 
 - Options and levels must be finite and enumerated. Free-text answers are not a

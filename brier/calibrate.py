@@ -77,13 +77,32 @@ class Calibration:
 
 
 def acceptable(q: Question, label: Any) -> set[int]:
+    """Indices of answers that count as correct. A dict label (soft target) is not evaluable
+    this way; evaluation sets carry hard labels only."""
     labels = q.labels
     if isinstance(q, Claim):
         if isinstance(label, bool):
             label = "yes" if label else "no"
+    if isinstance(label, dict):
+        top = max(label.values())
+        return {labels.index(str(k)) for k, v in label.items() if v == top}
     if isinstance(label, (tuple, list, set)):
         return {labels.index(str(l)) for l in label}
     return {labels.index(str(label))}
+
+
+def target(q: Question, label: Any) -> list[float] | None:
+    """A soft target distribution over q.labels when the label is a dict, else None."""
+    if not isinstance(label, dict):
+        return None
+    labels = q.labels
+    t = [0.0] * len(labels)
+    for k, v in label.items():
+        if isinstance(k, bool):
+            k = "yes" if k else "no"
+        t[labels.index(str(k))] = float(v)
+    z = sum(t)
+    return [x / z for x in t]
 
 
 def collect(scorer, questions: list[Question], examples: list[tuple[Any, dict]], log_every=50):

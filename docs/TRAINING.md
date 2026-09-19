@@ -88,6 +88,39 @@ For each model size, the kit is run untrained and trained on 300 examples per ta
 Accuracy is reported but is not the gate, because on in-distribution examples it can be
 inflated by memorising templates.
 
+## Round two: a harder protocol
+
+The first round's in-distribution numbers were memorisation, and its unseen-task
+calibration missed the gate because the training data contained no uncertainty. Round
+two changes the protocol in four ways, all now in the code:
+
+- **Template hold-out.** Every templated task splits its template pools in two.
+  Training draws from one half (`--split train`), evaluation from the other
+  (`--split eval`), so an evaluation example never shares a sentence template with
+  anything the model trained on.
+- **Uncertainty on purpose.** A fraction of training examples (`--uncertain 0.3`) is
+  built to be genuinely ambiguous, with a soft label equal to the generator's own
+  posterior: two categories' sentences mixed (0.5 each), a ticket with no priority
+  sentence (the prior over priorities), a request that names two tools, a passage that
+  names the topic without the value, adjacent frustration levels joined. The loss is
+  cross-entropy against the soft target, still a proper scoring rule, and now the model
+  is shown what "not knowable from this input" looks like.
+- **A second unseen task**, `duplicates`: do two contact records describe the same
+  person, with variants (initials, email formats, typos) as positives and near-misses
+  (same company, same surname) as negatives. Never trained on, like frustration.
+- **A real dataset**, `banking`: customer banking queries with human intent labels
+  (PolyAI banking77), restricted to ten intents. Real text, real label noise, never
+  trained on.
+
+And one new training mode, `rl.py`: outcome-reward training on gridworld with no
+labels. The model states a distribution over moves, one move is sampled and executed,
+and the environment reports whether the player got closer to the exit. The loss is a
+policy-gradient term on that outcome plus the Brier score of the stated probability
+against it. A caveat that the environment makes plain: for a single step, "got closer"
+is exactly the optimal-move label, so this is reinforcement learning in mechanism (the
+signal is for the chosen action only, on the model's own decisions) and not yet in
+information content. Multi-step episodes with delayed outcomes would change that.
+
 ## Results
 
 Untrained → trained, 300 held-out examples per task. "ECE raw" is the model's own

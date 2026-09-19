@@ -69,6 +69,27 @@ def generate(n, seed=0, size=5):
     return out
 
 
+def parse_state(ex):
+    """Recover grid, player, exit and monster positions from a generated example's text."""
+    grid = [list(r) for r in ex["state"].split("\n")[1:]]
+    find = lambda ch: next((r, c) for r in range(len(grid)) for c in range(len(grid[r])) if grid[r][c] == ch)
+    return grid, find("P"), find("E"), find("M")
+
+
+def outcome(grid, player, goal, monster, move):
+    """Environment signal, no label: 1 if the move is legal and reduces the shortest safe
+    distance to the exit, else 0."""
+    g = [row[:] for row in grid]
+    g[monster[0]][monster[1]] = "#"
+    g[player[0]][player[1]] = "."
+    dist = _bfs(g, player, goal)
+    dr, dc = DIRS[move]
+    nxt = (player[0] + dr, player[1] + dc)
+    if nxt not in dist:
+        return 0.0
+    return 1.0 if dist[nxt] < dist.get(player, 10 ** 9) else 0.0
+
+
 from brier.questions import Choice, Claim  # noqa: E402
 
 QUESTIONS = [
@@ -77,5 +98,5 @@ QUESTIONS = [
 ]
 
 
-def generate_q(n, seed=0, size=5):
+def generate_q(n, seed=0, size=5, split="all", uncertain=0.0):
     return [{"state": ex["context"], "questions": QUESTIONS, "labels": ex["labels"]} for ex in generate(n, seed, size)]

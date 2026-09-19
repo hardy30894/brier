@@ -19,24 +19,47 @@ FILL = {"year": ["2014", "2017", "2019", "2021"], "num": ["14", "30", "250", "12
 FILLER = ["The office kitchen was recently renovated.", "Quarterly planning happens every March.", "The support team works in two shifts.", "A new logo was announced on the blog."]
 
 
+def _pool(items, split):
+    """Template hold-out: train and eval draw from disjoint halves of every template list."""
+    if split == "train":
+        return items[0::2]
+    if split == "eval":
+        return items[1::2]
+    return list(items)
+
+VAGUE = [
+    "Details about {topic} are covered on the pricing page.",
+    "The team reviewed the policy on {topic} at the last all-hands.",
+    "Our documentation has a section on {topic}, updated recently.",
+]
+TOPICS = ["the founding", "headcount", "refunds", "the database", "upload limits", "leadership", "rate limits", "the free trial"]
+
+
 def _fill(s, rng):
     for k, vs in FILL.items():
         s = s.replace("{" + k + "}", rng.choice(vs))
     return s
 
 
-def generate(n, seed=0):
+def generate(n, seed=0, split="all", uncertain=0.0):
+    """Ambiguous examples name the topic without the value: whether that 'contains the
+    information' is genuinely arguable, so the label is 0.5."""
     rng = random.Random(seed)
     out = []
+    facts = _pool(FACTS, split)
     for _ in range(n):
-        q, yes, near = rng.choice(FACTS)
+        idx = rng.randrange(len(facts))
+        q, yes, near = facts[idx]
         r = rng.random()
-        if r < 0.45:
+        if rng.random() < uncertain:
+            passage = rng.choice(VAGUE).replace("{topic}", TOPICS[FACTS.index(facts[idx])])
+            label = {True: 0.5, False: 0.5}
+        elif r < 0.45:
             passage, label = _fill(yes, rng), True
         elif r < 0.8:
             passage, label = _fill(near, rng), False
         else:
-            passage, label = _fill(rng.choice(FACTS)[1], rng), False
+            passage, label = _fill(rng.choice(facts)[1], rng), False
             if passage.split()[0] == yes.split()[0]:
                 passage, label = _fill(near, rng), False
         parts = [passage] + rng.sample(FILLER, rng.randint(0, 2))

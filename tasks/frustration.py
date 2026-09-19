@@ -16,13 +16,30 @@ FEATURES = ["analytics", "billing", "SSO", "reports", "webhooks"]
 NOISE = ["Sent from my phone.", "Account ref 4471.", "We're on the Team plan."]
 
 
-def generate(n, seed=0):
+def _pool(items, split):
+    """Template hold-out: train and eval draw from disjoint halves of every template list."""
+    if split == "train":
+        return items[0::2]
+    if split == "eval":
+        return items[1::2]
+    return list(items)
+
+
+def generate(n, seed=0, split="all", uncertain=0.0):
+    """Ambiguous examples join sentences from two adjacent levels; the label is 0.5 each."""
     rng = random.Random(seed)
     out = []
+    levels = list(LEVELS)
     for _ in range(n):
-        lvl = rng.choice(list(LEVELS))
-        text = rng.choice(TEMPLATES[lvl]).replace("{feature}", rng.choice(FEATURES))
+        i = rng.randrange(len(levels))
+        lvl = levels[i]
+        text = rng.choice(_pool(TEMPLATES[lvl], split)).replace("{feature}", rng.choice(FEATURES))
+        label = lvl
+        if rng.random() < uncertain:
+            j = i + 1 if i + 1 < len(levels) else i - 1
+            text = text + " " + rng.choice(_pool(TEMPLATES[levels[j]], split)).replace("{feature}", rng.choice(FEATURES))
+            label = {lvl: 0.5, levels[j]: 0.5}
         if rng.random() < 0.3:
             text += " " + rng.choice(NOISE)
-        out.append({"state": text, "questions": QUESTIONS, "labels": {"frustration": lvl}})
+        out.append({"state": text, "questions": QUESTIONS, "labels": {"frustration": label}})
     return out

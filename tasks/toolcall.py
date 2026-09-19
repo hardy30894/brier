@@ -19,6 +19,15 @@ FILL = {"verb": ["rename", "archive", "share", "duplicate", "tag"], "noun": ["pr
 NOISE = ["Thanks!", "Sorry for the bother.", "I'm on the {plan} plan.", "It's fairly urgent.", "No rush."]
 
 
+def _pool(items, split):
+    """Template hold-out: train and eval draw from disjoint halves of every template list."""
+    if split == "train":
+        return items[0::2]
+    if split == "eval":
+        return items[1::2]
+    return list(items)
+
+
 def _fill(s, rng):
     for k, vs in FILL.items():
         s = s.replace("{" + k + "}", rng.choice(vs))
@@ -29,7 +38,8 @@ def questions(tool_names):
     return [Choice("tool", "which tool should be called to handle this request", {t: TOOLS[t][0] for t in tool_names})]
 
 
-def generate(n, seed=0, k=5):
+def generate(n, seed=0, k=5, split="all", uncertain=0.0):
+    """Ambiguous examples join two tools' requests in one message; the label is 0.5 each."""
     rng = random.Random(seed)
     out = []
     names = list(TOOLS)
@@ -38,8 +48,13 @@ def generate(n, seed=0, k=5):
         others = rng.sample([t for t in names if t != tool], k - 1)
         offered = others + [tool]
         rng.shuffle(offered)
-        text = _fill(rng.choice(TOOLS[tool][1]), rng)
+        text = _fill(rng.choice(_pool(TOOLS[tool][1], split)), rng)
+        label = tool
+        if rng.random() < uncertain:
+            tool2 = rng.choice([t for t in others if t != "none"] or others)
+            text = text + " Also, " + _fill(rng.choice(_pool(TOOLS[tool2][1], split)), rng).lower()
+            label = {tool: 0.5, tool2: 0.5}
         if rng.random() < 0.4:
             text = text + " " + _fill(rng.choice(NOISE), rng)
-        out.append({"state": {"request": text, "tools": {t: TOOLS[t][0] for t in offered}}, "questions": questions(offered), "labels": {"tool": tool}})
+        out.append({"state": {"request": text, "tools": {t: TOOLS[t][0] for t in offered}}, "questions": questions(offered), "labels": {"tool": label}})
     return out
