@@ -9,7 +9,7 @@
 
 **Calibrated typed decisions from any open language model, in one forward pass.**
 
-[Architecture](docs/ARCHITECTURE.md) · [Primer](docs/PRIMER.md) · [API](docs/QUESTIONS.md) · [Calibration](docs/CALIBRATION.md) · [Training](docs/TRAINING.md) · [Demo](docs/demo.html)
+[Architecture](docs/ARCHITECTURE.md) · [Primer](docs/PRIMER.md) · [API](docs/QUESTIONS.md) · [Calibration](docs/CALIBRATION.md) · [Training](docs/TRAINING.md) · [Milestones](docs/MILESTONES.md) · [Demo](docs/demo.html)
 
 [![license](https://img.shields.io/badge/license-Apache%202.0-1B1F24?style=flat-square)](LICENSE) [![status](https://img.shields.io/badge/status-research%20preview-4F46E5?style=flat-square)](docs/TRAINING.md)
 
@@ -83,32 +83,6 @@ The [architecture document](docs/ARCHITECTURE.md) walks through all of this from
 nothing; the [primer](docs/PRIMER.md) derives it, from probability to the
 policy-gradient objective.
 
-## Roadmap
-
-- [x] **Milestone 1, zero training.** Single-pass scorer, JSON-generation baseline, two
-      tasks with computable ground truth, calibration measured. One pass is 10 to 20×
-      faster than generation from the same weights at equal accuracy; raw confidence is
-      badly overconfident and one temperature per question cuts the error two to four
-      times.
-- [x] **Question API and calibration kit.** Choice, Score, Claim in one pass;
-      per-question temperature with five-fold cross-fitting, held-out ECE and Brier score,
-      reliability diagrams, and a precision-targeted auto / review / human policy.
-- [x] **Milestone 2, training for calibrated decisions.** LoRA with cross-entropy over the
-      answer set. Round one showed that clean labels teach overconfidence. Round two added
-      template hold-out, ambiguous examples with soft labels, two more never-trained tasks
-      and a real dataset; at 4B the strict gate passes on two of three unseen tasks.
-      Outcome-reward training with no labels reaches supervised accuracy on gridworld.
-      Five backbones from three families run unchanged.
-- [x] **Round three.** Contrastive claims cure the negative transfer seen at 0.6B;
-      Phi-4-mini trained is the strongest model in the project; a typed head over hidden
-      states; six-step outcome episodes with delayed reward.
-- [x] **Milestone 3, the demo.** [docs/demo.html](docs/demo.html) replays recorded
-      gridworld games with the four move probabilities, the chosen move and its latency
-      every tick, for a trained and an untrained model.
-- [ ] **Next.** A live demo served from the scorer; a head without the LM term; a
-      training set with distilled labels on real tickets and tool-call logs; multi-step
-      credit assignment; Phi-4-mini as the working backbone throughout.
-
 ## Usage
 
 ```python
@@ -175,6 +149,7 @@ managed by `pod.py`, which enforces a hard time-to-live on every pod it creates.
 | [QUESTIONS.md](docs/QUESTIONS.md) | the API |
 | [CALIBRATION.md](docs/CALIBRATION.md) | the kit and how its numbers are computed |
 | [TRAINING.md](docs/TRAINING.md) | recipes, protocol, every result table, and what was learned in each round |
+| [MILESTONES.md](docs/MILESTONES.md) | the plan: each milestone's question, what it delivered and found, and what is next |
 
 ## License
 
