@@ -131,6 +131,9 @@ def groups_for(questions: list[Question]):
 
 def ask(scorer: Scorer, state: Any, questions: list[Question], temperatures: dict[str, float] | None = None) -> Answers:
     """Every question, every allowed answer, one batched forward pass. Questions are independent."""
+    if getattr(scorer, "pointer", None) is not None:
+        from .pointer import ask_pointer
+        return ask_pointer(scorer, scorer.pointer, state, questions, temperatures)
     t0 = time.perf_counter()
     raw = scorer.score_groups(build_prompt(scorer, state, questions), groups_for(questions))
     temperatures = temperatures or {}

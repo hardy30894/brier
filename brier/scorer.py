@@ -49,6 +49,7 @@ class Scorer:
             model = load_causal_lm(model_id, self.device).to(self.device)
         self.model = model.eval()
         self.head = None
+        self.pointer = None
         self._enc_cache: dict[str, list[int]] = {}
 
     def _enc(self, s: str) -> list[int]:

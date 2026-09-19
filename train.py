@@ -15,6 +15,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from brier import Scorer
 from brier.head import TypedHead
+from brier.pointer import PointerHead, pointer_scores
 from brier.calibrate import acceptable, target
 from brier.questions import build_prompt, groups_for
 from tasks import examples
@@ -26,6 +27,34 @@ def lora_targets(model):
     """Projection names present in this architecture (Qwen/Llama use q,k,v; Phi fuses qkv and gate_up)."""
     names = {n.split(".")[-1] for n, m in model.named_modules() if isinstance(m, torch.nn.Linear)}
     return [t for t in CANDIDATE_TARGETS if t in names]
+
+
+def pointer_loss(scorer, head, exs, teacher=None):
+    """One row per example: every question's options scored by the pointer head. Cross-entropy
+    against the label (or soft target), plus KL to a teacher's distributions when given."""
+    loss, n = 0.0, 0
+    for ex in exs:
+        scores = pointer_scores(scorer, head, ex["state"], ex["questions"], grad=True)
+        tdists = None
+        if teacher is not None:
+            with torch.no_grad():
+                ta = teacher(ex["state"], ex["questions"])
+            tdists = {q.id: [ta[q.id].probabilities[l] for l in q.labels] for q in ex["questions"]}
+        for q, s in zip(ex["questions"], scores):
+            logp = torch.log_softmax(s, dim=0)
+            if q.id in ex["labels"]:
+                t = target(q, ex["labels"][q.id])
+                if t is not None:
+                    loss = loss - (torch.tensor(t, device=logp.device) * logp).sum()
+                else:
+                    acc = sorted(acceptable(q, ex["labels"][q.id]))
+                    loss = loss - torch.logsumexp(logp[acc], dim=0)
+                n += 1
+            if tdists is not None:
+                tp = torch.tensor(tdists[q.id], device=logp.device).clamp_min(1e-6)
+                loss = loss + (tp * (tp.log() - logp)).sum()
+                n += 1
+    return loss / max(n, 1)
 
 
 def batch_loss(scorer, exs):
@@ -85,6 +114,8 @@ def main():
     ap.add_argument("--seed", type=int, default=100)
     ap.add_argument("--out", default="adapters")
     ap.add_argument("--head", action="store_true", help="train a typed head over hidden states jointly with LoRA")
+    ap.add_argument("--pointer", action="store_true", help="train the pointer head: one row per example, options scored from the prompt's hidden states")
+    ap.add_argument("--distill", default=None, help="adapter dir of a row-scorer teacher; adds KL to its distributions (pointer only)")
     ap.add_argument("--head-lr", type=float, default=1e-3)
     a = ap.parse_args()
 
@@ -107,6 +138,14 @@ def main():
         scorer.model = torch.nn.parallel.DistributedDataParallel(peft_model, device_ids=[int(os.environ["LOCAL_RANK"])], find_unused_parameters=False)
     if a.head:
         scorer.head = TypedHead(base.config.hidden_size).to(scorer.device)
+    pointer, teacher = None, None
+    if a.pointer:
+        pointer = PointerHead(base.config.hidden_size).to(scorer.device)
+        if a.distill:
+            from brier.__main__ import load_scorer
+            from brier.questions import ask as _ask
+            tsc = load_scorer(a.model, a.distill)
+            teacher = lambda st, qs: _ask(tsc, st, qs)
 
     data = []
     for t in a.tasks.split(","):
@@ -119,6 +158,8 @@ def main():
     groups = [{"params": [p for p in scorer.model.parameters() if p.requires_grad], "lr": a.lr}]
     if a.head:
         groups.append({"params": list(scorer.head.parameters()), "lr": a.head_lr})
+    if pointer is not None:
+        groups.append({"params": list(pointer.parameters()), "lr": a.head_lr})
     opt = torch.optim.AdamW(groups, weight_decay=0.0)
     sched = torch.optim.lr_scheduler.LambdaLR(opt, lambda s: min(1.0, (s + 1) / 50) * max(0.05, 1 - s / a.steps))
     scorer.model.train()
@@ -128,7 +169,7 @@ def main():
         for _ in range(a.accum):
             exs = [data[(i + j) % len(data)] for j in range(a.batch)]
             i += a.batch
-            loss = batch_loss(scorer, exs) / a.accum
+            loss = (pointer_loss(scorer, pointer, exs, teacher) if pointer is not None else batch_loss(scorer, exs)) / a.accum
             loss.backward()
             running += loss.item()
         torch.nn.utils.clip_grad_norm_(scorer.model.parameters(), 1.0)
@@ -137,12 +178,14 @@ def main():
         if (step + 1) % 50 == 0:
             log(f"step {step + 1}/{a.steps} loss {running / 50:.4f} lr {sched.get_last_lr()[0]:.2e} ({time.perf_counter() - t0:.0f}s)")
             running = 0.0
-    name = f"{a.model.split('/')[-1]}-brier-r{a.rank}-s{a.steps}" + (f"-u{a.uncertain:g}" if a.uncertain else "") + (f"-{a.split}" if a.split != "all" else "") + ("-head" if a.head else "")
+    name = f"{a.model.split('/')[-1]}-brier-r{a.rank}-s{a.steps}" + (f"-u{a.uncertain:g}" if a.uncertain else "") + (f"-{a.split}" if a.split != "all" else "") + ("-head" if a.head else "") + ("-pointer" if a.pointer else "") + ("-distill" if a.distill else "")
     path = os.path.join(a.out, name)
     if rank == 0:
         peft_model.save_pretrained(path)
         if a.head:
             torch.save(scorer.head.state_dict(), os.path.join(path, "head.pt"))
+        if pointer is not None:
+            torch.save(pointer.state_dict(), os.path.join(path, "pointer.pt"))
         json.dump({**vars(a), "world_size": world, "train_seconds": round(time.perf_counter() - t0)}, open(os.path.join(path, "train_args.json"), "w"), indent=1)
         print(f"saved {path}  ({world} GPU{'s' if world > 1 else ''}, {time.perf_counter() - t0:.0f}s)")
     if world > 1:
