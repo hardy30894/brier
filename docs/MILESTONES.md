@@ -131,9 +131,29 @@ live with the move distribution drawn on the grid. It runs on a laptop with the 
 (about a second per decision on Apple silicon) and on a GPU with any backbone and
 adapter.
 
+## Round four, the generic corpus
+
+*2026-09-19. Done; tables in TRAINING.md.*
+
+**Question.** Does the objective learn real decisions in general, or only the synthetic
+ones it was built on?
+
+**Delivered.** Twelve public datasets as Pick, Grade and Claim questions, streamed and
+script-free; one adapter per backbone trained on a mixture of the five synthetic tasks
+and ten real ones, with three real datasets and two synthetic tasks held out entirely; a
+distributed trainer, with a four-GPU run of the Phi adapter measured against one GPU.
+
+**Found.** Large gains on real held-out data at both sizes (0.6B on MS MARCO 0.12 to
+0.88, on SNLI 0.33 to 0.84; Phi on toxicity 0.49 to 0.94, banking 0.98), transfer to the
+never-trained datasets, raw calibration error at or under 0.10 almost everywhere, and a
+0.6B that rivals an untrained 3.8B. Four GPUs finish the same job in 16 minutes against
+39. Breadth costs a few points on the narrowest synthetic task.
+
 ## Next
 
 - A head without the language-model term, scoring from hidden states alone.
+- Conformal prediction sets: a distribution-free coverage guarantee per question, from the same held-out data.
+- Calibration certificates: verifiable held-out evidence shipped with every calibration file.
 - Distilled labels on real tickets and tool-call logs, with disagreements kept.
 - Multi-step credit assignment: discounting or a value estimate for longer episodes.
 - Phi-4-mini as the working backbone throughout.

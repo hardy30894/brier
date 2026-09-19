@@ -1,0 +1,52 @@
+{
+ "model": "Qwen3-0.6B-mix@eval",
+ "created": 1789837229.7800584,
+ "questions": {
+  "tool": {
+   "id": "tool",
+   "T": 0.05000000000000001,
+   "n": 300,
+   "accuracy": 1.0,
+   "ece_raw": 0.0010658484448335948,
+   "ece_cal": 0.0,
+   "brier_raw": 1.9541487485667947e-05,
+   "brier_cal": 0.0,
+   "mean_conf_raw": 0.9989341515551664,
+   "mean_conf_cal": 1.0,
+   "reliability_raw": [
+    [
+     0.9,
+     1.0,
+     300,
+     0.9989341515551664,
+     1.0
+    ]
+   ],
+   "reliability_cal": [
+    [
+     0.9,
+     1.0,
+     300,
+     1.0,
+     1.0
+    ]
+   ],
+   "tiers": [
+    {
+     "name": "auto",
+     "target_precision": 0.95,
+     "min_confidence": 1.0,
+     "precision": 1.0,
+     "coverage": 1.0
+    },
+    {
+     "name": "review",
+     "target_precision": 0.8,
+     "min_confidence": 1.0,
+     "precision": 1.0,
+     "coverage": 1.0
+    }
+   ]
+  }
+ }
+}

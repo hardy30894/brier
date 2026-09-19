@@ -53,6 +53,9 @@ task. Full tables and protocol in [TRAINING.md](docs/TRAINING.md).
 | Duplicates (never trained on), Qwen3-4B | 0.73 acc · 0.26 ECE | **0.997 acc · 0.04 ECE** | raw |
 | Banking77 (real, never trained on), Qwen3-0.6B | 0.85 acc · 0.10 ECE | **0.90 acc · 0.02 ECE** | raw |
 | Ticket category, Phi-4-mini | 0.71 acc | **0.96 acc** | held-out templates |
+| MS MARCO passage relevance, Qwen3-0.6B, mixed corpus | 0.12 acc · 0.83 ECE | **0.88 acc · 0.07 ECE** | real, raw |
+| MNLI (never trained on), Qwen3-0.6B, mixed corpus | 0.38 acc | **0.77 acc** | real, held-out dataset |
+| Civil Comments toxicity, Phi-4-mini, mixed corpus | 0.49 acc · 0.33 ECE | **0.94 acc · 0.02 ECE** | real, raw |
 | Gridworld from outcomes only, no labels, Qwen3-0.6B | 0.35 acc | **0.81 acc** | vs 0.84 supervised |
 | Type errors, every model, every task | 0 | 0 | by construction |
 
