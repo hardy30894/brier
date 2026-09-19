@@ -154,8 +154,10 @@ category           300  0.680    0.295    0.054   6.46
 [QUESTIONS.md](docs/QUESTIONS.md) is the API reference, [CALIBRATION.md](docs/CALIBRATION.md)
 the kit, [TRAINING.md](docs/TRAINING.md) the training recipe and results.
 
-Any Hugging Face causal LM works as the backbone. The scorer needs a GPU with enough memory
-for the model plus a batch of short sequences.
+Any open-weight causal LM works as the backbone; the same code has run Qwen3 at three
+sizes, SmolLM2 and Phi-4-mini with no changes. The scorer needs a GPU with enough memory
+for the model plus a batch of short sequences. From about 1.7B up, `Scorer(..., shared_prefix=True)`
+runs the prompt once and scores all candidates against its cache, 1.6x to 2.3x faster.
 
 ## On a GPU pod
 
@@ -180,10 +182,17 @@ python3 pod.py down                      # terminate now; status should then sho
 - [x] **The question API and the calibration kit.** Choice, Score, Claim in one pass;
       per-question temperature with cross-fitting, held-out ECE, reliability diagrams,
       and a precision-targeted auto/review/human policy.
-- [ ] **Milestone 2, training for calibrated decisions.** LoRA on the backbone with
-      per-question cross-entropy over the answer set, a proper scoring rule, on five
-      tasks with computable ground truth. Gate: beat the temperature-scaled untrained
-      calibration, including on a task never trained on. In progress; see TRAINING.md.
+- [x] **Milestone 2, training for calibrated decisions.** LoRA on the backbone with
+      per-question cross-entropy over the answer set, a proper scoring rule. Round one
+      showed clean labels teach overconfidence; round two added template hold-out,
+      ambiguous training examples with soft labels, two more never-trained tasks and a
+      real dataset. At 4B the strict gate passes on two of three unseen tasks with no
+      post-hoc correction. Outcome-reward training with no labels reaches supervised
+      accuracy on gridworld. Five backbones from three families ran through the same
+      pipeline unchanged. See TRAINING.md.
+- [ ] **Next.** Contrastive claims in the training set, Phi-4-mini as the working
+      backbone, a typed head that reads hidden states instead of the vocabulary, and
+      multi-step outcome episodes.
 - [ ] **Milestone 3, live demo.** A structured-state environment where the model chooses
       an action every tick with a visible confidence bar.
 

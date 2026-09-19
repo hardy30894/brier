@@ -1,0 +1,17 @@
+  collected 50/300 (4s)
+  collected 100/300 (8s)
+  collected 150/300 (11s)
+  collected 200/300 (15s)
+  collected 250/300 (19s)
+  collected 300/300 (22s)
+
+== banking ==
+calibration report  model=SmolLM2-1.7B-Instruct@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+intent             300  0.613    0.148    0.133     0.146     0.144    0.540    0.554   0.95
+
+decision policy (calibrated confidence cutoffs, held-out):
+  intent           auto    target 0.95: act when confidence >= 0.552  -> precision 0.956, covers 45% of decisions
+  intent           review  target 0.80: act when confidence >= 0.381  -> precision 0.801, covers 69% of decisions
+  intent           human   everything below

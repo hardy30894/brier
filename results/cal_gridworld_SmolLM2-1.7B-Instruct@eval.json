@@ -1,0 +1,112 @@
+{
+ "model": "SmolLM2-1.7B-Instruct@eval",
+ "created": 1789789210.0504637,
+ "questions": {
+  "move": {
+   "id": "move",
+   "T": 9.064872394029605,
+   "n": 300,
+   "accuracy": 0.36,
+   "ece_raw": 0.0463717198567697,
+   "ece_cal": 0.09338442745705777,
+   "brier_raw": 0.2314898075413449,
+   "brier_cal": 0.23914770157071563,
+   "mean_conf_raw": 0.4063717198567697,
+   "mean_conf_cal": 0.2666155725429422,
+   "reliability_raw": [
+    [
+     0.30000000000000004,
+     0.4,
+     130,
+     0.3864614314455345,
+     0.3384615384615385
+    ],
+    [
+     0.4,
+     0.5,
+     170,
+     0.42159723452418485,
+     0.3764705882352941
+    ]
+   ],
+   "reliability_cal": [
+    [
+     0.2,
+     0.30000000000000004,
+     300,
+     0.2666155725429422,
+     0.36
+    ]
+   ],
+   "tiers": [
+    {
+     "name": "auto",
+     "target_precision": 0.95,
+     "min_confidence": null,
+     "precision": null,
+     "coverage": null
+    },
+    {
+     "name": "review",
+     "target_precision": 0.8,
+     "min_confidence": null,
+     "precision": null,
+     "coverage": null
+    }
+   ]
+  },
+  "danger": {
+   "id": "danger",
+   "T": 19.999999999999996,
+   "n": 300,
+   "accuracy": 0.13,
+   "ece_raw": 0.7098434109187917,
+   "ece_cal": 0.3907742678823486,
+   "brier_raw": 0.616397998993428,
+   "brier_cal": 0.2657222654416058,
+   "mean_conf_raw": 0.8398434109187916,
+   "mean_conf_cal": 0.5207742678823486,
+   "reliability_raw": [
+    [
+     0.7000000000000001,
+     0.8,
+     13,
+     0.796580091480727,
+     0.07692307692307693
+    ],
+    [
+     0.8,
+     0.9,
+     287,
+     0.8418030734717353,
+     0.13240418118466898
+    ]
+   ],
+   "reliability_cal": [
+    [
+     0.5,
+     0.6000000000000001,
+     300,
+     0.5207742678823486,
+     0.13
+    ]
+   ],
+   "tiers": [
+    {
+     "name": "auto",
+     "target_precision": 0.95,
+     "min_confidence": null,
+     "precision": null,
+     "coverage": null
+    },
+    {
+     "name": "review",
+     "target_precision": 0.8,
+     "min_confidence": null,
+     "precision": null,
+     "coverage": null
+    }
+   ]
+  }
+ }
+}

@@ -256,7 +256,31 @@ extraction, and classification tasks it is built for, that is the point: these a
 fast, intuitive decisions, and the slow deliberate mode is wasted on them. For a task
 that genuinely needs reasoning, generate text.
 
-### 2.8 Where the speed comes from
+### 2.8 Sharing the prompt across candidates
+
+Section 2.4 sends every candidate as a full row, so the prompt is processed once per
+candidate. The scorer has a second path, `shared_prefix=True`, that runs the prompt once,
+keeps its key/value cache, and scores only the short candidate tails against that cache.
+It is exact: in float32 the two paths agree to four decimals. In bfloat16 they differ by
+kernel numerics, up to a tenth in probability on the smallest model, which is a reminder
+that any single bfloat16 number carries that much noise.
+
+Whether it is faster depends on the model. Measured p50 latency per decision on an
+RTX 4090, tickets task, eleven candidates:
+
+| backbone | full rows | shared prefix | speedup |
+|---|---|---|---|
+| Qwen3-0.6B | 47 ms | 76 ms | 0.6x |
+| SmolLM2-1.7B-Instruct | 121 ms | 52 ms | 2.3x |
+| Phi-4-mini-instruct (3.8B) | 101 ms | 58 ms | 1.7x |
+| Qwen3-4B | 119 ms | 76 ms | 1.6x |
+
+On a 0.6B model a batch of eleven full rows is nearly free and the second sequential
+pass costs more than it saves. From about 1.7B up, the shared prefix wins, and its
+advantage grows with prompt length and option count. The default is the full-row path;
+switch per scorer for larger models or long states.
+
+### 2.9 Where the speed comes from
 
 Putting it together: JSON generation is about 25 sequential forward passes, each one
 waiting for the last. Brier is one forward pass over a small batch. On the tickets task

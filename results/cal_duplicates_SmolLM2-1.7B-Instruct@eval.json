@@ -1,0 +1,52 @@
+{
+ "model": "SmolLM2-1.7B-Instruct@eval",
+ "created": 1789789249.0171294,
+ "questions": {
+  "same": {
+   "id": "same",
+   "T": 19.999999999999996,
+   "n": 300,
+   "accuracy": 0.52,
+   "ece_raw": 0.4522335043844703,
+   "ece_cal": 0.025331631295822832,
+   "brier_raw": 0.4516298256587254,
+   "brier_cal": 0.24906219448581615,
+   "mean_conf_raw": 0.9722335043844703,
+   "mean_conf_cal": 0.5453316312958228,
+   "reliability_raw": [
+    [
+     0.9,
+     1.0,
+     300,
+     0.9722335043844703,
+     0.52
+    ]
+   ],
+   "reliability_cal": [
+    [
+     0.5,
+     0.6000000000000001,
+     300,
+     0.5453316312958228,
+     0.52
+    ]
+   ],
+   "tiers": [
+    {
+     "name": "auto",
+     "target_precision": 0.95,
+     "min_confidence": 0.5520398998281582,
+     "precision": 1.0,
+     "coverage": 0.02666666666666667
+    },
+    {
+     "name": "review",
+     "target_precision": 0.8,
+     "min_confidence": 0.5487044964144573,
+     "precision": 0.8095238095238095,
+     "coverage": 0.14
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,139 @@
+  collected 50/300 (2s)
+  collected 100/300 (4s)
+  collected 150/300 (6s)
+  collected 200/300 (7s)
+  collected 250/300 (9s)
+  collected 300/300 (11s)
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/brier/brier/__main__.py", line 69, in <module>
+    cmd_calibrate(a)
+  File "/workspace/brier/brier/__main__.py", line 34, in cmd_calibrate
+    exs = examples(task, a.n, seed=a.seed, split=a.split)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/brier/tasks/__init__.py", line 16, in examples
+    return REGISTRY[name](n, seed, split=split, uncertain=uncertain)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/brier/tasks/banking.py", line 24, in generate
+    ds = load_dataset("PolyAI/banking77", split="test" if split != "train" else "train")
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/dist-packages/datasets/load.py", line 1696, in load_dataset
+    builder_instance = load_dataset_builder(
+                       ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/dist-packages/datasets/load.py", line 1323, in load_dataset_builder
+    dataset_module = dataset_module_factory(
+                     ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/dist-packages/datasets/load.py", line 1215, in dataset_module_factory
+    raise e1 from None
+  File "/usr/local/lib/python3.11/dist-packages/datasets/load.py", line 1175, in dataset_module_factory
+    raise RuntimeError(f"Dataset scripts are no longer supported, but found {filename}")
+RuntimeError: Dataset scripts are no longer supported, but found banking77.py
+  collected 50/300 (3s)
+  collected 100/300 (5s)
+  collected 150/300 (7s)
+  collected 200/300 (9s)
+  collected 250/300 (11s)
+  collected 300/300 (13s)
+
+== tickets ==
+calibration report  model=Qwen3-0.6B@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+category           300  0.227    0.477    0.032     0.426     0.175    0.704    0.258  13.72
+priority           300  0.397    0.382    0.127     0.366     0.223    0.778    0.497   2.93
+needs_human        300  0.320    0.543    0.388     0.459     0.242    0.863    0.575  10.54
+
+decision policy (calibrated confidence cutoffs, held-out):
+  category         auto    target 0.95: unreachable on this data
+  category         review  target 0.80: unreachable on this data
+  category         human   everything below
+  priority         auto    target 0.95: act when confidence >= 0.619  -> precision 1.000, covers 4% of decisions
+  priority         review  target 0.80: act when confidence >= 0.605  -> precision 0.800, covers 7% of decisions
+  priority         human   everything below
+  needs_human      auto    target 0.95: act when confidence >= 0.632  -> precision 0.954, covers 22% of decisions
+  needs_human      review  target 0.80: act when confidence >= 0.576  -> precision 0.800, covers 37% of decisions
+  needs_human      human   everything below
+  collected 50/300 (2s)
+  collected 100/300 (4s)
+  collected 150/300 (6s)
+  collected 200/300 (7s)
+  collected 250/300 (9s)
+  collected 300/300 (11s)
+
+== gridworld ==
+calibration report  model=Qwen3-0.6B@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+move               300  0.353    0.488    0.095     0.443     0.226    0.841    0.314   9.41
+danger             300  0.870    0.155    0.012     0.133     0.110    0.715    0.872   0.46
+
+decision policy (calibrated confidence cutoffs, held-out):
+  move             auto    target 0.95: unreachable on this data
+  move             review  target 0.80: act when confidence >= 0.348  -> precision 0.875, covers 3% of decisions
+  move             human   everything below
+  danger           auto    target 0.95: act when confidence >= 0.961  -> precision 1.000, covers 2% of decisions
+  danger           review  target 0.80: act when confidence >= 0.623  -> precision 0.870, covers 100% of decisions
+  danger           human   everything below
+
+== toolcall ==
+calibration report  model=Qwen3-0.6B@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+tool               300  0.943    0.029    0.022     0.030     0.030    0.943    0.950   0.88
+
+decision policy (calibrated confidence cutoffs, held-out):
+  tool             auto    target 0.95: act when confidence >= 0.545  -> precision 0.953, covers 99% of decisions
+  tool             review  target 0.80: act when confidence >= 0.477  -> precision 0.943, covers 100% of decisions
+  tool             human   everything below
+  collected 50/300 (2s)
+  collected 100/300 (3s)
+  collected 150/300 (5s)
+  collected 200/300 (7s)
+  collected 250/300 (9s)
+  collected 300/300 (10s)
+
+== passages ==
+calibration report  model=Qwen3-0.6B@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+answers            300  0.503    0.345    0.320     0.273     0.217    0.825    0.675   2.42
+
+decision policy (calibrated confidence cutoffs, held-out):
+  answers          auto    target 0.95: act when confidence >= 0.667  -> precision 0.950, covers 47% of decisions
+  answers          review  target 0.80: act when confidence >= 0.626  -> precision 0.800, covers 62% of decisions
+  answers          human   everything below
+  collected 50/300 (2s)
+  collected 100/300 (4s)
+  collected 150/300 (6s)
+  collected 200/300 (8s)
+  collected 250/300 (10s)
+  collected 300/300 (12s)
+
+== frustration ==
+calibration report  model=Qwen3-0.6B@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+frustration        300  0.377    0.618    0.234     0.591     0.255    0.894    0.354  14.79
+
+decision policy (calibrated confidence cutoffs, held-out):
+  frustration      auto    target 0.95: unreachable on this data
+  frustration      review  target 0.80: unreachable on this data
+  frustration      human   everything below
+  collected 50/300 (2s)
+  collected 100/300 (3s)
+  collected 150/300 (5s)
+  collected 200/300 (7s)
+  collected 250/300 (9s)
+  collected 300/300 (10s)
+
+== duplicates ==
+calibration report  model=Qwen3-0.6B@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+same               300  0.863    0.095    0.058     0.093     0.086    0.797    0.878   0.46
+
+decision policy (calibrated confidence cutoffs, held-out):
+  same             auto    target 0.95: act when confidence >= 0.803  -> precision 0.954, covers 72% of decisions
+  same             review  target 0.80: act when confidence >= 0.500  -> precision 0.863, covers 100% of decisions
+  same             human   everything below

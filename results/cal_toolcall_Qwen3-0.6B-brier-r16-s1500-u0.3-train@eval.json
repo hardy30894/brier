@@ -1,0 +1,59 @@
+{
+ "model": "Qwen3-0.6B-brier-r16-s1500-u0.3-train@eval",
+ "created": 1789790213.6439342,
+ "questions": {
+  "tool": {
+   "id": "tool",
+   "T": 0.05000000000000001,
+   "n": 300,
+   "accuracy": 1.0,
+   "ece_raw": 0.0033394291075188633,
+   "ece_cal": 2.182840352915605e-08,
+   "brier_raw": 0.0007867736644188675,
+   "brier_cal": 1.201511055171735e-13,
+   "mean_conf_raw": 0.9966605708924813,
+   "mean_conf_cal": 0.9999999781715965,
+   "reliability_raw": [
+    [
+     0.6000000000000001,
+     0.7000000000000001,
+     2,
+     0.658671109669549,
+     1.0
+    ],
+    [
+     0.9,
+     1.0,
+     298,
+     0.9989289565382726,
+     1.0
+    ]
+   ],
+   "reliability_cal": [
+    [
+     0.9,
+     1.0,
+     300,
+     0.9999999781715965,
+     1.0
+    ]
+   ],
+   "tiers": [
+    {
+     "name": "auto",
+     "target_precision": 0.95,
+     "min_confidence": 0.999994023539662,
+     "precision": 1.0,
+     "coverage": 1.0
+    },
+    {
+     "name": "review",
+     "target_precision": 0.8,
+     "min_confidence": 0.999994023539662,
+     "precision": 1.0,
+     "coverage": 1.0
+    }
+   ]
+  }
+ }
+}

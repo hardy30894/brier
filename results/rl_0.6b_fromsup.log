@@ -1,0 +1,21 @@
+`use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`.
+/usr/local/lib/python3.11/dist-packages/torch/utils/checkpoint.py:295: FutureWarning: `torch.cpu.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cpu', args...)` instead.
+  with torch.enable_grad(), device_autocast_ctx, torch.cpu.amp.autocast(**ctx.cpu_autocast_kwargs):  # type: ignore[attr-defined]
+step 25/400 reward 0.760 brier 0.199 conf 0.878 (14s)
+step 50/400 reward 0.775 brier 0.185 conf 0.859 (27s)
+step 75/400 reward 0.855 brier 0.166 conf 0.808 (39s)
+step 100/400 reward 0.800 brier 0.168 conf 0.835 (52s)
+step 125/400 reward 0.825 brier 0.165 conf 0.792 (65s)
+step 150/400 reward 0.760 brier 0.228 conf 0.893 (78s)
+step 175/400 reward 0.790 brier 0.195 conf 0.802 (91s)
+step 200/400 reward 0.775 brier 0.207 conf 0.739 (104s)
+step 225/400 reward 0.795 brier 0.192 conf 0.885 (116s)
+step 250/400 reward 0.780 brier 0.207 conf 0.766 (129s)
+step 275/400 reward 0.795 brier 0.210 conf 0.697 (142s)
+step 300/400 reward 0.785 brier 0.219 conf 0.786 (155s)
+step 325/400 reward 0.875 brier 0.140 conf 0.805 (168s)
+step 350/400 reward 0.820 brier 0.187 conf 0.881 (181s)
+step 375/400 reward 0.795 brier 0.206 conf 0.833 (193s)
+step 400/400 reward 0.765 brier 0.206 conf 0.736 (206s)
+trainable params: 10,092,544 || all params: 606,142,464 || trainable%: 1.6650
+saved adapters/Qwen3-0.6B-brier-rl-s400-from-sup

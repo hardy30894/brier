@@ -19,12 +19,25 @@ INTENTS = {
 QUESTIONS = [Choice("intent", "what the customer wants help with", INTENTS)]
 
 
+URL = "https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/master/banking_data/{split}.csv"
+
+
+def _rows(split):
+    import csv
+    import io
+    import os
+    import urllib.request
+    cache = os.path.expanduser(f"~/.cache/brier/banking77_{split}.csv")
+    if not os.path.exists(cache):
+        os.makedirs(os.path.dirname(cache), exist_ok=True)
+        with urllib.request.urlopen(URL.format(split=split), timeout=60) as r:
+            open(cache, "wb").write(r.read())
+    with open(cache, newline="", encoding="utf-8") as f:
+        return [(row["text"], row["category"]) for row in csv.DictReader(f)]
+
+
 def generate(n, seed=0, split="all", uncertain=0.0):
-    from datasets import load_dataset
-    ds = load_dataset("PolyAI/banking77", split="test" if split != "train" else "train")
-    names = ds.features["label"].names
-    keep = {names.index(k): k for k in INTENTS}
-    rows = [(r["text"], keep[r["label"]]) for r in ds if r["label"] in keep]
+    rows = [(t, c) for t, c in _rows("test" if split != "train" else "train") if c in INTENTS]
     rng = random.Random(seed)
     rng.shuffle(rows)
     return [{"state": text, "questions": QUESTIONS, "labels": {"intent": intent}} for text, intent in rows[:n]]
