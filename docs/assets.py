@@ -649,13 +649,13 @@ def fig_milestones():
     o = _svg(900, 300)
     _caps(o, 40, 34, "Milestones")
     stages = (
-        ("M1", "zero training", "one pass vs generating JSON", "10–20× faster,\nsame accuracy", True),
-        ("Kit", "calibration", "thresholds from your data", "ECE 0.37 → 0.16\nafter one temperature", True),
-        ("M2 · r1", "train on labels", "does it beat temperature?", "no: clean labels\nteach overconfidence", True),
-        ("M2 · r2", "ambiguity + hold-out", "the gate on unseen tasks", "4B passes:\nECE 0.54 → 0.25", True),
-        ("r3", "contrastive + Phi + head", "cure the shortcut", "0.6B duplicates\n0.64 → 0.97", True),
+        ("M1", "zero training", "vs generating JSON", "10–20× faster,\nsame accuracy", True),
+        ("Kit", "calibration kit", "thresholds from data", "ECE 0.37 → 0.16\nafter one temperature", True),
+        ("M2 · r1", "train on labels", "beats temperature?", "no: clean labels\nteach overconfidence", True),
+        ("M2 · r2", "ambiguity, hold-out", "gate on unseen tasks", "4B passes:\nECE 0.54 → 0.25", True),
+        ("r3", "contrastive, head", "cure the shortcut", "0.6B duplicates\n0.64 → 0.97", True),
         ("M3", "the demo", "watch it decide", "replay of recorded\ngames, live next", True),
-        ("next", "live demo · real data", "a head without the LM term", "", False),
+        ("next", "live demo, real data", "head without LM term", "", False),
     )
     n = len(stages)
     x0, x1, y = 110, 790, 110
@@ -667,8 +667,8 @@ def fig_milestones():
         else:
             o.append(f'<circle cx="{x:.1f}" cy="{y}" r="7" fill="{SURFACE}" stroke="{ACCENT}" stroke-width="2"/>')
         _t(o, x, y - 18, tag, 11, INK, "700", "middle")
-        _t(o, x, y + 30, name, 11, INK, "700", "middle")
-        _t(o, x, y + 46, question, 9.5, MUTED, "400", "middle")
+        _t(o, x, y + 30, name, 10.5, INK, "700", "middle")
+        _t(o, x, y + 46, question, 9, MUTED, "400", "middle")
         for k, line in enumerate(finding.split("\n")):
             _t(o, x, y + 78 + k * 14, line, 10, ACCENT if done else FAINT, "400", "middle")
     _hair(o, 40, 232, 860, 232)
