@@ -190,9 +190,11 @@ python3 pod.py down                      # terminate now; status should then sho
       post-hoc correction. Outcome-reward training with no labels reaches supervised
       accuracy on gridworld. Five backbones from three families ran through the same
       pipeline unchanged. See TRAINING.md.
-- [ ] **Next.** Contrastive claims in the training set, Phi-4-mini as the working
-      backbone, a typed head that reads hidden states instead of the vocabulary, and
-      multi-step outcome episodes.
+- [x] **Round three.** Contrastive claims in the training set, Phi-4-mini trained, a
+      typed head over hidden states (input-conditional temperature plus per-candidate
+      residual, zero-initialised to the plain scorer), six-step outcome episodes, and
+      the [demo page](docs/demo.html) replaying recorded games with live distributions.
+      Results in TRAINING.md.
 - [ ] **Milestone 3, live demo.** A structured-state environment where the model chooses
       an action every tick with a visible confidence bar.
 

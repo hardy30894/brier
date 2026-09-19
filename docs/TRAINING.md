@@ -366,6 +366,34 @@ by this table, not by habit; Phi-4-mini is the candidate to train next.
 **Shared-prefix scoring is exact and pays from 1.7B up.** See
 [ARCHITECTURE.md §2.8](ARCHITECTURE.md#28-sharing-the-prompt-across-candidates).
 
+## Round three: contrastive data, a typed head, another backbone, longer episodes
+
+Four changes, run in parallel on four pods:
+
+- **Contrastive claims in training.** A new training task, `matching` (does an invoice
+  line match an order line, where negatives share the product or the total on purpose),
+  and contrastive negatives in tickets ("no need for a person, an automated reply is
+  fine") so that `needs_human` cannot be learned from the word "person". This targets
+  the round-two failure where the 0.6B learned that shared cues mean yes.
+- **A typed head.** `brier/head.py`: two corrections over the LM-head scores, an
+  input-conditional temperature from the state's hidden representation and a
+  per-candidate residual from the candidate's, all parameters starting at zero so the
+  untrained head is exactly the plain scorer (verified: max difference 0.0). Trained
+  jointly with LoRA. This is the first piece of the model that reads hidden states
+  rather than the vocabulary, and it gives the model a way to be more or less sure
+  per input, which a single temperature cannot.
+- **Phi-4-mini trained.** The strongest untrained backbone in round two, put through the
+  same recipe. LoRA targets are now detected per architecture (Phi fuses the q, k, v
+  projections into one matrix).
+- **Six-step episodes.** `rl.py --episode 6`: the reward for every move in an episode is
+  whether the episode reached the exit, a delayed outcome that single-step training
+  never sees. And `record.py` writes trajectories with per-step distributions for the
+  [demo page](demo.html).
+
+ROUND3_TABLES
+
+ROUND3_LESSONS
+
 ## Next
 
 - **Outcome rewards.** Gridworld is an environment, not just a dataset. The same

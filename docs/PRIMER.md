@@ -452,12 +452,13 @@ is strictly proper, the fixed point is still honesty. This is the next training 
 and the reason the project keeps a gridworld: it is an environment, not just a dataset.
 
 **Typed heads.** Today the scores are read from the LM head's distribution (section 8).
-An alternative reads the hidden states (section 7, step 3) into a small head that
-outputs one scalar per candidate, trained from scratch with the same loss. It removes the
-dependence on tokenization (section 8, multi-token subtlety) and on prompt format, at
-the cost of starting from nothing rather than from a good prior. The right design is
-probably a head initialised to reproduce the LM-head scores and then trained; that is an
-open experiment.
+`brier/head.py` adds the first head that reads the hidden states (section 7, step 3)
+instead: *score_i = lm_i · exp(τ·h_state) + w·h_cand,i + b*. The first term is an
+input-conditional temperature, the second a per-candidate residual, and all parameters
+start at zero so the untrained head is exactly the plain scorer. It keeps the backbone's
+good prior and learns where to deviate from it. A head that drops the LM term entirely,
+removing the tokenization dependence of section 8, is the next step and needs more data
+than the residual form because it starts from nothing.
 
 **Dependent questions.** Every question is answered from the same prompt independently.
 A second pass conditioned on the first pass's answers would recover dependencies at

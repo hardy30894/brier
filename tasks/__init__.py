@@ -1,5 +1,5 @@
 """Every task exposes examples of the form {state, questions, labels}."""
-from . import tickets, gridworld, toolcall, passages, frustration, duplicates, banking
+from . import tickets, gridworld, toolcall, passages, frustration, duplicates, banking, matching
 
 REGISTRY = {
     "tickets": tickets.generate_q,
@@ -9,6 +9,7 @@ REGISTRY = {
     "frustration": frustration.generate,
     "duplicates": duplicates.generate,
     "banking": banking.generate,
+    "matching": matching.generate,
 }
 
 

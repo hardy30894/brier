@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brier plays gridworld</title>
+<style>
+  :root { --ink:#1B1F24; --muted:#5B6B7C; --faint:#8A94A0; --blue:#3557C4; --pale:#EEF3FF; --violet:#8A2BE2; --line:#D8DEE6; --bg:#fff; --card:#F6F8FB; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ink:#F5F7FA; --muted:#A8B3BF; --faint:#7C8794; --blue:#7FA6F0; --pale:#1B2436; --line:#2A3441; --bg:#0D1117; --card:#161C24; } }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; }
+  .wrap { max-width:960px; margin:0 auto; padding:24px 16px; }
+  h1 { font-size:22px; margin:0 0 4px; } .sub { color:var(--muted); font-size:14px; margin:0 0 20px; }
+  .row { display:flex; gap:24px; flex-wrap:wrap; align-items:flex-start; }
+  .grid { display:grid; grid-template-columns:repeat(5,44px); gap:3px; }
+  .cell { width:44px; height:44px; border-radius:6px; background:var(--card); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:18px; }
+  .wall { background:var(--line); } .exit { background:#DDF3E4; color:#1E7A3A; } .monster { background:#FBE0E0; color:#B32626; } .player { background:var(--blue); color:#fff; }
+  .panel { min-width:280px; flex:1; }
+  .bar { display:grid; grid-template-columns:64px 1fr 52px; align-items:center; gap:10px; margin:8px 0; font-size:14px; }
+  .track { height:12px; background:var(--line); border-radius:6px; overflow:hidden; } .fill { height:100%; background:var(--blue); border-radius:6px; transition:width .35s ease; }
+  .fill.chosen { background:var(--violet); }
+  .meta { color:var(--muted); font-size:13px; margin-top:12px; line-height:1.6; }
+  .ctl { margin:16px 0; display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  button, select { font:inherit; padding:6px 12px; border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--ink); cursor:pointer; }
+  button.primary { background:var(--blue); color:#fff; border-color:var(--blue); }
+  .tag { display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; background:var(--pale); color:var(--blue); }
+  .tag.bad { background:#FBE0E0; color:#B32626; } .tag.good { background:#DDF3E4; color:#1E7A3A; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Brier plays gridworld</h1>
+  <p class="sub">Every tick is one forward pass: four allowed moves scored at once, a probability for each, no text generated. Trained with no labels, from the environment's own outcomes.</p>
+  <div class="ctl">
+    <select id="src"></select>
+    <select id="ep"></select>
+    <button id="play" class="primary">Play</button>
+    <button id="stepb">Step</button>
+    <button id="reset">Reset</button>
+    <span id="status" class="tag"></span>
+  </div>
+  <div class="row">
+    <div><div id="grid" class="grid"></div><div class="meta" id="legend">P player · E exit · M monster · # wall</div></div>
+    <div class="panel">
+      <div id="bars"></div>
+      <div class="meta" id="meta"></div>
+    </div>
+  </div>
+</div>
+<script>
+const SOURCES = [["trained (outcome reward, 0.6B)", "../results/trajectories_trained.json"], ["untrained (0.6B)", "../results/trajectories_untrained.json"]];
+const MOVES = ["up", "down", "left", "right"];
+let data = null, epi = 0, t = 0, timer = null;
+const $ = id => document.getElementById(id);
+function cellClass(ch) { return ch === "#" ? "wall" : ch === "E" ? "exit" : ch === "M" ? "monster" : ch === "P" ? "player" : ""; }
+function drawGrid(lines) {
+  const g = $("grid"); const cells = g.children;
+  if (cells.length !== 25) { g.innerHTML = ""; for (let i = 0; i < 25; i++) { const d = document.createElement("div"); d.className = "cell"; g.appendChild(d); } }
+  for (let r = 0; r < 5; r++) for (let c = 0; c < 5; c++) { const ch = lines[r][c]; const d = g.children[r * 5 + c]; d.className = "cell " + cellClass(ch); d.textContent = ch === "." ? "" : ch; }
+}
+function drawBars(step) {
+  const b = $("bars");
+  if (b.children.length !== 4) { b.innerHTML = ""; for (const m of MOVES) { const row = document.createElement("div"); row.className = "bar"; row.innerHTML = `<span>${m}</span><div class="track"><div class="fill" data-m="${m}"></div></div><span class="pct"></span>`; b.appendChild(row); } }
+  for (const row of b.children) { const m = row.querySelector(".fill").dataset.m; const p = step ? step.probs[m] : 0; row.querySelector(".fill").style.width = (p * 100).toFixed(0) + "%"; row.querySelector(".fill").className = "fill" + (step && step.move === m ? " chosen" : ""); row.querySelector(".pct").textContent = step ? (p * 100).toFixed(0) + "%" : ""; }
+}
+function render() {
+  const e = data.episodes[epi]; const step = e.steps[Math.min(t, e.steps.length - 1)];
+  drawGrid(t < e.steps.length ? step.grid : e.steps[e.steps.length - 1].grid);
+  drawBars(step);
+  const done = t >= e.steps.length;
+  $("status").textContent = done ? `episode over: ${e.result}` : `step ${t + 1} of ${e.steps.length}`;
+  $("status").className = "tag " + (done ? (e.result === "exit" ? "good" : e.result === "dead" ? "bad" : "") : "");
+  $("meta").innerHTML = step ? `chose <b>${step.move}</b> at confidence <b>${(step.confidence * 100).toFixed(0)}%</b> · ${step.optimal ? "optimal" : "not optimal"} · ${step.latency_ms} ms<br>model: ${data.model}` : "";
+}
+function stepOnce() { const e = data.episodes[epi]; if (t < e.steps.length) { t++; render(); } else stop(); }
+function play() { stop(); timer = setInterval(stepOnce, 700); $("play").textContent = "Pause"; }
+function stop() { if (timer) { clearInterval(timer); timer = null; } $("play").textContent = "Play"; }
+async function load(src) { stop(); data = await (await fetch(src)).json(); const s = $("ep"); s.innerHTML = ""; data.episodes.forEach((e, i) => { const o = document.createElement("option"); o.value = i; o.textContent = `episode ${i + 1} · ${e.steps.length} steps · ${e.result}`; s.appendChild(o); }); epi = 0; t = 0; render(); }
+SOURCES.forEach(([n, p]) => { const o = document.createElement("option"); o.value = p; o.textContent = n; $("src").appendChild(o); });
+$("src").onchange = e => load(e.target.value);
+$("ep").onchange = e => { stop(); epi = +e.target.value; t = 0; render(); };
+$("play").onclick = () => timer ? stop() : play();
+$("stepb").onclick = () => { stop(); stepOnce(); };
+$("reset").onclick = () => { stop(); t = 0; render(); };
+load(SOURCES[0][1]).catch(() => { $("status").textContent = "no trajectories found; run record.py"; });
+</script>
+</body>
+</html>

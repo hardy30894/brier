@@ -40,6 +40,7 @@ class Scorer:
             dtype = torch.bfloat16 if self.device != "cpu" else torch.float32
             model = AutoModelForCausalLM.from_pretrained(model_id, dtype=dtype).to(self.device)
         self.model = model.eval()
+        self.head = None
         self._enc_cache: dict[str, list[int]] = {}
 
     def _enc(self, s: str) -> list[int]:
@@ -78,9 +79,22 @@ class Scorer:
         lp = torch.log_softmax(logits[rows, cols].float(), dim=-1).gather(1, tgt[:, None]).squeeze(1)
         return torch.stack([s.sum() for s in torch.split(lp, [b - a for a, b in spans])])
 
+    def scores_from_rows(self, input_ids, attn, spans):
+        """LM-head scores per candidate, corrected by the typed head when one is attached."""
+        if self.head is None:
+            logits = self.model(input_ids=input_ids, attention_mask=attn).logits
+            return self.candidate_logprobs(logits, input_ids, spans)
+        out = self.model(input_ids=input_ids, attention_mask=attn, output_hidden_states=True)
+        lm = self.candidate_logprobs(out.logits, input_ids, spans)
+        h = out.hidden_states[-1]
+        idx = torch.arange(len(spans), device=self.device)
+        h_state = h[idx, torch.tensor([a - 1 for a, b in spans], device=self.device)]
+        h_cand = h[idx, torch.tensor([b - 1 for a, b in spans], device=self.device)]
+        return self.head(lm, h_state, h_cand)
+
     @torch.no_grad()
     def score_groups(self, prefix: str, groups: list[tuple[str, list[str]]]) -> list[list[float]]:
-        flat = (self._score_cached if self.shared_prefix else self._score_full)(prefix, groups)
+        flat = (self._score_cached if self.shared_prefix and self.head is None else self._score_full)(prefix, groups)
         out, k = [], 0
         for _, cands in groups:
             out.append(flat[k : k + len(cands)])
@@ -90,8 +104,7 @@ class Scorer:
     def _score_full(self, prefix, groups):
         seqs, spans = self.build_rows(prefix, groups)
         input_ids, attn = self.batch(seqs)
-        logits = self.model(input_ids=input_ids, attention_mask=attn).logits
-        return self.candidate_logprobs(logits, input_ids, spans).tolist()
+        return self.scores_from_rows(input_ids, attn, spans).tolist()
 
     def _score_cached(self, prefix, groups):
         """The prompt is run once; its key/value cache is shared by every candidate row, so the

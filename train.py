@@ -13,11 +13,18 @@ from peft import LoraConfig, get_peft_model
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from brier import Scorer
+from brier.head import TypedHead
 from brier.calibrate import acceptable, target
 from brier.questions import build_prompt, groups_for
 from tasks import examples
 
-TARGETS = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
+CANDIDATE_TARGETS = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj", "qkv_proj", "gate_up_proj"]
+
+
+def lora_targets(model):
+    """Projection names present in this architecture (Qwen/Llama use q,k,v; Phi fuses qkv and gate_up)."""
+    names = {n.split(".")[-1] for n, m in model.named_modules() if isinstance(m, torch.nn.Linear)}
+    return [t for t in CANDIDATE_TARGETS if t in names]
 
 
 def batch_loss(scorer, exs):
@@ -31,8 +38,7 @@ def batch_loss(scorer, exs):
         spans += sp
         layout.append((ex, groups))
     input_ids, attn = scorer.batch(seqs)
-    logits = scorer.model(input_ids=input_ids, attention_mask=attn).logits
-    cand = scorer.candidate_logprobs(logits, input_ids, spans)
+    cand = scorer.scores_from_rows(input_ids, attn, spans)
     loss, n, k = 0.0, 0, 0
     for ex, groups in layout:
         for q, (_, labels) in zip(ex["questions"], groups):
@@ -65,6 +71,8 @@ def main():
     ap.add_argument("--batch", type=int, default=1, help="examples per forward pass")
     ap.add_argument("--seed", type=int, default=100)
     ap.add_argument("--out", default="adapters")
+    ap.add_argument("--head", action="store_true", help="train a typed head over hidden states jointly with LoRA")
+    ap.add_argument("--head-lr", type=float, default=1e-3)
     a = ap.parse_args()
 
     torch.manual_seed(a.seed)
@@ -73,11 +81,13 @@ def main():
     base = AutoModelForCausalLM.from_pretrained(a.model, dtype=torch.bfloat16)
     base.gradient_checkpointing_enable()
     base.enable_input_require_grads()
-    cfg = LoraConfig(r=a.rank, lora_alpha=2 * a.rank, lora_dropout=0.05, target_modules=TARGETS, task_type="CAUSAL_LM")
+    cfg = LoraConfig(r=a.rank, lora_alpha=2 * a.rank, lora_dropout=0.05, target_modules=lora_targets(base), task_type="CAUSAL_LM")
     model = get_peft_model(base, cfg)
     model.print_trainable_parameters()
     scorer = Scorer(a.model, model=model, tok=tok)
     scorer.model = scorer.model.to(scorer.device)
+    if a.head:
+        scorer.head = TypedHead(base.config.hidden_size).to(scorer.device)
 
     data = []
     for t in a.tasks.split(","):
@@ -85,7 +95,10 @@ def main():
     random.shuffle(data)
     print(f"{len(data)} training examples from {a.tasks}", file=sys.stderr)
 
-    opt = torch.optim.AdamW([p for p in model.parameters() if p.requires_grad], lr=a.lr, weight_decay=0.0)
+    groups = [{"params": [p for p in model.parameters() if p.requires_grad], "lr": a.lr}]
+    if a.head:
+        groups.append({"params": list(scorer.head.parameters()), "lr": a.head_lr})
+    opt = torch.optim.AdamW(groups, weight_decay=0.0)
     sched = torch.optim.lr_scheduler.LambdaLR(opt, lambda s: min(1.0, (s + 1) / 50) * max(0.05, 1 - s / a.steps))
     model.train()
     t0, running, i = time.perf_counter(), 0.0, 0
@@ -103,9 +116,11 @@ def main():
         if (step + 1) % 50 == 0:
             print(f"step {step + 1}/{a.steps} loss {running / 50:.4f} lr {sched.get_last_lr()[0]:.2e} ({time.perf_counter() - t0:.0f}s)", file=sys.stderr)
             running = 0.0
-    name = f"{a.model.split('/')[-1]}-brier-r{a.rank}-s{a.steps}" + (f"-u{a.uncertain:g}" if a.uncertain else "") + (f"-{a.split}" if a.split != "all" else "")
+    name = f"{a.model.split('/')[-1]}-brier-r{a.rank}-s{a.steps}" + (f"-u{a.uncertain:g}" if a.uncertain else "") + (f"-{a.split}" if a.split != "all" else "") + ("-head" if a.head else "")
     path = os.path.join(a.out, name)
     model.save_pretrained(path)
+    if a.head:
+        torch.save(scorer.head.state_dict(), os.path.join(path, "head.pt"))
     json.dump(vars(a), open(os.path.join(path, "train_args.json"), "w"), indent=1)
     print(f"saved {path}")
 

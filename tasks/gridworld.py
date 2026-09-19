@@ -90,6 +90,38 @@ def outcome(grid, player, goal, monster, move):
     return 1.0 if dist[nxt] < dist.get(player, 10 ** 9) else 0.0
 
 
+def step(grid, player, monster, move):
+    """Apply a move. Returns (new_player, status) with status in {'ok', 'blocked', 'dead', 'exit'}."""
+    dr, dc = DIRS[move]
+    n = len(grid)
+    nxt = (player[0] + dr, player[1] + dc)
+    if not (0 <= nxt[0] < n and 0 <= nxt[1] < n) or grid[nxt[0]][nxt[1]] == "#":
+        return player, "blocked"
+    if nxt == monster:
+        return nxt, "dead"
+    if grid[nxt[0]][nxt[1]] == "E":
+        return nxt, "exit"
+    return nxt, "ok"
+
+
+def render_state(grid, player, goal, monster):
+    g = [row[:] for row in grid]
+    for r in range(len(g)):
+        for c in range(len(g[r])):
+            if g[r][c] in "PEM":
+                g[r][c] = "."
+    g[goal[0]][goal[1]] = "E"
+    g[monster[0]][monster[1]] = "M"
+    g[player[0]][player[1]] = "P"
+    size = len(g)
+    return (
+        f"A {size}x{size} grid. P = player, E = exit, M = monster (never step onto it), # = wall, . = open floor. "
+        f"Rows go top to bottom, columns left to right. The player is at row {player[0] + 1}, column {player[1] + 1}; "
+        f"the exit is at row {goal[0] + 1}, column {goal[1] + 1}; the monster is at row {monster[0] + 1}, column {monster[1] + 1}.\n"
+        + _render(g)
+    )
+
+
 from brier.questions import Choice, Claim  # noqa: E402
 
 QUESTIONS = [

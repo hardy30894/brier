@@ -74,6 +74,13 @@ PRIORITY_PHRASES = {
     ],
 }
 
+NOT_HUMAN_PHRASES = [
+    "No need for a person to call, an automated reply is fine.",
+    "I don't need to talk to anyone, just point me at the fix.",
+    "The bot answer will do, I'm only reporting it.",
+    "Please don't escalate to a human, this is minor.",
+]
+
 HUMAN_PHRASES = [
     "I'd like to speak to an actual person about this.",
     "I've already been through the bot twice, I need a human.",
@@ -144,6 +151,8 @@ def generate(n, seed=0, split="all", uncertain=0.0):
             parts.append(rng.choice(_pool(PRIORITY_PHRASES[pri], split)))
         if human:
             parts.append(rng.choice(_pool(HUMAN_PHRASES, split)))
+        elif rng.random() < 0.3:
+            parts.append(rng.choice(_pool(NOT_HUMAN_PHRASES, split)))
         if rng.random() < 0.35:
             parts.append(_fill(rng.choice(NOISE), rng))
         rng.shuffle(parts)

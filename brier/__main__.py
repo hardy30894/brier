@@ -20,6 +20,12 @@ def load_scorer(model_id, adapter=None):
     model = PeftModel.from_pretrained(base, adapter)
     sc = Scorer(model_id, model=model, tok=tok)
     sc.model = sc.model.to(sc.device)
+    head_path = os.path.join(adapter, "head.pt")
+    if os.path.exists(head_path):
+        from .head import TypedHead
+        sc.head = TypedHead(base.config.hidden_size).to(sc.device)
+        sc.head.load_state_dict(torch.load(head_path, map_location=sc.device))
+        sc.head.eval()
     return sc
 
 
