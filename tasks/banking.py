@@ -1,8 +1,8 @@
 """A real dataset: customer banking queries with human intent labels (PolyAI banking77),
-restricted to ten intents so a Choice can list them. Real text, real label noise."""
+restricted to ten intents so a Pick can list them. Real text, real label noise."""
 import random
 
-from brier.questions import Choice
+from brier.questions import Pick
 
 INTENTS = {
     "card_arrival": "asking when a new card will arrive",
@@ -16,7 +16,7 @@ INTENTS = {
     "atm_support": "trouble using an ATM",
     "edit_personal_details": "wants to change name, address or other personal details",
 }
-QUESTIONS = [Choice("intent", "what the customer wants help with", INTENTS)]
+QUESTIONS = [Pick("intent", "what the customer wants help with", INTENTS)]
 
 
 URL = "https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/master/banking_data/{split}.csv"

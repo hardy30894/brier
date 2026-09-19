@@ -444,7 +444,7 @@ def fig_training():
 def fig_components():
     o = _svg(900, 300)
     _t(o, 450, 34, "An ask() call through the code", 15, INK, "700", "middle")
-    boxes = (("your code", "state + questions", "#FFFFFF", LINE), ("brier/questions.py", "Choice, Score, Claim → candidates", "#FFFFFF", LINE),
+    boxes = (("your code", "state + questions", "#FFFFFF", LINE), ("brier/questions.py", "Pick, Grade, Claim → candidates", "#FFFFFF", LINE),
              ("brier/scorer.py", "prompt → batch → softmax", PALE, BLUE), ("brier/questions.py", "Answer: value, probabilities", "#FFFFFF", LINE))
     for i, (name, what, fill, stroke) in enumerate(boxes):
         x = 40 + i * 215

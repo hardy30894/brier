@@ -34,11 +34,11 @@ python3 -m brier calibrate --task tickets --model Qwen/Qwen3-0.6B --adapter adap
 On your own data, from Python:
 
 ```python
-from brier import Scorer, Choice, Claim
+from brier import Scorer, Pick, Claim
 from brier.calibrate import collect, calibrate, report, Calibration
 from brier.report import reliability_svg
 
-questions = [Choice("category", "...", (...)), Claim("needs_human", "...")]
+questions = [Pick("category", "...", (...)), Claim("needs_human", "...")]
 examples = [(state, {"category": "bug", "needs_human": True}), ...]   # a few hundred, labelled
 
 scorer = Scorer("Qwen/Qwen3-4B")

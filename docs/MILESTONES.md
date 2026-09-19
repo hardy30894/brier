@@ -27,7 +27,7 @@ structural guarantee was not yet the differentiator. Raw confidence is badly inf
 (0.95 mean confidence at 0.59 accuracy on the 4B) and one temperature per question cuts
 the calibration error two to four times. Two format lessons: the scoring header must be
 something the model would have written (a JSON key works, a bare `field:` line does
-not), and Score levels must be listed as bare names, because inline descriptions bleed
+not), and Grade levels must be listed as bare names, because inline descriptions bleed
 into the answer space.
 
 **Decision.** Training is worth it, and calibration is the gap.
@@ -40,7 +40,7 @@ into the answer space.
 own thresholds. Can the thresholds be derived from the user's own data with a stated
 guarantee?
 
-**Delivered.** Choice, Score and Claim questions answered in one pass with full
+**Delivered.** Pick, Grade and Claim questions answered in one pass with full
 distributions, a stated definition of confidence, and expected level for scores. The
 kit: per-question temperature fit by maximum likelihood with five-fold cross-fitting,
 ECE and Brier score on held-out folds, reliability diagrams, and the lowest confidence

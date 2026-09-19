@@ -1,7 +1,7 @@
 """Function-call selection: given a user request and a list of tools, which tool should be called?"""
 import random
 
-from brier.questions import Choice
+from brier.questions import Pick
 
 TOOLS = {
     "search_docs": ("Search the product documentation for a topic", ["how do I {verb} a {noun}", "where is the setting for {noun}s", "is there a way to {verb} {noun}s in bulk", "docs on {noun} permissions"]),
@@ -35,7 +35,7 @@ def _fill(s, rng):
 
 
 def questions(tool_names):
-    return [Choice("tool", "which tool should be called to handle this request", {t: TOOLS[t][0] for t in tool_names})]
+    return [Pick("tool", "which tool should be called to handle this request", {t: TOOLS[t][0] for t in tool_names})]
 
 
 def generate(n, seed=0, k=5, split="all", uncertain=0.0):

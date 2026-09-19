@@ -52,11 +52,11 @@ the evaluation seed:
 
 | task | question(s) | trained on |
 |---|---|---|
-| tickets | category (Choice), priority (Score), needs_human (Claim) | yes |
-| gridworld | move (Choice, ties allowed), danger (Claim) | yes |
-| toolcall | tool (Choice over a per-example subset of eight tools) | yes |
+| tickets | category (Pick), priority (Grade), needs_human (Claim) | yes |
+| gridworld | move (Pick, ties allowed), danger (Claim) | yes |
+| toolcall | tool (Pick over a per-example subset of eight tools) | yes |
 | passages | answers (Claim) | yes |
-| frustration | frustration (Score, four levels) | **no**, held out entirely |
+| frustration | frustration (Grade, four levels) | **no**, held out entirely |
 
 The generators know every label because they chose it, so there is no label noise to
 learn. Frustration is excluded so that its result measures whether the model learned to

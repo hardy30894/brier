@@ -120,12 +120,12 @@ model is running.
 ## Usage
 
 ```python
-from brier import Scorer, Choice, Score, Claim, ask
+from brier import Scorer, Pick, Grade, Claim, ask
 
 scorer = Scorer("microsoft/Phi-4-mini-instruct")
 answers = ask(scorer, "Webhooks are firing twice for every event since 3am. Need this today.", [
-    Choice("category", "which team should handle this ticket", ("billing", "bug", "feature", "account", "other")),
-    Score("priority", "how fast this must be handled", ("low", "medium", "high", "urgent")),
+    Pick("category", "which team should handle this ticket", ("billing", "bug", "feature", "account", "other")),
+    Grade("priority", "how fast this must be handled", ("low", "medium", "high", "urgent")),
     Claim("needs_human", "the customer is asking for a human agent rather than an automated reply"),
 ])
 
@@ -165,7 +165,7 @@ managed by `pod.py`, which enforces a hard time-to-live on every pod it creates.
 
 | | |
 |---|---|
-| `brier/questions.py` | Choice, Score, Claim and `ask()` |
+| `brier/questions.py` | Pick, Grade, Claim and `ask()` |
 | `brier/scorer.py` | the single-pass scorer, full-row and shared-prefix paths, and the JSON-generation baseline |
 | `brier/calibrate.py` · `brier/report.py` | the calibration kit and its figures |
 | `brier/head.py` | the typed head |

@@ -5,7 +5,7 @@
 
     python3 -m brier.serve --mock          # no model; random distributions, for developing the page
 
-POST /ask        {"state": str|obj, "questions": [{"kind": "choice"|"score"|"claim", "id", "instructions", "options"|"levels"|"true"/"false"}]}
+POST /ask        {"state": str|obj, "questions": [{"kind": "pick"|"grade"|"claim", "id", "instructions", "options"|"levels"|"true"/"false"}]}
 POST /grid/new   {}                      -> a fresh game
 POST /grid/step  {"game": <as returned>} -> the move distribution and the game after applying the top move
 GET  /            the demo page; GET /health
@@ -25,17 +25,17 @@ ROOT = HERE.parent
 
 
 def parse_questions(items):
-    from .questions import Choice, Score, Claim
+    from .questions import Pick, Grade, Claim
     qs = []
     for it in items:
-        kind = it.get("kind", "choice")
+        kind = it.get("kind", "pick")
         qid, instr = str(it["id"]).strip(), str(it.get("instructions", "")).strip()
-        if kind == "choice":
+        if kind == "pick":
             opts = it["options"]
-            qs.append(Choice(qid, instr, tuple(opts) if isinstance(opts, list) else dict(opts)))
-        elif kind == "score":
+            qs.append(Pick(qid, instr, tuple(opts) if isinstance(opts, list) else dict(opts)))
+        elif kind == "grade":
             lv = it["levels"]
-            qs.append(Score(qid, instr, tuple(lv) if isinstance(lv, list) else dict(lv)))
+            qs.append(Grade(qid, instr, tuple(lv) if isinstance(lv, list) else dict(lv)))
         else:
             qs.append(Claim(qid, instr, it.get("true", "yes"), it.get("false", "no")))
     return qs
@@ -94,7 +94,7 @@ class Engine:
             if k == "claim":
                 return f"{q.id}: claim {q.instructions}"
             labels = q.labels
-            sep = " < " if k == "score" else " | "
+            sep = " < " if k == "grade" else " | "
             return f"{q.id}: {k} {q.instructions} = {sep.join(labels)}"
         def lab(v):
             if isinstance(v, bool):
@@ -133,7 +133,7 @@ class Engine:
         from .questions import render_state
         fields = []
         for it in items:
-            kind = it.get("kind", "choice")
+            kind = it.get("kind", "pick")
             if kind == "claim":
                 fields.append(Bool(it["id"], it.get("instructions", "")))
             else:

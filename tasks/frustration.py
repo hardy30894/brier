@@ -1,10 +1,10 @@
-"""Customer frustration on an ordered scale: a Score question."""
+"""Customer frustration on an ordered scale: a Grade question."""
 import random
 
-from brier.questions import Score
+from brier.questions import Grade
 
 LEVELS = {"calm": "neutral or friendly, no complaint", "annoyed": "mild irritation, still polite", "angry": "clearly upset, demanding", "furious": "hostile, threats to leave or escalate"}
-QUESTIONS = [Score("frustration", "how frustrated is the customer", LEVELS)]
+QUESTIONS = [Grade("frustration", "how frustrated is the customer", LEVELS)]
 
 TEMPLATES = {
     "calm": ["Quick question: how do I change my billing email? Thanks!", "Loving the new dashboard. Is there a keyboard shortcut list somewhere?", "Could you point me to the docs for webhooks when you get a chance?", "Just checking whether the {feature} feature is on the roadmap."],

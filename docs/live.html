@@ -124,7 +124,7 @@
       <div class="ed state"><textarea id="state" spellcheck="false" placeholder="text, or JSON"></textarea></div>
       <div class="ph">Questions<span class="sp"></span><label style="text-transform:none;letter-spacing:0;font-size:12px;display:flex;gap:6px;align-items:center"><input type="checkbox" id="live" checked style="accent-color:var(--accent);margin:0"> live</label><button id="run" class="solid">Decide ⌘↩</button></div>
       <div class="ed questions"><textarea id="questions" spellcheck="false"></textarea></div>
-      <div class="help">one per line · <b>id: choice</b> instructions <b>= a | b | c</b> · <b>id: score</b> instructions <b>= low &lt; high</b> · <b>id: claim</b> statement</div>
+      <div class="help">one per line · <b>id: pick</b> instructions <b>= a | b | c</b> · <b>id: grade</b> instructions <b>= low &lt; high</b> · <b>id: claim</b> statement</div>
       <div class="err" id="err"></div>
     </div>
     <div class="pane">
@@ -183,30 +183,30 @@ function parseQuestions(text) {
   const out = [], errs = [];
   text.split("\n").forEach((line, i) => {
     const l = line.trim(); if (!l || l.startsWith("#")) return;
-    const m = l.match(/^([A-Za-z_][\w-]*)\s*:\s*(choice|score|claim)\b\s*(.*)$/);
-    if (!m) { errs.push(`line ${i + 1}: expected "id: choice|score|claim …"`); return; }
+    const m = l.match(/^([A-Za-z_][\w-]*)\s*:\s*(pick|grade|claim)\b\s*(.*)$/);
+    if (!m) { errs.push(`line ${i + 1}: expected "id: pick|grade|claim …"`); return; }
     const [, id, kind, rest] = m;
     if (kind === "claim") { out.push({ kind, id, instructions: rest.trim() }); return; }
     const eq = rest.lastIndexOf("="); if (eq < 0) { errs.push(`line ${i + 1}: ${kind} needs "= options"`); return; }
     const instructions = rest.slice(0, eq).trim(); const optsRaw = rest.slice(eq + 1);
-    const sep = kind === "score" ? /<|\|/ : /\|/;
+    const sep = kind === "grade" ? /<|\|/ : /\|/;
     const opts = optsRaw.split(sep).map(s => s.trim()).filter(Boolean);
     if (opts.length < 2) { errs.push(`line ${i + 1}: need at least two options`); return; }
-    out.push(kind === "score" ? { kind, id, instructions, levels: opts } : { kind, id, instructions, options: opts });
+    out.push(kind === "grade" ? { kind, id, instructions, levels: opts } : { kind, id, instructions, options: opts });
   });
   return { questions: out, errs };
 }
 const EX = {
   "ticket": { state: "Webhooks are firing twice for every event since around 3am UTC. I need this sorted today if at all possible. We're on the Team plan.",
-    questions: "category: choice which team should handle this ticket = billing | bug | feature | account | other\npriority: score how fast this must be handled = low < medium < high < urgent\nneeds_human: claim the customer is asking for a human agent rather than an automated reply" },
+    questions: "category: pick which team should handle this ticket = billing | bug | feature | account | other\npriority: grade how fast this must be handled = low < medium < high < urgent\nneeds_human: claim the customer is asking for a human agent rather than an automated reply" },
   "tool": { state: JSON.stringify({ request: "send me the invoice for September and then cancel my plan", tools: { get_invoice: "Fetch a billing invoice by month", cancel_subscription: "Cancel the current subscription", reset_password: "Send a password reset email", schedule_call: "Book a call with a human agent", none: "No tool applies" } }, null, 2),
-    questions: "tool: choice which tool should be called first = get_invoice | cancel_subscription | reset_password | schedule_call | none\ntwo_tools: claim the request needs more than one tool" },
+    questions: "tool: pick which tool should be called first = get_invoice | cancel_subscription | reset_password | schedule_call | none\ntwo_tools: claim the request needs more than one tool" },
   "records": { state: JSON.stringify({ record_a: { name: "Priya Raman", email: "priya.raman@northwind.io", phone: "+1 415 555 0142", company: "Northwind" }, record_b: { name: "P. Raman", email: "praman@northwind.io", company: "Northwind" } }, null, 2),
     questions: "same: claim the two records describe the same person" },
   "passage": { state: JSON.stringify({ question: "What is the refund window?", passage: "Customers may request a full refund within 30 days of purchase. The support team works in two shifts." }, null, 2),
-    questions: "answers: claim the passage contains the information needed to answer the question\nrelevance: score how related the passage is to the question = unrelated < tangential < related < answers it" },
+    questions: "answers: claim the passage contains the information needed to answer the question\nrelevance: grade how related the passage is to the question = unrelated < tangential < related < answers it" },
   "frustration": { state: "Third outage this month and nobody has replied to my two emails about the SSO settings you deleted. What exactly are we paying for?",
-    questions: "frustration: score how frustrated the customer is = calm < annoyed < angry < furious\nchurn_risk: claim the customer is threatening to leave" },
+    questions: "frustration: grade how frustrated the customer is = calm < annoyed < angry < furious\nchurn_risk: claim the customer is threatening to leave" },
 };
 Object.keys(EX).forEach((k, i) => { const b = document.createElement("button"); b.textContent = k; b.className = i === 0 ? "on" : ""; b.onclick = () => { $("state").value = EX[k].state; $("questions").value = EX[k].questions; [...$("examples").children].forEach(x => x.classList.toggle("on", x === b)); decide(); }; $("examples").appendChild(b); });
 $("state").value = EX.ticket.state; $("questions").value = EX.ticket.questions;
@@ -219,7 +219,7 @@ function render(root, answers) {
     let el = root.querySelector(`[data-id="${CSS.escape(a.id)}"]`);
     if (!el) { el = document.createElement("div"); el.className = "q"; el.dataset.id = a.id; el.innerHTML = `<div class="h"><span class="id"></span><span class="kind"></span><span class="val"></span><span class="tier"></span></div><div class="rows"></div>`; root.appendChild(el); }
     el.querySelector(".id").textContent = a.id; el.querySelector(".kind").textContent = a.kind;
-    el.querySelector(".val").textContent = a.kind === "claim" ? `p = ${a.value.toFixed(3)}` : (a.kind === "score" && a.expected != null ? `${a.value}  E[level] ${a.expected.toFixed(2)}` : a.value);
+    el.querySelector(".val").textContent = a.kind === "claim" ? `p = ${a.value.toFixed(3)}` : (a.kind === "grade" && a.expected != null ? `${a.value}  E[level] ${a.expected.toFixed(2)}` : a.value);
     const t = el.querySelector(".tier"); t.textContent = a.tier ? `${a.tier}${calApplied.startsWith("built-in") ? " · synthetic" : ""}` : "uncalibrated"; t.title = a.tier ? `tier from calibration on ${calApplied}; the precision target holds for inputs like those` : "no calibration for this question: raw model probabilities"; t.className = "tier " + (a.tier || "none");
     const rows = el.querySelector(".rows"); const order = Object.entries(a.probabilities).sort((x, y) => y[1] - x[1]); const top = order[0][0];
     for (const [lab, p] of order) {

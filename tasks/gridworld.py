@@ -122,10 +122,10 @@ def render_state(grid, player, goal, monster):
     )
 
 
-from brier.questions import Choice, Claim  # noqa: E402
+from brier.questions import Pick, Claim  # noqa: E402
 
 QUESTIONS = [
-    Choice("move", "the single step that gets the player closer to the exit along the shortest safe path", ("up", "down", "left", "right")),
+    Pick("move", "the single step that gets the player closer to the exit along the shortest safe path", ("up", "down", "left", "right")),
     Claim("danger", "a monster is in one of the four cells directly next to the player"),
 ]
 

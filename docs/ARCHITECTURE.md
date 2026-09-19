@@ -124,9 +124,9 @@ This is the last piece of background. Everything else is Brier.
 Brier is asked **questions** about a **state**. There are three kinds, and the full
 reference is [QUESTIONS.md](QUESTIONS.md):
 
-- `Choice("category", "which team should handle this ticket", ("billing", "bug", "feature", "account", "other"))`,
+- `Pick("category", "which team should handle this ticket", ("billing", "bug", "feature", "account", "other"))`,
   which of these options.
-- `Score("priority", "how fast this must be handled", ("low", "medium", "high", "urgent"))`,
+- `Grade("priority", "how fast this must be handled", ("low", "medium", "high", "urgent"))`,
   which level on an ordered scale. The answer also carries the probability-weighted
   mean position, so "between medium and high" is expressible.
 - `Claim("needs_human", "the customer is asking for a human agent")`, is this statement
@@ -166,7 +166,7 @@ The format of that header matters more than it looks. The first version of Brier
 `category:` on its own line. A 4B model scored `other` with total confidence on every
 ticket, because that is not how it had learned to answer such a prompt. Switching to the
 JSON header, which matches what the model was trained to produce, fixed it immediately.
-The same lesson recurred with `Score` questions: rendering level descriptions inline
+The same lesson recurred with `Grade` questions: rendering level descriptions inline
 (`calm: neutral or friendly`) dropped accuracy from 0.43 to 0.28 on Qwen3-4B, because
 the description text bled into the answer space; listing the bare level names in order
 fixed it. The lesson generalises: **the scoring prefix must be something the model would
@@ -568,7 +568,7 @@ forward pass, gather the candidate positions' log-probabilities, sum per candida
 `generate_json()` is the baseline: a normal generation call, a regex to find the
 object, a parse, and a per-field validation. The `debias` flag is section 3.7.
 
-**`brier/questions.py`.** `Choice`, `Score`, `Claim`; `ask()` renders the state and the
+**`brier/questions.py`.** `Pick`, `Grade`, `Claim`; `ask()` renders the state and the
 questions into one prompt, calls `score_groups`, and softmaxes per question into
 `Answer` objects with value, probabilities, confidence, margin and, for scores, the
 expected level.

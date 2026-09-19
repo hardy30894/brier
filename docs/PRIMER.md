@@ -62,7 +62,7 @@ $p_1, \dots, p_n$, the expected value is the probability-weighted average:
 \mathbb{E}[v] = \sum_{i=1}^{n} p_i\, v_i
 ```
 
-Brier uses it for `Score` questions: levels `calm < annoyed < angry < furious` are given
+Brier uses it for `Grade` questions: levels `calm < annoyed < angry < furious` are given
 positions $0, 1, 2, 3$, and `expected` is $\sum_i p_i \cdot i$. A distribution of 0.5 on
 `annoyed` and 0.5 on `angry` has expected level 1.5, which correctly says "between the
 two" where the argmax would have to pick one.

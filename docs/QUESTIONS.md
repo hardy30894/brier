@@ -5,7 +5,7 @@ question in a call is answered in the same forward pass, and every answer carrie
 probability distribution. This page is the reference; the [architecture doc](ARCHITECTURE.md)
 explains the mechanism and the [primer](PRIMER.md) the mathematics.
 
-**Contents**: [State](#state) · [Choice](#choice) · [Score](#score) · [Claim](#claim) · [Asking](#asking) · [Answers](#answers) · [Confidence](#confidence) · [Independence](#independence) · [Writing good questions](#writing-good-questions) · [Limits](#limits)
+**Contents**: [State](#state) · [Pick](#pick) · [Grade](#grade) · [Claim](#claim) · [Asking](#asking) · [Answers](#answers) · [Confidence](#confidence) · [Independence](#independence) · [Writing good questions](#writing-good-questions) · [Limits](#limits)
 
 ## State
 
@@ -25,17 +25,17 @@ state = {
 Keep the state to what the questions need. Irrelevant fields are distractors for a model
 that reads everything in one pass.
 
-## Choice
+## Pick
 
 *Which of these options?*
 
 ```python
-from brier import Choice
+from brier import Pick
 
-Choice("category", "which team should handle this ticket",
+Pick("category", "which team should handle this ticket",
        ("billing", "bug", "feature", "account", "other"))
 
-Choice("tool", "which tool should be called to handle this request",
+Pick("tool", "which tool should be called to handle this request",
        {"get_invoice": "Fetch a billing invoice by month",
         "reset_password": "Send a password reset email",
         "none": "No tool applies; reply conversationally"})
@@ -48,15 +48,15 @@ Choice("tool", "which tool should be called to handle this request",
 
 The answer's `value` is one of the labels. It cannot be anything else.
 
-## Score
+## Grade
 
 *Which level on an ordered scale?*
 
 ```python
-from brier import Score
+from brier import Grade
 
-Score("priority", "how fast this must be handled", ("low", "medium", "high", "urgent"))
-Score("frustration", "how frustrated is the customer", ("calm", "annoyed", "angry", "furious"))
+Grade("priority", "how fast this must be handled", ("low", "medium", "high", "urgent"))
+Grade("frustration", "how frustrated is the customer", ("calm", "annoyed", "angry", "furious"))
 ```
 
 - `levels`: ordered lowest to highest. A dict of label to description is accepted for
@@ -144,10 +144,10 @@ probabilities, where it is explicit.
 ## Writing good questions
 
 - **Atomic.** One judgement per question. "Is this a bug report" and "is it urgent" are
-  two Claims, not one Choice over four combinations.
+  two Claims, not one Pick over four combinations.
 - **Literal.** The model answers what is written. If the boundary matters, put it in the
   instructions: "the customer explicitly asks for a person" rather than "needs a human."
-- **Bounded.** Choice options should be exhaustive; include an `other` or `none` when
+- **Bounded.** Pick options should be exhaustive; include an `other` or `none` when
   the real world has one, or the model will force a wrong fit.
 - **Short labels.** Labels that tokenize to one or two tokens score on equal footing.
   Deliberately long labels among short ones are penalised by the extra tokens; the

@@ -1,4 +1,4 @@
-"""The question interface: Choice, Score and Claim, answered together in one pass."""
+"""The question interface: Pick, Grade and Claim, answered together in one pass."""
 import json
 import math
 import time
@@ -15,7 +15,7 @@ def render_state(state: Any) -> str:
 
 
 @dataclass(frozen=True)
-class Choice:
+class Pick:
     """Which of these options? `options` maps a label to an optional description."""
     id: str
     instructions: str
@@ -34,7 +34,7 @@ class Choice:
 
 
 @dataclass(frozen=True)
-class Score:
+class Grade:
     """Which level on an ordered scale? `levels` is lowest to highest; labels may carry a description."""
     id: str
     instructions: str
@@ -65,7 +65,7 @@ class Claim:
         return f'- "{self.id}" ({self.instructions}) yes or no{clar}'
 
 
-Question = Choice | Score | Claim
+Question = Pick | Grade | Claim
 
 
 @dataclass
@@ -110,10 +110,10 @@ def answer_from_scores(q: Question, scores: list[float], T: float = 1.0) -> Answ
     if isinstance(q, Claim):
         return Answer(q.id, "claim", dist["yes"], dist, conf, margin, dict(zip(labels, scores)))
     best = max(dist, key=dist.get)
-    if isinstance(q, Score):
+    if isinstance(q, Grade):
         expected = sum(i * p for i, p in enumerate(probs))
-        return Answer(q.id, "score", best, dist, conf, margin, dict(zip(labels, scores)), expected=expected)
-    return Answer(q.id, "choice", best, dist, conf, margin, dict(zip(labels, scores)))
+        return Answer(q.id, "grade", best, dist, conf, margin, dict(zip(labels, scores)), expected=expected)
+    return Answer(q.id, "pick", best, dist, conf, margin, dict(zip(labels, scores)))
 
 
 def build_prompt(scorer: Scorer, state: Any, questions: list[Question]) -> str:
