@@ -120,13 +120,16 @@ Qwen3-4B, untrained, 300 examples per task, five-fold cross-fitted temperature.
 | gridworld | danger | 0.870 | 0.128 | 0.048 | 5.0 | 0.90 | 64% |
 | toolcall | tool | 0.970 | 0.028 | 0.008 | 3.4 | 0.65 | 100% |
 | passages | answers | 0.933 | 0.058 | 0.009 | 4.3 | 0.71 | 97% |
+| frustration | frustration | 0.493 | 0.449 | 0.073 | 9.1 | unreachable | |
 
 Two readings. Tool selection and passage relevance, which are the shape of most real
 decision workloads, are near-solved by a 4B model with no training and become honest
 after a single temperature: an auto tier covering essentially everything at 95%
 precision. The harder synthetic tasks show the other regime: accuracy in the 0.5 to 0.7
 range, where calibration cannot manufacture precision and the policy correctly sends most
-decisions to a person. Training ([TRAINING.md](TRAINING.md)) is aimed at the second
+decisions to a person. Frustration, a four-level scale, is the hardest: the model is right
+half the time and, raw, claims 0.93; after calibration no cutoff reaches 95% precision,
+which is the kit refusing to invent a guarantee the data does not support. Training ([TRAINING.md](TRAINING.md)) is aimed at the second
 regime.
 
 The temperatures are all well above 1, between 3 and 10. That is the size of the

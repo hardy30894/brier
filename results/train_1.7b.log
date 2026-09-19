@@ -1,0 +1,37 @@
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00, 61.37it/s]
+2400 training examples from tickets,gridworld,toolcall,passages
+`use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`.
+/usr/local/lib/python3.11/dist-packages/torch/utils/checkpoint.py:295: FutureWarning: `torch.cpu.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cpu', args...)` instead.
+  with torch.enable_grad(), device_autocast_ctx, torch.cpu.amp.autocast(**ctx.cpu_autocast_kwargs):  # type: ignore[attr-defined]
+step 50/1500 loss 1.7032 lr 9.67e-05 (55s)
+step 100/1500 loss 0.4212 lr 9.33e-05 (109s)
+step 150/1500 loss 0.2213 lr 9.00e-05 (163s)
+step 200/1500 loss 0.3272 lr 8.67e-05 (217s)
+step 250/1500 loss 0.1650 lr 8.33e-05 (270s)
+step 300/1500 loss 0.1512 lr 8.00e-05 (324s)
+step 350/1500 loss 0.2181 lr 7.67e-05 (378s)
+step 400/1500 loss 0.1320 lr 7.33e-05 (433s)
+step 450/1500 loss 0.1837 lr 7.00e-05 (487s)
+step 500/1500 loss 0.0913 lr 6.67e-05 (541s)
+step 550/1500 loss 0.1305 lr 6.33e-05 (595s)
+step 600/1500 loss 0.1595 lr 6.00e-05 (649s)
+step 650/1500 loss 0.0494 lr 5.67e-05 (703s)
+step 700/1500 loss 0.0588 lr 5.33e-05 (757s)
+step 750/1500 loss 0.0756 lr 5.00e-05 (811s)
+step 800/1500 loss 0.1053 lr 4.67e-05 (865s)
+step 850/1500 loss 0.0400 lr 4.33e-05 (918s)
+step 900/1500 loss 0.0616 lr 4.00e-05 (972s)
+step 950/1500 loss 0.1072 lr 3.67e-05 (1026s)
+step 1000/1500 loss 0.0714 lr 3.33e-05 (1079s)
+step 1050/1500 loss 0.0951 lr 3.00e-05 (1133s)
+step 1100/1500 loss 0.0544 lr 2.67e-05 (1187s)
+step 1150/1500 loss 0.0761 lr 2.33e-05 (1242s)
+step 1200/1500 loss 0.1007 lr 2.00e-05 (1295s)
+step 1250/1500 loss 0.0371 lr 1.67e-05 (1349s)
+step 1300/1500 loss 0.0434 lr 1.33e-05 (1404s)
+step 1350/1500 loss 0.0368 lr 1.00e-05 (1457s)
+step 1400/1500 loss 0.0706 lr 6.67e-06 (1511s)
+step 1450/1500 loss 0.0297 lr 5.00e-06 (1563s)
+step 1500/1500 loss 0.0447 lr 5.00e-06 (1617s)
+trainable params: 17,432,576 || all params: 1,738,007,552 || trainable%: 1.0030
+saved adapters/Qwen3-1.7B-brier-r16-s1500

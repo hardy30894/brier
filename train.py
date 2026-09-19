@@ -20,24 +20,30 @@ from tasks import examples
 TARGETS = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
 
 
-def example_loss(scorer, ex):
-    prompt = build_prompt(scorer, ex["state"], ex["questions"])
-    groups = groups_for(ex["questions"])
-    seqs, spans = scorer.build_rows(prompt, groups)
+def batch_loss(scorer, exs):
+    """One forward pass over the candidate rows of several examples; mean per-question NLL."""
+    seqs, spans, layout = [], [], []
+    for ex in exs:
+        prompt = build_prompt(scorer, ex["state"], ex["questions"])
+        groups = groups_for(ex["questions"])
+        s, sp = scorer.build_rows(prompt, groups)
+        seqs += s
+        spans += sp
+        layout.append((ex, groups))
     input_ids, attn = scorer.batch(seqs)
     logits = scorer.model(input_ids=input_ids, attention_mask=attn).logits
     cand = scorer.candidate_logprobs(logits, input_ids, spans)
-    loss, k, n = 0.0, 0, 0
-    for q, (_, labels) in zip(ex["questions"], groups):
-        if q.id not in ex["labels"]:
+    loss, n, k = 0.0, 0, 0
+    for ex, groups in layout:
+        for q, (_, labels) in zip(ex["questions"], groups):
+            s = cand[k : k + len(labels)]
             k += len(labels)
-            continue
-        s = cand[k : k + len(labels)]
-        k += len(labels)
-        logp = torch.log_softmax(s, dim=0)
-        acc = sorted(acceptable(q, ex["labels"][q.id]))
-        loss = loss - torch.logsumexp(logp[acc], dim=0)
-        n += 1
+            if q.id not in ex["labels"]:
+                continue
+            logp = torch.log_softmax(s, dim=0)
+            acc = sorted(acceptable(q, ex["labels"][q.id]))
+            loss = loss - torch.logsumexp(logp[acc], dim=0)
+            n += 1
     return loss / max(n, 1)
 
 
@@ -49,7 +55,8 @@ def main():
     ap.add_argument("--steps", type=int, default=1500)
     ap.add_argument("--lr", type=float, default=1e-4)
     ap.add_argument("--rank", type=int, default=16)
-    ap.add_argument("--accum", type=int, default=4)
+    ap.add_argument("--accum", type=int, default=4, help="optimizer step every N micro-batches")
+    ap.add_argument("--batch", type=int, default=1, help="examples per forward pass")
     ap.add_argument("--seed", type=int, default=100)
     ap.add_argument("--out", default="adapters")
     a = ap.parse_args()
@@ -79,9 +86,9 @@ def main():
     for step in range(a.steps):
         opt.zero_grad(set_to_none=True)
         for _ in range(a.accum):
-            ex = data[i % len(data)]
-            i += 1
-            loss = example_loss(scorer, ex) / a.accum
+            exs = [data[(i + j) % len(data)] for j in range(a.batch)]
+            i += a.batch
+            loss = batch_loss(scorer, exs) / a.accum
             loss.backward()
             running += loss.item()
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)

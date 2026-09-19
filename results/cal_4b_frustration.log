@@ -1,0 +1,19 @@
+Fetching 3 files:   0%|          | 0/3 [00:00<?, ?it/s]Fetching 3 files:  33%|███▎      | 1/3 [00:00<00:01,  1.55it/s]Fetching 3 files:  67%|██████▋   | 2/3 [00:06<00:03,  3.10s/it]Fetching 3 files: 100%|██████████| 3/3 [00:07<00:00,  2.34s/it]Fetching 3 files: 100%|██████████| 3/3 [00:07<00:00,  2.34s/it]
+Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]Loading checkpoint shards:  67%|██████▋   | 2/3 [00:00<00:00, 12.27it/s]Loading checkpoint shards: 100%|██████████| 3/3 [00:00<00:00, 17.35it/s]
+  collected 50/300 (2s)
+  collected 100/300 (4s)
+  collected 150/300 (6s)
+  collected 200/300 (8s)
+  collected 250/300 (10s)
+  collected 300/300 (12s)
+
+== frustration ==
+calibration report  model=Qwen3-4B
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+frustration        300  0.493    0.449    0.073     0.450     0.254    0.934    0.536   9.06
+
+decision policy (calibrated confidence cutoffs, held-out):
+  frustration      auto    target 0.95: unreachable on this data
+  frustration      review  target 0.80: act when confidence >= 0.659  -> precision 0.875, covers 3% of decisions
+  frustration      human   everything below

@@ -1,0 +1,144 @@
+{
+ "model": "Qwen3-0.6B-brier-r16-s1500",
+ "created": 1789783250.5059423,
+ "questions": {
+  "category": {
+   "id": "category",
+   "T": 0.05000000000000001,
+   "n": 300,
+   "accuracy": 1.0,
+   "ece_raw": 4.1304002686093355e-05,
+   "ece_cal": 0.0,
+   "brier_raw": 1.847689610709135e-08,
+   "brier_cal": 0.0,
+   "mean_conf_raw": 0.9999586959973139,
+   "mean_conf_cal": 1.0,
+   "reliability_raw": [
+    [
+     0.9,
+     1.0,
+     300,
+     0.9999586959973139,
+     1.0
+    ]
+   ],
+   "reliability_cal": [
+    [
+     0.9,
+     1.0,
+     300,
+     1.0,
+     1.0
+    ]
+   ],
+   "tiers": [
+    {
+     "name": "auto",
+     "target_precision": 0.95,
+     "min_confidence": 1.0,
+     "precision": 1.0,
+     "coverage": 1.0
+    },
+    {
+     "name": "review",
+     "target_precision": 0.8,
+     "min_confidence": 1.0,
+     "precision": 1.0,
+     "coverage": 1.0
+    }
+   ]
+  },
+  "priority": {
+   "id": "priority",
+   "T": 0.05000000000000001,
+   "n": 300,
+   "accuracy": 1.0,
+   "ece_raw": 0.00018322215638588712,
+   "ece_cal": 0.0,
+   "brier_raw": 1.9696235929341543e-06,
+   "brier_cal": 0.0,
+   "mean_conf_raw": 0.9998167778436141,
+   "mean_conf_cal": 1.0,
+   "reliability_raw": [
+    [
+     0.9,
+     1.0,
+     300,
+     0.9998167778436141,
+     1.0
+    ]
+   ],
+   "reliability_cal": [
+    [
+     0.9,
+     1.0,
+     300,
+     1.0,
+     1.0
+    ]
+   ],
+   "tiers": [
+    {
+     "name": "auto",
+     "target_precision": 0.95,
+     "min_confidence": 1.0,
+     "precision": 1.0,
+     "coverage": 1.0
+    },
+    {
+     "name": "review",
+     "target_precision": 0.8,
+     "min_confidence": 1.0,
+     "precision": 1.0,
+     "coverage": 1.0
+    }
+   ]
+  },
+  "needs_human": {
+   "id": "needs_human",
+   "T": 0.05000000000000001,
+   "n": 300,
+   "accuracy": 1.0,
+   "ece_raw": 7.466544576395506e-06,
+   "ece_cal": 0.0,
+   "brier_raw": 1.8278574282811683e-10,
+   "brier_cal": 0.0,
+   "mean_conf_raw": 0.9999925334554236,
+   "mean_conf_cal": 1.0,
+   "reliability_raw": [
+    [
+     0.9,
+     1.0,
+     300,
+     0.9999925334554236,
+     1.0
+    ]
+   ],
+   "reliability_cal": [
+    [
+     0.9,
+     1.0,
+     300,
+     1.0,
+     1.0
+    ]
+   ],
+   "tiers": [
+    {
+     "name": "auto",
+     "target_precision": 0.95,
+     "min_confidence": 1.0,
+     "precision": 1.0,
+     "coverage": 1.0
+    },
+    {
+     "name": "review",
+     "target_precision": 0.8,
+     "min_confidence": 1.0,
+     "precision": 1.0,
+     "coverage": 1.0
+    }
+   ]
+  }
+ }
+}

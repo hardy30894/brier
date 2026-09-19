@@ -1,0 +1,9 @@
++ cd /workspace/brier
++ python3 -m brier calibrate --model Qwen/Qwen3-4B --n 300
++ python3 -m brier calibrate --model Qwen/Qwen3-0.6B --n 300
++ python3 train.py --model Qwen/Qwen3-0.6B --steps 1500
++ python3 -m brier calibrate --model Qwen/Qwen3-0.6B --adapter adapters/Qwen3-0.6B-brier-r16-s1500 --n 300
++ python3 -m brier calibrate --model Qwen/Qwen3-1.7B --n 300
++ python3 train.py --model Qwen/Qwen3-1.7B --steps 1500
++ python3 -m brier calibrate --model Qwen/Qwen3-1.7B --adapter adapters/Qwen3-1.7B-brier-r16-s1500 --n 300
++ echo PIPELINE_DONE

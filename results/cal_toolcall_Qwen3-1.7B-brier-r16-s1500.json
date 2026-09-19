@@ -1,0 +1,59 @@
+{
+ "model": "Qwen3-1.7B-brier-r16-s1500",
+ "created": 1789785107.5056355,
+ "questions": {
+  "tool": {
+   "id": "tool",
+   "T": 0.05000000000000001,
+   "n": 300,
+   "accuracy": 1.0,
+   "ece_raw": 0.0006218627551531487,
+   "ece_cal": 3.3306690738754696e-16,
+   "brier_raw": 0.00011322369319920191,
+   "brier_cal": 2.912885327130778e-29,
+   "mean_conf_raw": 0.9993781372448469,
+   "mean_conf_cal": 0.9999999999999997,
+   "reliability_raw": [
+    [
+     0.8,
+     0.9,
+     1,
+     0.8156996017078214,
+     1.0
+    ],
+    [
+     0.9,
+     1.0,
+     299,
+     0.9999924467282483,
+     1.0
+    ]
+   ],
+   "reliability_cal": [
+    [
+     0.9,
+     1.0,
+     300,
+     0.9999999999999997,
+     1.0
+    ]
+   ],
+   "tiers": [
+    {
+     "name": "auto",
+     "target_precision": 0.95,
+     "min_confidence": 0.9999999999999065,
+     "precision": 1.0,
+     "coverage": 1.0
+    },
+    {
+     "name": "review",
+     "target_precision": 0.8,
+     "min_confidence": 0.9999999999999065,
+     "precision": 1.0,
+     "coverage": 1.0
+    }
+   ]
+  }
+ }
+}

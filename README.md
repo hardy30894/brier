@@ -29,7 +29,7 @@ Named after the Brier score, the scoring rule that defines whether a probability
 
 New to all of this? [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) walks from what a language model computes to how Brier decides, how the probabilities are measured, and how the model is trained, assuming nothing.
 
-**Contents**: [Architecture, from zero](docs/ARCHITECTURE.md) · [How it works](#how-it-works) · [What it is not](#what-it-is-not) · [Benchmarks](#benchmarks) · [Run it](#run-it) · [On a GPU pod](#on-a-gpu-pod) · [Roadmap](#roadmap) · [Layout](#layout)
+**Contents**: [Architecture, from zero](docs/ARCHITECTURE.md) · [The primer](docs/PRIMER.md) · [How it works](#how-it-works) · [What it is not](#what-it-is-not) · [Benchmarks](#benchmarks) · [Run it](#run-it) · [On a GPU pod](#on-a-gpu-pod) · [Roadmap](#roadmap) · [Layout](#layout)
 
 ## How it works
 
@@ -117,27 +117,45 @@ per-bin reliability tables, are in `results/`.
 
 ## Run it
 
+Ask questions about a state. Every question is answered in the same forward pass.
+
 ```python
-from brier import Scorer, Schema, Enum, Bool
+from brier import Scorer, Choice, Score, Noul, ask
 
-schema = Schema((
-    Enum("category", ("billing", "bug", "feature", "account", "other")),
-    Enum("priority", ("low", "medium", "high", "urgent")),
-    Bool("needs_human"),
-))
+scorer = Scorer("Qwen/Qwen3-4B")
+answers = ask(scorer, "Webhooks are firing twice for every event since 3am. Need this today.", [
+    Choice("category", "which team should handle this ticket", ("billing", "bug", "feature", "account", "other")),
+    Score("priority", "how fast this must be handled", ("low", "medium", "high", "urgent")),
+    Noul("needs_human", "the customer is asking for a human agent rather than an automated reply"),
+])
 
-s = Scorer("Qwen/Qwen3-4B")
-d = s.decide("Webhooks are firing twice for every event since 3am. Need this today.", schema)
-
-d["category"]                     # 'bug'
-d.fields["category"].prob         # 0.86  (illustrative)
-d.fields["priority"].dist         # {'low': 0.01, 'medium': 0.12, 'high': 0.59, 'urgent': 0.28}
-d.latency_ms                      # ~110 on a 4090 for Qwen3-4B, three fields
+answers["category"].value          # 'bug'
+answers["category"].probabilities  # {'billing': 0.07, 'bug': 0.86, 'feature': 0.0, 'account': 0.05, 'other': 0.02}
+answers["priority"].expected       # 2.3   (0 = low … 3 = urgent)
+answers["needs_human"].value       # 0.06  (probability the statement is true)
+answers.latency_ms                 # ~110 on a 4090
 ```
 
+Then make the probabilities honest and turn them into a policy, on your own labelled
+examples:
+
+```sh
+python3 -m brier calibrate --task tickets --model Qwen/Qwen3-4B --n 300
+```
+
+```
+question             n    acc  ECE raw  ECE cal      T
+category           300  0.680    0.295    0.054   6.46
+  auto    target 0.95: act when confidence >= 0.910  -> precision 1.000, covers 4% of decisions
+  review  target 0.80: act when confidence >= 0.721  -> precision 0.800, covers 48% of decisions
+  human   everything below
+```
+
+[QUESTIONS.md](docs/QUESTIONS.md) is the API reference, [CALIBRATION.md](docs/CALIBRATION.md)
+the kit, [TRAINING.md](docs/TRAINING.md) the training recipe and results.
+
 Any Hugging Face causal LM works as the backbone. The scorer needs a GPU with enough memory
-for the model plus a batch of short sequences; an 8GB laptop is not enough for the 0.6B
-tier with the JSON baseline running alongside.
+for the model plus a batch of short sequences.
 
 ## On a GPU pod
 
@@ -159,19 +177,26 @@ python3 pod.py down                      # terminate now; status should then sho
 - [x] **Milestone 1, zero training.** Single-pass scorer, JSON baseline, two tasks with
       ground truth, calibration measured. The number that decides whether training is
       worth it.
-- [ ] **Milestone 2, trained heads.** Drop the LM head. Add typed heads per field type,
-      train with LoRA on distilled and environment-generated labels, then calibrate with
-      a proper scoring rule. Target: calibration error well under the untrained baseline.
+- [x] **The question API and the calibration kit.** Choice, Score, Noul in one pass;
+      per-question temperature with cross-fitting, held-out ECE, reliability diagrams,
+      and a precision-targeted auto/review/human policy.
+- [ ] **Milestone 2, training for calibrated decisions.** LoRA on the backbone with
+      per-question cross-entropy over the answer set, a proper scoring rule, on five
+      tasks with computable ground truth. Gate: beat the temperature-scaled untrained
+      calibration, including on a task never trained on. In progress; see TRAINING.md.
 - [ ] **Milestone 3, live demo.** A structured-state environment where the model chooses
       an action every tick with a visible confidence bar.
 
 ## Layout
 
-- `brier/schema.py` typed fields and decisions
-- `brier/scorer.py` the single-pass scorer and the JSON-generation baseline
+- `brier/questions.py` Choice, Score, Noul and `ask()`
+- `brier/scorer.py` the single-pass scorer core and the JSON-generation baseline
+- `brier/calibrate.py`, `brier/report.py` the calibration kit and its figures
 - `brier/metrics.py` accuracy, ECE, Brier, latency, temperature scaling
-- `tasks/` synthetic tasks with computable ground truth
-- `bench.py` runs both methods on both tasks and prints the table
+- `train.py` LoRA training with the per-question cross-entropy objective
+- `tasks/` five synthetic tasks with computable ground truth
+- `bench.py` the milestone 1 scorer-versus-JSON benchmark
+- `docs/` architecture, primer, API, calibration and training guides; `assets.py` draws every figure
 - `pod.py` RunPod lifecycle with the time-to-live watchdog
 - `setup.sh` fresh-GPU-box setup and smoke run
 

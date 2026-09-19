@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="340" viewBox="0 0 600 340" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
+<rect width="600" height="340" rx="14" fill="#FFFFFF" stroke="#D8DEE6"/>
+<text x="300.0" y="28" text-anchor="middle" font-size="14" font-weight="700" fill="#1B1F24">gridworld · Qwen3-1.7B</text>
+<text x="580" y="28" text-anchor="end" font-size="11" fill="#8A94A0"><tspan fill="#8A2BE2">●</tspan> raw   <tspan fill="#3557C4">●</tspan> calibrated</text>
+<line x1="60" y1="230" x2="230" y2="230" stroke="#5B6B7C"/><line x1="60" y1="230" x2="60" y2="60" stroke="#5B6B7C"/>
+<line x1="60" y1="230" x2="230" y2="60" stroke="#8A94A0" stroke-dasharray="4 4"/>
+<text x="60" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.0</text>
+<text x="54" y="233" font-size="9" fill="#8A94A0" text-anchor="end">0.0</text>
+<text x="145.0" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.5</text>
+<text x="54" y="148.0" font-size="9" fill="#8A94A0" text-anchor="end">0.5</text>
+<text x="230" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">1.0</text>
+<text x="54" y="63" font-size="9" fill="#8A94A0" text-anchor="end">1.0</text>
+<path d="M138.9 211.1 L153.2 145.0 L170.5 155.6 L187.5 181.4 L204.4 178.5 L226.7 147.9" fill="none" stroke="#8A2BE2" stroke-width="2"/><circle cx="138.9" cy="211.1" r="3.5" fill="#8A2BE2"/><circle cx="153.2" cy="145.0" r="3.5" fill="#8A2BE2"/><circle cx="170.5" cy="155.6" r="3.5" fill="#8A2BE2"/><circle cx="187.5" cy="181.4" r="3.5" fill="#8A2BE2"/><circle cx="204.4" cy="178.5" r="3.5" fill="#8A2BE2"/><circle cx="226.7" cy="147.9" r="3.5" fill="#8A2BE2"/>
+<path d="M108.4 166.7 L118.0 152.2 L133.6 147.3" fill="none" stroke="#3557C4" stroke-width="2"/><circle cx="108.4" cy="166.7" r="3.5" fill="#3557C4"/><circle cx="118.0" cy="152.2" r="3.5" fill="#3557C4"/><circle cx="133.6" cy="147.3" r="3.5" fill="#3557C4"/>
+<text x="145.0" y="260" text-anchor="middle" font-size="12" font-weight="700" fill="#1B1F24">move</text>
+<text x="145.0" y="276" text-anchor="middle" font-size="10" fill="#5B6B7C">acc 0.44 · ECE 0.46 → 0.10 · T 19.3</text>
+<line x1="340" y1="230" x2="510" y2="230" stroke="#5B6B7C"/><line x1="340" y1="230" x2="340" y2="60" stroke="#5B6B7C"/>
+<line x1="340" y1="230" x2="510" y2="60" stroke="#8A94A0" stroke-dasharray="4 4"/>
+<text x="340" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.0</text>
+<text x="334" y="233" font-size="9" fill="#8A94A0" text-anchor="end">0.0</text>
+<text x="425.0" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.5</text>
+<text x="334" y="148.0" font-size="9" fill="#8A94A0" text-anchor="end">0.5</text>
+<text x="510" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">1.0</text>
+<text x="334" y="63" font-size="9" fill="#8A94A0" text-anchor="end">1.0</text>
+<path d="M487.0 187.5 L507.7 208.2" fill="none" stroke="#8A2BE2" stroke-width="2"/><circle cx="487.0" cy="187.5" r="3.5" fill="#8A2BE2"/><circle cx="507.7" cy="208.2" r="3.5" fill="#8A2BE2"/>
+<path d="M435.7 208.4 L442.8 60.0" fill="none" stroke="#3557C4" stroke-width="2"/><circle cx="435.7" cy="208.4" r="3.5" fill="#3557C4"/><circle cx="442.8" cy="60.0" r="3.5" fill="#3557C4"/>
+<text x="425.0" y="260" text-anchor="middle" font-size="12" font-weight="700" fill="#1B1F24">danger</text>
+<text x="425.0" y="276" text-anchor="middle" font-size="10" fill="#5B6B7C">acc 0.13 · ECE 0.85 → 0.44 · T 20.0</text>
+</svg>

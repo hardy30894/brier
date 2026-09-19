@@ -1,0 +1,17 @@
+  collected 50/300 (3s)
+  collected 100/300 (5s)
+  collected 150/300 (7s)
+  collected 200/300 (9s)
+  collected 250/300 (11s)
+  collected 300/300 (13s)
+
+== frustration ==
+calibration report  model=Qwen3-0.6B
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+frustration        300  0.383    0.600    0.087     0.562     0.237    0.917    0.372  11.80
+
+decision policy (calibrated confidence cutoffs, held-out):
+  frustration      auto    target 0.95: unreachable on this data
+  frustration      review  target 0.80: unreachable on this data
+  frustration      human   everything below

@@ -8,6 +8,10 @@ trained today and how it will be trained next. Every figure is generated from
 
 Read it top to bottom. Each part uses only what the parts before it established.
 
+Companion documents: [PRIMER.md](PRIMER.md) for the mathematics from probability to the
+training objective, [QUESTIONS.md](QUESTIONS.md) for the API, [CALIBRATION.md](CALIBRATION.md)
+for the kit, [TRAINING.md](TRAINING.md) for milestone 2.
+
 **Contents**
 1. [The problem, in one example](#1-the-problem-in-one-example)
 2. [Part I: what a language model computes](#part-i-what-a-language-model-computes)
@@ -115,19 +119,26 @@ This is the last piece of background. Everything else is Brier.
 
 ## Part II: how Brier decides
 
-### 2.1 The schema
+### 2.1 Questions
 
-A **schema** is a list of typed fields. Each field has a name and a finite set of allowed
-values. Today there are two field types:
+Brier is asked **questions** about a **state**. There are three kinds, and the full
+reference is [QUESTIONS.md](QUESTIONS.md):
 
-- `Enum("category", ("billing", "bug", "feature", "account", "other"))`, a choice from a
-  fixed list.
-- `Bool("needs_human")`, which is an `Enum` over `("yes", "no")` that decodes to a Python
-  boolean.
+- `Choice("category", "which team should handle this ticket", ("billing", "bug", "feature", "account", "other"))`,
+  which of these options.
+- `Score("priority", "how fast this must be handled", ("low", "medium", "high", "urgent"))`,
+  which level on an ordered scale. The answer also carries the probability-weighted
+  mean position, so "between medium and high" is expressible.
+- `Noul("needs_human", "the customer is asking for a human agent")`, is this statement
+  true, answered as a probability.
 
-The word *finite* is doing the work. Because every field has an enumerable set of
-values, Brier can look at all of them. A free-text field would have infinitely many
+All three reduce to the same thing underneath: a **finite set of allowed answers**. The
+word *finite* is doing the work. Because every question has an enumerable set of
+answers, Brier can look at all of them. A free-text answer would have infinitely many
 values and could not be scored this way; that is the price of the guarantee.
+
+(`Schema`, `Enum` and `Bool` in `schema.py` are the older field-based form of the same
+idea and are kept for the original benchmark.)
 
 ### 2.2 The prompt
 
@@ -155,8 +166,11 @@ The format of that header matters more than it looks. The first version of Brier
 `category:` on its own line. A 4B model scored `other` with total confidence on every
 ticket, because that is not how it had learned to answer such a prompt. Switching to the
 JSON header, which matches what the model was trained to produce, fixed it immediately.
-The lesson generalises: **the scoring prefix must be something the model would actually
-have written**, or the log-probabilities are about the wrong question.
+The same lesson recurred with `Score` questions: rendering level descriptions inline
+(`calm: neutral or friendly`) dropped accuracy from 0.43 to 0.28 on Qwen3-4B, because
+the description text bled into the answer space; listing the bare level names in order
+fixed it. The lesson generalises: **the scoring prefix must be something the model would
+actually have written**, or the log-probabilities are about the wrong question.
 
 ### 2.3 Scoring one candidate
 
@@ -320,7 +334,19 @@ to 0.11. This is the cheapest possible calibration and it already halves the err
 Its limit is that it is one number per field: it cannot make the model more confident on
 easy inputs and less on hard ones. That requires training, which is Part IV.
 
-### 3.6 Contextual debiasing, and why it is optional
+### 3.6 From probabilities to a policy
+
+A calibrated probability is still only a number. The question software asks is "above
+what confidence may I act automatically and stay at 95% precision?" The
+[calibration kit](CALIBRATION.md) answers it: it fits the per-question temperature with
+cross-fitting, reports ECE and Brier score on held-out folds, draws the reliability
+diagram, and derives the confidence cutoffs for `auto`, `review` and `human` tiers at
+target precisions, together with the coverage each tier gets. On Qwen3-4B untrained, the
+`needs_human` question can be automated at 95% precision for 42% of tickets; `category`
+for only 4%. Those coverages, not the accuracies, are what decide whether a model is
+useful on a task.
+
+### 3.7 Contextual debiasing, and why it is optional
 
 Language models also carry a **prior**: given the header `{"priority": "` and no input
 at all, the model already prefers some values. Contextual calibration scores a
@@ -369,54 +395,39 @@ preference stage actively pushed toward sharpness. The good ranking survives bec
 is a side-effect of understanding the text; the calibration does not, because it was
 never the target.
 
-### 4.3 Next: milestone 2, typed heads and a calibration objective
+### 4.3 Milestone 2: training for calibrated decisions
 
-The bottom row of the figure is the plan. It changes three things and keeps the
-backbone.
+The bottom row of the figure is the plan; [TRAINING.md](TRAINING.md) is what was built
+and measured. The first training stage keeps the backbone's LM head and changes the
+*objective*, which turns out to be the part that matters:
 
-**The output layer.** The language-model head, which maps hidden states to 150,000
-vocabulary logits, is dropped. In its place, one small head per field *type*:
+**The objective.** For every question in a training example, score every allowed
+answer exactly as inference does (one batched pass, section 2.4), softmax over them
+(section 2.5), and take the loss to be the negative log-probability of the correct
+answer. This is cross-entropy over the *answer set* rather than over the vocabulary:
+the same proper scoring rule the backbone was pretrained with, aimed at the event Brier
+actually cares about. Because it is a proper scoring rule, minimising it drives the
+probabilities toward honesty as a side-effect of driving them toward correctness; the
+[primer](PRIMER.md#15-the-brier-training-objective) works through why.
 
-- `Enum`: a softmax over the field's values, conditioned on the schema so the same head
-  serves any enum.
-- `Bool`: a single logit.
-- Numbers (not yet in the schema): a distribution over buckets.
-- Select-from-input (not yet in the schema): a pointer over spans of the input, for
-  "which of the entities mentioned is the customer".
+**The adaptation.** LoRA adapters of rank 16 on the attention and MLP matrices of every
+block, so the base weights are frozen and the adapter is a few tens of megabytes. Fits
+a 4B model on one 24 GB GPU.
 
-All heads read the same final hidden states, so every field is still decoded in one
-pass. The independence of 2.7 is preserved; the prompt-format fragility of 2.2 goes
-away, because the heads are trained on the schema directly rather than on a text
-convention.
+**The data.** Decisions with known answers, not conversations: the built-in synthetic
+tasks, whose generators know the label because they chose it. Three sources scale
+beyond that: more environments where the answer is computable, labels distilled from a
+frontier model and parsed to the typed answer, and logs from real software with a
+checkable outcome.
 
-**The data.** Training needs decisions with known answers, not conversations. Three
-sources, in order of cheapness:
+**The gate.** Held-out calibration error must beat the temperature-scaled untrained
+number, and it must improve on a task the model never trained on. If training cannot
+beat a one-parameter fix, it is not earning its keep.
 
-1. **Synthetic environments** where the right answer is computable: the gridworld in
-   Part V is one, and any state machine, routing rule set, or game can be another. Free,
-   unlimited, and perfectly labelled.
-2. **Distilled labels** from a frontier model: run it on real inputs, parse its answer to
-   the typed schema, and train on that. Fast to build. Its limit is that the small model
-   becomes calibrated to the large model's mistakes.
-3. **Logs from real software** with a checkable outcome: the ticket that was actually
-   reassigned, the action that actually succeeded.
-
-**The objective.** This is what the project calls training for calibrated decisions.
-
-1. **Cross-entropy on typed labels.** Ordinary supervised training, but on the typed
-   heads. Because cross-entropy is a proper scoring rule, minimising it pushes the
-   probabilities toward honesty as a side-effect of pushing them toward correctness.
-2. **Outcome reward on environments.** For tasks where the answer is only known after
-   acting, a reinforcement stage whose reward is the Brier score of the stated
-   probability against the outcome. A confident miss is penalised more than a hesitant
-   one. There is no preference model and no pass/fail reward; the reward is continuous
-   and it is about honesty as much as correctness.
-3. **The gate.** Held-out ECE must beat the temperature-scaled milestone 1 number in
-   Part V. If training cannot beat a one-parameter fix, it is not earning its keep.
-
-The backbone is adapted with LoRA (small trainable matrices added to the attention
-weights, leaving the original weights frozen), which fits on a single consumer GPU. The
-heads are trained in full.
+**Typed heads**, which replace the LM head with a small per-field-type output layer
+reading the hidden states directly, are the second stage. They remove the dependence on
+tokenization and prompt format at the cost of starting from nothing rather than from the
+backbone's good prior; the primer's last section discusses the trade.
 
 ### 4.4 What this is, in one sentence
 
@@ -510,17 +521,33 @@ prompt. `Decision` is what comes back: per field, the decoded value, the chosen 
 its probability, the full distribution, and the raw scores (kept so temperature scaling
 can be fitted offline).
 
-**`brier/scorer.py`.** `Scorer` loads a model and tokenizer once. `decide()` is
-sections 2.2 through 2.5 in order: build the prompt through the chat template, build one
-row per candidate, pad and batch, run one forward pass, gather the candidate positions'
-log-probabilities, sum per candidate, softmax per field, decode. `generate_json()` is
-the baseline: a normal generation call, a regex to find the object, a parse, and a
-per-field validation. The `debias` flag is section 3.6.
+**`brier/scorer.py`.** `Scorer` loads a model and tokenizer once. Its core is
+`score_groups(prefix, groups)`: build one row per candidate, pad and batch, run one
+forward pass, gather the candidate positions' log-probabilities, sum per candidate.
+`decide()` (the schema form) and `ask()` (the question form) are thin layers on it.
+`generate_json()` is the baseline: a normal generation call, a regex to find the
+object, a parse, and a per-field validation. The `debias` flag is section 3.7.
+
+**`brier/questions.py`.** `Choice`, `Score`, `Noul`; `ask()` renders the state and the
+questions into one prompt, calls `score_groups`, and softmaxes per question into
+`Answer` objects with value, probabilities, confidence, margin and, for scores, the
+expected level.
+
+**`brier/calibrate.py`, `brier/report.py`.** The calibration kit: `collect` runs
+labelled examples and keeps raw scores; `calibrate` cross-fits a temperature per
+question, measures ECE and Brier held-out, and derives the decision policy;
+`Calibration` saves, loads and applies; `report` prints; `reliability_svg` draws.
+
+**`train.py`.** Milestone 2: LoRA fine-tuning with the per-question cross-entropy loss,
+using the scorer's own `build_rows`, `batch` and `candidate_logprobs` so that training
+and inference score candidates identically.
 
 The measurement path is everything else.
 
-**`tasks/tickets.py`, `tasks/gridworld.py`.** Each exposes a `SCHEMA` and a
-`generate(n, seed)` that returns inputs with their labels.
+**`tasks/`.** Five generators (tickets, gridworld, tool-call selection, passage
+relevance, frustration), each producing `{state, questions, labels}` examples with
+ground truth the generator chose. `tasks.examples(name, n, seed)` is the one entry
+point used by the bench, the calibration CLI and the trainer.
 
 **`brier/metrics.py`.** ECE with its per-bin table, Brier score, latency percentiles,
 and `fit_temperature`, a grid search over T minimising negative log-likelihood on the
