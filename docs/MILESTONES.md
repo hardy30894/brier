@@ -149,9 +149,27 @@ never-trained datasets, raw calibration error at or under 0.10 almost everywhere
 0.6B that rivals an untrained 3.8B. Four GPUs finish the same job in 16 minutes against
 39. Breadth costs a few points on the narrowest synthetic task.
 
+## Round five, the pointer head
+
+*2026-09-19/20. Done; tables in TRAINING.md.*
+
+**Question.** Can a head that scores every option from one forward pass match the row
+scorer, and what does it take.
+
+**Delivered.** `brier/pointer.py`: options scored from the hidden states where the prompt
+lists them, no vocabulary projection, one row per request, an ordinal term for Grade
+questions, distillation from the row scorer as a warm start. Five runs in parallel plus
+a latency benchmark.
+
+**Found.** Flat latency in the number of questions (Phi-4-mini: 50 ms whether three or
+ten questions, against 145 and 1,230 ms for the row scorer, which cannot fit thirty).
+Parity with the row scorer on Pick and Claim questions across the real datasets. Grade
+questions trail a head trained from labels alone; more data and the ordinal term with
+distillation are the fixes, measured in the tables.
+
 ## Next
 
-- A head without the language-model term, scoring from hidden states alone.
+- Trim the pointer head's fixed overhead so the 0.6B's single row is as fast as its forward pass.
 - Conformal prediction sets: a distribution-free coverage guarantee per question, from the same held-out data.
 - Distilled labels on real tickets and tool-call logs, with disagreements kept.
 - Multi-step credit assignment: discounting or a value estimate for longer episodes.

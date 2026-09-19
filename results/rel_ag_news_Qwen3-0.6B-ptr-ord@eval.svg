@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="340" viewBox="0 0 320 340" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
+<rect width="320" height="340" rx="14" fill="#FFFFFF" stroke="#D8DEE6"/>
+<text x="160.0" y="28" text-anchor="middle" font-size="14" font-weight="700" fill="#1B1F24">ag_news · Qwen3-0.6B-ptr-ord@eval</text>
+<text x="300" y="28" text-anchor="end" font-size="11" fill="#8A94A0"><tspan fill="#8A2BE2">●</tspan> raw   <tspan fill="#3557C4">●</tspan> calibrated</text>
+<line x1="60" y1="230" x2="230" y2="230" stroke="#5B6B7C"/><line x1="60" y1="230" x2="60" y2="60" stroke="#5B6B7C"/>
+<line x1="60" y1="230" x2="230" y2="60" stroke="#8A94A0" stroke-dasharray="4 4"/>
+<text x="60" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.0</text>
+<text x="54" y="233" font-size="9" fill="#8A94A0" text-anchor="end">0.0</text>
+<text x="145.0" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.5</text>
+<text x="54" y="148.0" font-size="9" fill="#8A94A0" text-anchor="end">0.5</text>
+<text x="230" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">1.0</text>
+<text x="54" y="63" font-size="9" fill="#8A94A0" text-anchor="end">1.0</text>
+<path d="M119.9 230.0 L133.7 60.0 L154.7 135.6 L168.4 94.0 L187.9 121.8 L206.8 92.4 L224.0 68.3" fill="none" stroke="#8A2BE2" stroke-width="2"/><circle cx="119.9" cy="230.0" r="3.5" fill="#8A2BE2"/><circle cx="133.7" cy="60.0" r="3.5" fill="#8A2BE2"/><circle cx="154.7" cy="135.6" r="3.5" fill="#8A2BE2"/><circle cx="168.4" cy="94.0" r="3.5" fill="#8A2BE2"/><circle cx="187.9" cy="121.8" r="3.5" fill="#8A2BE2"/><circle cx="206.8" cy="92.4" r="3.5" fill="#8A2BE2"/><circle cx="224.0" cy="68.3" r="3.5" fill="#8A2BE2"/>
+<path d="M118.7 230.0 L135.9 60.0 L153.5 124.8 L172.6 112.3 L187.4 114.1 L205.5 84.7 L223.0 67.6" fill="none" stroke="#3557C4" stroke-width="2"/><circle cx="118.7" cy="230.0" r="3.5" fill="#3557C4"/><circle cx="135.9" cy="60.0" r="3.5" fill="#3557C4"/><circle cx="153.5" cy="124.8" r="3.5" fill="#3557C4"/><circle cx="172.6" cy="112.3" r="3.5" fill="#3557C4"/><circle cx="187.4" cy="114.1" r="3.5" fill="#3557C4"/><circle cx="205.5" cy="84.7" r="3.5" fill="#3557C4"/><circle cx="223.0" cy="67.6" r="3.5" fill="#3557C4"/>
+<text x="145.0" y="260" text-anchor="middle" font-size="12" font-weight="700" fill="#1B1F24">topic</text>
+<text x="145.0" y="276" text-anchor="middle" font-size="10" fill="#5B6B7C">acc 0.87 · ECE 0.03 → 0.02 · T 1.1</text>
+<text x="145.0" y="290" text-anchor="middle" font-size="10" fill="#3557C4">auto ≥ 0.87 covers 67% at 0.95</text>
+</svg>

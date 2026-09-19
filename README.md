@@ -57,6 +57,7 @@ task. Full tables and protocol in [TRAINING.md](docs/TRAINING.md).
 | MNLI (never trained on), Qwen3-0.6B, mixed corpus | 0.38 acc | **0.77 acc** | real, held-out dataset |
 | Civil Comments toxicity, Phi-4-mini, mixed corpus | 0.49 acc · 0.33 ECE | **0.94 acc · 0.02 ECE** | real, raw |
 | Gridworld from outcomes only, no labels, Qwen3-0.6B | 0.35 acc | **0.81 acc** | vs 0.84 supervised |
+| Ten questions per request, Phi-4-mini, pointer head | 1,230 ms row scorer | **50 ms** one row | 25× |
 | Type errors, every model, every task | 0 | 0 | by construction |
 
 Three findings shape the method. Clean labels alone teach overconfidence: a model
@@ -71,10 +72,12 @@ of the latency.
 
 <p align="center"><img src="docs/how-it-works.svg" width="900" alt="state and questions in, batched candidates through one forward pass, a distribution per question out"></p>
 
-- **Scoring.** Each allowed answer is appended to the prompt as a candidate; its score
-  is the sum of its tokens' log-probabilities under the backbone. All candidates of all
-  questions go through one batched pass. A softmax within each question yields its
-  distribution. From 1.7B up, the prompt is run once and candidates share its cache.
+- **Scoring.** Two paths. The row scorer appends each allowed answer to the prompt as a
+  candidate and scores it by its tokens' log-probabilities under the backbone, all
+  candidates in one batched pass. The pointer head reads the hidden state where the
+  prompt lists each option and scores it against the hidden state at the end of its
+  question, so a whole request is one row with no vocabulary projection: latency is flat
+  in the number of questions. A softmax within each question yields its distribution.
 - **Calibration.** One temperature per question, fit by maximum likelihood with five-fold
   cross-fitting, then the lowest confidence cutoff that reaches a target precision on
   held-out decisions, with its coverage. Expected calibration error and Brier score are
