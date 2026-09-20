@@ -1,0 +1,5 @@
+set -x; cd /workspace/brier; mkdir -p results/v2/typed
+python3 -m brier calibrate --model Qwen/Qwen3-0.6B --task typed --split eval --n 400 --tag zeroshot-qwen0.6b --out results/v2/typed
+python3 train.py --model Qwen/Qwen3-0.6B --tasks typed --examples 1200 --steps 1200 --accum 4 --batch 1 --split train --seed 1 --out adapters/t06-1
+python3 -m brier calibrate --model Qwen/Qwen3-0.6B --adapter adapters/t06-1/Qwen3-0.6B-brier-r16-s1200-train --task typed --split eval --n 400 --tag ft-qwen0.6b-seed1 --out results/v2/typed
+touch results/v2/typed/DONE_t06-1

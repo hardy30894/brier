@@ -1,6 +1,7 @@
 """Every task exposes examples of the form {state, questions, labels}."""
 from . import tickets, gridworld, toolcall, passages, frustration, duplicates, banking, matching
 from .public import PUBLIC
+from .typed import TYPED
 
 REGISTRY = {
     "tickets": tickets.generate_q,
@@ -12,6 +13,7 @@ REGISTRY = {
     "banking": banking.generate,
     "matching": matching.generate,
     **PUBLIC,
+    **TYPED,
 }
 
 

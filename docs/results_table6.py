@@ -15,7 +15,7 @@ from stats import per_example, bootstrap  # noqa: E402
 R = os.path.join(os.path.dirname(__file__), "..", "results")
 
 
-DIRS = ("v2/seeds", "v2/8b", "v2/baselines", "v2/grade", "v2/encoder", "v2/outcome", "seeds", "8b", "grade", "baselines", "")
+DIRS = ("v2/typed", "v2/seeds", "v2/8b", "v2/baselines", "v2/grade", "v2/encoder", "v2/outcome", "seeds", "8b", "grade", "baselines", "")
 
 
 def find(kind, task, tag, dirname=None):

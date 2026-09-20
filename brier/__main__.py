@@ -6,7 +6,7 @@ import sys
 import time
 
 from . import Scorer
-from .calibrate import collect, calibrate, report, Calibration
+from .calibrate import collect, calibrate, report, target, Calibration
 from .report import reliability_svg
 
 
@@ -79,7 +79,9 @@ def cmd_calibrate(a):
         cal.save(f"{a.out}/cal_{task}_{tag}.json")
         with open(f"{a.out}/rec_{task}_{tag}.json", "w") as f:
             json.dump({"task": task, "tag": tag, "seed": a.seed, "labels": {q.id: list(q.labels) for q in questions},
-                       "records": {k: [[s, sorted(acc)] for s, acc in v] for k, v in records.items()}}, f)
+                       "records": {k: [[s, sorted(acc)] for s, acc in v] for k, v in records.items()},
+                       "targets": {q.id: [target(q, e["labels"][q.id]) for e in exs if q.id in e["labels"]] for q in questions},
+                       "gold": [e.get("gold") for e in exs], "workflow": [e.get("workflow") for e in exs]}, f)
         with open(f"{a.out}/rel_{task}_{tag}.svg", "w") as f:
             f.write(reliability_svg(cal, f"{task} · {tag}"))
 
