@@ -181,6 +181,22 @@ def encoder_table():
             print(f"| {t} · {q} | " + " | ".join(cells) + " |")
 
 
+def outcome_encoder_table():
+    print("\n### Outcome-reward against supervised training · ModernBERT-large encoder, single task, three seeds (accuracy · raw ECE)\n")
+    print("| task · question | encoder, outcome reward, no labels | encoder, supervised, labels | 0.6B, outcome reward | 0.6B, supervised |")
+    print("|---|---|---|---|---|")
+    for t in ("tickets", "toolcall"):
+        qs = set()
+        for p in glob.glob(os.path.join(R, "v2", "outcome", f"cal_{t}_*.json")):
+            qs |= set(json.load(open(p))["questions"])
+        for q in sorted(qs):
+            cells = []
+            for pref in (f"enc-outcome-{t}-seed", f"enc-supervised-{t}-seed", f"outcome-{t}-seed", f"supervised-{t}-seed"):
+                s_ = seeds("", t, pref, q, ("v2/outcome",))
+                cells.append("–" if not s_ else f"{s_[0]:.3f} ± {s_[1]:.3f} · {s_[2]:.3f}")
+            print(f"| {t} · {q} | " + " | ".join(cells) + " |")
+
+
 def outcome_table():
     print("\n### Outcome-reward against supervised training · Qwen3-0.6B, single task, three seeds (accuracy · raw ECE)\n")
     print("| task · question | untrained | outcome reward, no labels | supervised, labels |")
@@ -212,3 +228,4 @@ if __name__ == "__main__":
         encoder_table()
     if which in ("all", "outcome"):
         outcome_table()
+        outcome_encoder_table()

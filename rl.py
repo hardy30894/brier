@@ -67,6 +67,9 @@ def main():
     head = None
     if a.full:
         model = base
+        if a.init and os.path.exists(os.path.join(a.init, "backbone.pt")):
+            model.load_state_dict(torch.load(os.path.join(a.init, "backbone.pt"), map_location="cpu"))
+            print(f"warm start from {a.init}")
         for prm in model.parameters():
             prm.requires_grad_(True)
     else:

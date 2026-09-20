@@ -1,0 +1,2435 @@
+[
+ {
+  "name": "bbc_news",
+  "family": "topic",
+  "kind": "pick",
+  "held_out": false,
+  "path": "SetFit/bbc-news",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 5,
+   "options": 5,
+   "majority": 0.25,
+   "hist": {
+    "sport": 50,
+    "business": 49,
+    "entertainment": 38,
+    "politics": 37,
+    "tech": 26
+   },
+   "state_chars": 1445,
+   "seconds": 2.4,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 5,
+   "options": 5,
+   "majority": 0.24,
+   "hist": {
+    "sport": 48,
+    "business": 48,
+    "tech": 41,
+    "entertainment": 35,
+    "politics": 28
+   },
+   "state_chars": 1409,
+   "seconds": 0.8,
+   "flags": []
+  }
+ },
+ {
+  "name": "newsgroups",
+  "family": "topic",
+  "kind": "pick",
+  "held_out": false,
+  "path": "SetFit/20_newsgroups",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 20,
+   "options": 20,
+   "majority": 0.11,
+   "hist": {
+    "soc.religion.christian": 22,
+    "sci.electronics": 21,
+    "sci.crypt": 15,
+    "rec.autos": 14,
+    "comp.graphics": 13,
+    "rec.motorcycles": 13,
+    "comp.sys.ibm.pc.hardware": 12,
+    "comp.windows.x": 10
+   },
+   "state_chars": 793,
+   "seconds": 2.0,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 20,
+   "options": 20,
+   "majority": 0.09,
+   "hist": {
+    "comp.graphics": 18,
+    "comp.sys.ibm.pc.hardware": 14,
+    "rec.motorcycles": 14,
+    "comp.os.ms-windows.misc": 13,
+    "sci.med": 12,
+    "rec.sport.hockey": 12,
+    "sci.electronics": 11,
+    "sci.crypt": 11
+   },
+   "state_chars": 655,
+   "seconds": 1.5,
+   "flags": []
+  }
+ },
+ {
+  "name": "yahoo_topics",
+  "family": "topic",
+  "kind": "pick",
+  "held_out": false,
+  "path": "community-datasets/yahoo_answers_topics",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 10,
+   "options": 10,
+   "majority": 0.135,
+   "hist": {
+    "Business & Finance": 27,
+    "Computers & Internet": 26,
+    "Science & Mathematics": 24,
+    "Society & Culture": 21,
+    "Entertainment & Music": 20,
+    "Sports": 18,
+    "Health": 18,
+    "Family & Relationships": 17
+   },
+   "state_chars": 525,
+   "seconds": 13.2,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 10,
+   "options": 10,
+   "majority": 0.265,
+   "hist": {
+    "Business & Finance": 53,
+    "Computers & Internet": 26,
+    "Science & Mathematics": 21,
+    "Society & Culture": 18,
+    "Sports": 16,
+    "Health": 16,
+    "Entertainment & Music": 14,
+    "Education & Reference": 14
+   },
+   "state_chars": 494,
+   "seconds": 7.8,
+   "flags": []
+  }
+ },
+ {
+  "name": "trec",
+  "family": "topic",
+  "kind": "pick",
+  "held_out": true,
+  "path": "CogComp/trec",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 6,
+   "options": 6,
+   "majority": 0.24,
+   "hist": {
+    "description": 48,
+    "entity": 46,
+    "human": 41,
+    "number": 34,
+    "location": 28,
+    "abbreviation": 3
+   },
+   "state_chars": 50,
+   "seconds": 0.8,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 6,
+   "options": 6,
+   "majority": 0.275,
+   "hist": {
+    "description": 55,
+    "number": 46,
+    "entity": 38,
+    "human": 30,
+    "location": 28,
+    "abbreviation": 3
+   },
+   "state_chars": 36,
+   "seconds": 0.4,
+   "flags": []
+  }
+ },
+ {
+  "name": "rotten_tomatoes",
+  "family": "sentiment",
+  "kind": "claim",
+  "held_out": false,
+  "path": "cornell-movie-review-data/rotten_tomatoes",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.5,
+   "hist": {
+    "True": 100,
+    "False": 100
+   },
+   "state_chars": 120,
+   "seconds": 0.6,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.51,
+   "hist": {
+    "False": 102,
+    "True": 98
+   },
+   "state_chars": 120,
+   "seconds": 0.3,
+   "flags": []
+  }
+ },
+ {
+  "name": "amazon_polarity",
+  "family": "sentiment",
+  "kind": "claim",
+  "held_out": false,
+  "path": "fancyzhx/amazon_polarity",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.515,
+   "hist": {
+    "True": 103,
+    "False": 97
+   },
+   "state_chars": 481,
+   "seconds": 15.7,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.565,
+   "hist": {
+    "True": 113,
+    "False": 87
+   },
+   "state_chars": 453,
+   "seconds": 9.3,
+   "flags": []
+  }
+ },
+ {
+  "name": "tweet_sentiment",
+  "family": "sentiment",
+  "kind": "grade",
+  "held_out": false,
+  "path": "cardiffnlp/tweet_eval",
+  "config": "sentiment",
+  "train": {
+   "n": 200,
+   "classes": 3,
+   "options": 3,
+   "majority": 0.54,
+   "hist": {
+    "neutral": 108,
+    "positive": 70,
+    "negative": 22
+   },
+   "state_chars": 110,
+   "seconds": 7.2,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 3,
+   "options": 3,
+   "majority": 0.465,
+   "hist": {
+    "neutral": 93,
+    "negative": 68,
+    "positive": 39
+   },
+   "state_chars": 97,
+   "seconds": 6.9,
+   "flags": []
+  }
+ },
+ {
+  "name": "financial_news",
+  "family": "sentiment",
+  "kind": "grade",
+  "held_out": true,
+  "path": "zeroshot/twitter-financial-news-sentiment",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 3,
+   "options": 3,
+   "majority": 0.73,
+   "hist": {
+    "neutral": 146,
+    "bullish": 28,
+    "bearish": 26
+   },
+   "state_chars": 91,
+   "seconds": 1.2,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 3,
+   "options": 3,
+   "majority": 0.61,
+   "hist": {
+    "neutral": 122,
+    "bearish": 41,
+    "bullish": 37
+   },
+   "state_chars": 92,
+   "seconds": 0.5,
+   "flags": []
+  }
+ },
+ {
+  "name": "app_reviews",
+  "family": "ordinal",
+  "kind": "grade",
+  "held_out": false,
+  "path": "sealuzh/app_reviews",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 5,
+   "options": 5,
+   "majority": 0.445,
+   "hist": {
+    "5": 89,
+    "4": 41,
+    "1": 37,
+    "3": 19,
+    "2": 14
+   },
+   "state_chars": 164,
+   "seconds": 8.2,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 5,
+   "options": 5,
+   "majority": 0.45,
+   "hist": {
+    "5": 90,
+    "1": 39,
+    "4": 33,
+    "3": 24,
+    "2": 14
+   },
+   "state_chars": 161,
+   "seconds": 8.0,
+   "flags": []
+  }
+ },
+ {
+  "name": "amazon_reviews_multi",
+  "family": "ordinal",
+  "kind": "grade",
+  "held_out": false,
+  "path": "SetFit/amazon_reviews_multi_en",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 1,
+   "options": 5,
+   "majority": 1.0,
+   "hist": {
+    "1": 200
+   },
+   "state_chars": 170,
+   "seconds": 1.8,
+   "flags": [
+    "SINGLE-CLASS"
+   ]
+  },
+  "eval": {
+   "n": 200,
+   "classes": 5,
+   "options": 5,
+   "majority": 0.235,
+   "hist": {
+    "2": 47,
+    "1": 42,
+    "3": 40,
+    "4": 39,
+    "5": 32
+   },
+   "state_chars": 202,
+   "seconds": 0.7,
+   "flags": []
+  }
+ },
+ {
+  "name": "poem_sentiment",
+  "family": "sentiment",
+  "kind": "pick",
+  "held_out": false,
+  "path": "google-research-datasets/poem_sentiment",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 4,
+   "options": 4,
+   "majority": 0.64,
+   "hist": {
+    "no impact": 128,
+    "negative": 31,
+    "positive": 28,
+    "mixed": 13
+   },
+   "state_chars": 41,
+   "seconds": 6.0,
+   "flags": []
+  },
+  "eval": {
+   "n": 104,
+   "classes": 3,
+   "options": 4,
+   "majority": 0.663,
+   "hist": {
+    "no impact": 69,
+    "negative": 19,
+    "positive": 16
+   },
+   "state_chars": 40,
+   "seconds": 6.0,
+   "flags": []
+  }
+ },
+ {
+  "name": "counterfactual",
+  "family": "sentiment",
+  "kind": "claim",
+  "held_out": false,
+  "path": "SetFit/amazon_counterfactual_en",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.5,
+   "hist": {
+    "False": 100,
+    "True": 100
+   },
+   "state_chars": 101,
+   "seconds": 1.5,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.5,
+   "hist": {
+    "False": 100,
+    "True": 100
+   },
+   "state_chars": 104,
+   "seconds": 0.9,
+   "flags": []
+  }
+ },
+ {
+  "name": "subjectivity",
+  "family": "sentiment",
+  "kind": "claim",
+  "held_out": false,
+  "path": "SetFit/subj",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.56,
+   "hist": {
+    "True": 112,
+    "False": 88
+   },
+   "state_chars": 127,
+   "seconds": 0.9,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.575,
+   "hist": {
+    "True": 115,
+    "False": 85
+   },
+   "state_chars": 136,
+   "seconds": 0.4,
+   "flags": []
+  }
+ },
+ {
+  "name": "customer_reviews",
+  "family": "sentiment",
+  "kind": "claim",
+  "held_out": false,
+  "path": "SetFit/CR",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.675,
+   "hist": {
+    "True": 135,
+    "False": 65
+   },
+   "state_chars": 97,
+   "seconds": 0.7,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.63,
+   "hist": {
+    "True": 126,
+    "False": 74
+   },
+   "state_chars": 88,
+   "seconds": 0.5,
+   "flags": []
+  }
+ },
+ {
+  "name": "rte",
+  "family": "nli",
+  "kind": "claim",
+  "held_out": false,
+  "path": "nyu-mll/glue",
+  "config": "rte",
+  "train": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.535,
+   "hist": {
+    "False": 107,
+    "True": 93
+   },
+   "state_chars": 367,
+   "seconds": 6.1,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.525,
+   "hist": {
+    "True": 105,
+    "False": 95
+   },
+   "state_chars": 342,
+   "seconds": 7.2,
+   "flags": []
+  }
+ },
+ {
+  "name": "wnli",
+  "family": "nli",
+  "kind": "claim",
+  "held_out": false,
+  "path": "nyu-mll/glue",
+  "config": "wnli",
+  "train": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.535,
+   "hist": {
+    "True": 107,
+    "False": 93
+   },
+   "state_chars": 184,
+   "seconds": 6.0,
+   "flags": []
+  },
+  "eval": {
+   "n": 71,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.563,
+   "hist": {
+    "False": 40,
+    "True": 31
+   },
+   "state_chars": 184,
+   "seconds": 5.8,
+   "flags": []
+  }
+ },
+ {
+  "name": "qnli",
+  "family": "qa",
+  "kind": "claim",
+  "held_out": false,
+  "path": "nyu-mll/glue",
+  "config": "qnli",
+  "train": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.535,
+   "hist": {
+    "True": 107,
+    "False": 93
+   },
+   "state_chars": 262,
+   "seconds": 8.7,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.54,
+   "hist": {
+    "True": 108,
+    "False": 92
+   },
+   "state_chars": 267,
+   "seconds": 6.6,
+   "flags": []
+  }
+ },
+ {
+  "name": "anli",
+  "family": "nli",
+  "kind": "pick",
+  "held_out": true,
+  "path": "facebook/anli",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 3,
+   "options": 3,
+   "majority": 0.42,
+   "hist": {
+    "neutral": 84,
+    "entailment": 61,
+    "contradiction": 55
+   },
+   "state_chars": 425,
+   "seconds": 6.9,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 3,
+   "options": 3,
+   "majority": 0.365,
+   "hist": {
+    "contradiction": 73,
+    "neutral": 65,
+    "entailment": 62
+   },
+   "state_chars": 432,
+   "seconds": 6.5,
+   "flags": []
+  }
+ },
+ {
+  "name": "scitail",
+  "family": "nli",
+  "kind": "claim",
+  "held_out": false,
+  "path": "allenai/scitail",
+  "config": "tsv_format",
+  "train": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.68,
+   "hist": {
+    "False": 136,
+    "True": 64
+   },
+   "state_chars": 211,
+   "seconds": 8.0,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.61,
+   "hist": {
+    "False": 122,
+    "True": 78
+   },
+   "state_chars": 200,
+   "seconds": 6.3,
+   "flags": []
+  }
+ },
+ {
+  "name": "hans",
+  "family": "nli",
+  "kind": "claim",
+  "held_out": false,
+  "path": "jhu-cogsci/hans",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.505,
+   "hist": {
+    "True": 101,
+    "False": 99
+   },
+   "state_chars": 119,
+   "seconds": 0.7,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.505,
+   "hist": {
+    "True": 101,
+    "False": 99
+   },
+   "state_chars": 117,
+   "seconds": 0.4,
+   "flags": []
+  }
+ },
+ {
+  "name": "sick",
+  "family": "nli",
+  "kind": "pick",
+  "held_out": false,
+  "path": "RobZamp/sick",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 3,
+   "options": 3,
+   "majority": 0.51,
+   "hist": {
+    "neutral": 102,
+    "entailment": 72,
+    "contradiction": 26
+   },
+   "state_chars": 118,
+   "seconds": 0.6,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 3,
+   "options": 3,
+   "majority": 0.5,
+   "hist": {
+    "neutral": 100,
+    "entailment": 62,
+    "contradiction": 38
+   },
+   "state_chars": 119,
+   "seconds": 0.3,
+   "flags": []
+  }
+ },
+ {
+  "name": "cb",
+  "family": "nli",
+  "kind": "pick",
+  "held_out": false,
+  "path": "aps/super_glue",
+  "config": "cb",
+  "train": {
+   "n": 200,
+   "classes": 3,
+   "options": 3,
+   "majority": 0.48,
+   "hist": {
+    "contradiction": 96,
+    "entailment": 92,
+    "neutral": 12
+   },
+   "state_chars": 367,
+   "seconds": 6.0,
+   "flags": []
+  },
+  "eval": {
+   "n": 56,
+   "classes": 3,
+   "options": 3,
+   "majority": 0.5,
+   "hist": {
+    "contradiction": 28,
+    "entailment": 23,
+    "neutral": 5
+   },
+   "state_chars": 403,
+   "seconds": 5.8,
+   "flags": []
+  }
+ },
+ {
+  "name": "mrpc",
+  "family": "paraphrase",
+  "kind": "claim",
+  "held_out": false,
+  "path": "nyu-mll/glue",
+  "config": "mrpc",
+  "train": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.6,
+   "hist": {
+    "True": 120,
+    "False": 80
+   },
+   "state_chars": 268,
+   "seconds": 6.7,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.69,
+   "hist": {
+    "True": 138,
+    "False": 62
+   },
+   "state_chars": 263,
+   "seconds": 6.2,
+   "flags": []
+  }
+ },
+ {
+  "name": "paws",
+  "family": "paraphrase",
+  "kind": "claim",
+  "held_out": true,
+  "path": "google-research-datasets/paws",
+  "config": "labeled_final",
+  "train": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.585,
+   "hist": {
+    "False": 117,
+    "True": 83
+   },
+   "state_chars": 253,
+   "seconds": 7.5,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.57,
+   "hist": {
+    "False": 114,
+    "True": 86
+   },
+   "state_chars": 255,
+   "seconds": 6.6,
+   "flags": []
+  }
+ },
+ {
+  "name": "stsb",
+  "family": "ordinal",
+  "kind": "grade",
+  "held_out": false,
+  "path": "nyu-mll/glue",
+  "config": "stsb",
+  "train": {
+   "n": 200,
+   "classes": 6,
+   "options": 6,
+   "majority": 0.27,
+   "hist": {
+    "4": 54,
+    "3": 52,
+    "2": 27,
+    "5": 27,
+    "1": 21,
+    "0": 19
+   },
+   "state_chars": 148,
+   "seconds": 7.8,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 6,
+   "options": 6,
+   "majority": 0.215,
+   "hist": {
+    "3": 43,
+    "4": 42,
+    "2": 40,
+    "1": 36,
+    "0": 26,
+    "5": 13
+   },
+   "state_chars": 157,
+   "seconds": 6.1,
+   "flags": []
+  }
+ },
+ {
+  "name": "medical_pairs",
+  "family": "paraphrase",
+  "kind": "claim",
+  "held_out": false,
+  "path": "curaihealth/medical_questions_pairs",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.53,
+   "hist": {
+    "True": 106,
+    "False": 94
+   },
+   "state_chars": 238,
+   "seconds": 6.8,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.52,
+   "hist": {
+    "True": 104,
+    "False": 96
+   },
+   "state_chars": 242,
+   "seconds": 6.5,
+   "flags": []
+  }
+ },
+ {
+  "name": "clinc",
+  "family": "intent",
+  "kind": "pick",
+  "held_out": false,
+  "path": "clinc/clinc_oos",
+  "config": "plus",
+  "train": {
+   "n": 200,
+   "classes": 52,
+   "options": 151,
+   "majority": 0.035,
+   "hist": {
+    "timer": 7,
+    "insurance": 7,
+    "change_user_name": 7,
+    "rollover_401k": 6,
+    "oil_change_how": 6,
+    "maybe": 6,
+    "balance": 6,
+    "user_name": 5
+   },
+   "state_chars": 40,
+   "seconds": 8.6,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 104,
+   "options": 151,
+   "majority": 0.14,
+   "hist": {
+    "oos": 28,
+    "todo_list": 4,
+    "gas_type": 4,
+    "improve_credit_score": 3,
+    "reminder": 3,
+    "income": 3,
+    "update_playlist": 3,
+    "bill_due": 3
+   },
+   "state_chars": 41,
+   "seconds": 6.6,
+   "flags": []
+  }
+ },
+ {
+  "name": "snips",
+  "family": "intent",
+  "kind": "pick",
+  "held_out": false,
+  "path": "benayas/snips",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 3,
+   "options": 7,
+   "majority": 0.415,
+   "hist": {
+    "BookRestaurant": 83,
+    "AddToPlaylist": 61,
+    "GetWeather": 56
+   },
+   "state_chars": 55,
+   "seconds": 6.7,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 7,
+   "options": 7,
+   "majority": 0.175,
+   "hist": {
+    "RateBook": 35,
+    "BookRestaurant": 31,
+    "GetWeather": 31,
+    "AddToPlaylist": 30,
+    "SearchCreativeWork": 26,
+    "PlayMusic": 24,
+    "SearchScreeningEvent": 23
+   },
+   "state_chars": 50,
+   "seconds": 6.0,
+   "flags": []
+  }
+ },
+ {
+  "name": "hate_offensive",
+  "family": "toxicity",
+  "kind": "pick",
+  "held_out": false,
+  "path": "SetFit/hate_speech_offensive",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 3,
+   "options": 3,
+   "majority": 0.745,
+   "hist": {
+    "offensive language": 149,
+    "neither": 38,
+    "hate speech": 13
+   },
+   "state_chars": 89,
+   "seconds": 1.3,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 3,
+   "options": 3,
+   "majority": 0.745,
+   "hist": {
+    "offensive language": 149,
+    "neither": 35,
+    "hate speech": 16
+   },
+   "state_chars": 89,
+   "seconds": 0.5,
+   "flags": []
+  }
+ },
+ {
+  "name": "toxic_conversations",
+  "family": "toxicity",
+  "kind": "claim",
+  "held_out": false,
+  "path": "SetFit/toxic_conversations",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.5,
+   "hist": {
+    "False": 100,
+    "True": 100
+   },
+   "state_chars": 290,
+   "seconds": 2.2,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.5,
+   "hist": {
+    "False": 100,
+    "True": 100
+   },
+   "state_chars": 294,
+   "seconds": 1.8,
+   "flags": []
+  }
+ },
+ {
+  "name": "tweet_hate",
+  "family": "toxicity",
+  "kind": "claim",
+  "held_out": false,
+  "path": "cardiffnlp/tweet_eval",
+  "config": "hate",
+  "train": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.605,
+   "hist": {
+    "False": 121,
+    "True": 79
+   },
+   "state_chars": 124,
+   "seconds": 6.2,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.585,
+   "hist": {
+    "False": 117,
+    "True": 83
+   },
+   "state_chars": 138,
+   "seconds": 6.5,
+   "flags": []
+  }
+ },
+ {
+  "name": "tweet_offensive",
+  "family": "toxicity",
+  "kind": "claim",
+  "held_out": false,
+  "path": "cardiffnlp/tweet_eval",
+  "config": "offensive",
+  "train": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.5,
+   "hist": {
+    "False": 100,
+    "True": 100
+   },
+   "state_chars": 141,
+   "seconds": 6.8,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.5,
+   "hist": {
+    "False": 100,
+    "True": 100
+   },
+   "state_chars": 151,
+   "seconds": 6.3,
+   "flags": []
+  }
+ },
+ {
+  "name": "sms_spam",
+  "family": "spam",
+  "kind": "claim",
+  "held_out": true,
+  "path": "ucirvine/sms_spam",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.5,
+   "hist": {
+    "False": 100,
+    "True": 100
+   },
+   "state_chars": 116,
+   "seconds": 6.9,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.5,
+   "hist": {
+    "False": 100,
+    "True": 100
+   },
+   "state_chars": 110,
+   "seconds": 6.5,
+   "flags": []
+  }
+ },
+ {
+  "name": "enron_spam",
+  "family": "spam",
+  "kind": "claim",
+  "held_out": false,
+  "path": "SetFit/enron_spam",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.53,
+   "hist": {
+    "False": 106,
+    "True": 94
+   },
+   "state_chars": 872,
+   "seconds": 5.2,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.51,
+   "hist": {
+    "False": 102,
+    "True": 98
+   },
+   "state_chars": 894,
+   "seconds": 1.3,
+   "flags": []
+  }
+ },
+ {
+  "name": "liar",
+  "family": "factcheck",
+  "kind": "grade",
+  "held_out": false,
+  "path": "chengxuphd/liar2",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 6,
+   "options": 6,
+   "majority": 0.26,
+   "hist": {
+    "false": 52,
+    "half true": 36,
+    "barely true": 35,
+    "true": 29,
+    "mostly true": 24,
+    "pants on fire": 24
+   },
+   "state_chars": 187,
+   "seconds": 2.1,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 6,
+   "options": 6,
+   "majority": 0.285,
+   "hist": {
+    "false": 57,
+    "barely true": 32,
+    "pants on fire": 32,
+    "half true": 30,
+    "mostly true": 28,
+    "true": 21
+   },
+   "state_chars": 181,
+   "seconds": 0.8,
+   "flags": []
+  }
+ },
+ {
+  "name": "health_fact",
+  "family": "factcheck",
+  "kind": "pick",
+  "held_out": false,
+  "path": "ImperialCollegeLondon/health_fact",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 4,
+   "options": 4,
+   "majority": 0.505,
+   "hist": {
+    "true": 101,
+    "false": 60,
+    "mixture": 30,
+    "unproven": 9
+   },
+   "state_chars": 1605,
+   "seconds": 0.7,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 4,
+   "options": 4,
+   "majority": 0.46,
+   "hist": {
+    "true": 92,
+    "false": 61,
+    "mixture": 42,
+    "unproven": 5
+   },
+   "state_chars": 1616,
+   "seconds": 0.3,
+   "flags": []
+  }
+ },
+ {
+  "name": "climate_fever",
+  "family": "factcheck",
+  "kind": "pick",
+  "held_out": false,
+  "path": "tdiggelm/climate_fever",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 4,
+   "options": 4,
+   "majority": 0.42,
+   "hist": {
+    "supports": 84,
+    "not enough info": 61,
+    "refutes": 31,
+    "disputed": 24
+   },
+   "state_chars": 341,
+   "seconds": 6.6,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 4,
+   "options": 4,
+   "majority": 0.445,
+   "hist": {
+    "supports": 89,
+    "not enough info": 56,
+    "refutes": 33,
+    "disputed": 22
+   },
+   "state_chars": 328,
+   "seconds": 6.4,
+   "flags": []
+  }
+ },
+ {
+  "name": "boolq",
+  "family": "qa",
+  "kind": "claim",
+  "held_out": true,
+  "path": "google/boolq",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.625,
+   "hist": {
+    "True": 125,
+    "False": 75
+   },
+   "state_chars": 629,
+   "seconds": 6.6,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.655,
+   "hist": {
+    "True": 131,
+    "False": 69
+   },
+   "state_chars": 654,
+   "seconds": 6.7,
+   "flags": []
+  }
+ },
+ {
+  "name": "wiki_qa",
+  "family": "qa",
+  "kind": "claim",
+  "held_out": false,
+  "path": "microsoft/wiki_qa",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.5,
+   "hist": {
+    "False": 100,
+    "True": 100
+   },
+   "state_chars": 213,
+   "seconds": 7.1,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.5,
+   "hist": {
+    "False": 100,
+    "True": 100
+   },
+   "state_chars": 209,
+   "seconds": 6.8,
+   "flags": []
+  }
+ },
+ {
+  "name": "piqa",
+  "family": "commonsense",
+  "kind": "pick",
+  "held_out": false,
+  "path": "ybisk/piqa",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 200,
+   "options": 2,
+   "majority": 0.005,
+   "hist": {
+    "Use a pair of kitchen tongs, place the cut lemon between the two parts of the tong and squeeze outside the tongs and juice.": 1,
+    "Add a small amount of white vinegar to a cup. With a small paint brush dipped into vinegar, gently wipe the battery terminals to neutralize anything left behind. Let terminals dry thoroughly and insert new battery.": 1,
+    "get the smallest size gauge and shove it in your piercing hole very slowly until you have the biggest portion in, then leave it in for a few days.": 1,
+    "can be used to check your oil ": 1,
+    "Reinforce the edges by carefully sewing them": 1,
+    "If you like salads you are in luck. Leafy vegetables like lettuce, arugula and spinach pop up in about a month after planting. Beans also develop very quickly, about 60 days to harvest.": 1,
+    "Place the onions roots down in cool  water for a few hours.": 1,
+    "Using a half round file inserted into the hollow in the center of the bamboo and move it up and down while going around inside until the inside is smooth.": 1
+   },
+   "state_chars": 46,
+   "seconds": 0.8,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 200,
+   "options": 2,
+   "majority": 0.005,
+   "hist": {
+    "Toast the nuts in a skillet for a few minutes while stirring constantly.": 1,
+    "Take the router with round over bit. Go around the edges of the bar stool seat. Round the edges on the top of the seat": 1,
+    "Take a multivitamin.": 1,
+    "Keep a muffin pan inside drawer.": 1,
+    "Use white chalk because the chalk will make easy to see marks that will quickly disappear when wiped with a damp paper towel.": 1,
+    "Use a spoon to smooth the mayo": 1,
+    "Sew two pieces of fabric together.": 1,
+    "Boil the peach slices and then lower the heat. Let the fruit simmer for 2 minutes or so. Remove the pan from the heat and leave it to cool for 30 minutes. Use a blender or food processor to puree the peaches. Use the mixture within the same day, refrigerate up to 24 hours, or freeze the food up to a month.": 1
+   },
+   "state_chars": 47,
+   "seconds": 0.3,
+   "flags": []
+  }
+ },
+ {
+  "name": "hellaswag",
+  "family": "commonsense",
+  "kind": "pick",
+  "held_out": false,
+  "path": "Rowan/hellaswag",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 200,
+   "options": 4,
+   "majority": 0.005,
+   "hist": {
+    "has a canvas and paints in front of her.": 1,
+    ", the man put the kettlebell on the floor and continues talking.": 1,
+    "complete, it is placed on a red plate and cut in half with a thick knife.": 1,
+    "uses a cigarette lighter to heat the earring to sanitize it.": 1,
+    "take turns throwing and kicking.": 1,
+    "see the final score cards for all the contestants.": 1,
+    "watch and take photos and video from the shore.": 1,
+    ", another young woman spins around an throws a disc.": 1
+   },
+   "state_chars": 120,
+   "seconds": 7.4,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 200,
+   "options": 4,
+   "majority": 0.005,
+   "hist": {
+    "If you find you've been in the same position for an hour or more, move around for a few minutes before resuming your position. [substeps] If you work in an office and are required to sit for your job, get up and take breaks every hour and a half or so.": 1,
+    "talks inside a car washing shop where there are people waiting.": 1,
+    "[step] Pour until the glass is half-full of cider. [substeps] A traditional snakebite is equal parts cider and lager, but you can change that ratio to your preferences.": 1,
+    "[substeps] If you plan to shave your head, cut the dreads off close to the scalp where the hair is less tangled. If you want to retain a bit of length without too much work, cut off lock 1-2 \" from the scalp.": 1,
+    "then dance together for the camera.": 1,
+    "Then, decide how much hair you want to leave down, and how much you want to put into the top knot. You can section off all the hair from your ears upwards, or just a little bit of hair on the top.": 1,
+    "Blend the oats until they reach a very fine, powdered texture. This will help them dissolve more easily in the bath.": 1,
+    "leaves the stage in frustration.": 1
+   },
+   "state_chars": 188,
+   "seconds": 6.8,
+   "flags": []
+  }
+ },
+ {
+  "name": "copa",
+  "family": "commonsense",
+  "kind": "pick",
+  "held_out": false,
+  "path": "aps/super_glue",
+  "config": "copa",
+  "train": {
+   "n": 200,
+   "classes": 200,
+   "options": 2,
+   "majority": 0.005,
+   "hist": {
+    "Factories increased their production.": 1,
+    "The light flickered.": 1,
+    "He planned to ask the girl out.": 1,
+    "I was shocked.": 1,
+    "Her alibi checked out.": 1,
+    "The station was coming in with static.": 1,
+    "They remained untouched for years.": 1,
+    "The woman took her sweater off.": 1
+   },
+   "state_chars": 72,
+   "seconds": 6.0,
+   "flags": []
+  },
+  "eval": {
+   "n": 100,
+   "classes": 100,
+   "options": 2,
+   "majority": 0.01,
+   "hist": {
+    "The woman planned to buy a condo.": 1,
+    "Their responses on the assignment were identical.": 1,
+    "A tall person was sitting in front of me.": 1,
+    "I brushed against poison ivy in my yard.": 1,
+    "He began attending school.": 1,
+    "He insulted her.": 1,
+    "The cook grilled it.": 1,
+    "His brother took his toys from him.": 1
+   },
+   "state_chars": 72,
+   "seconds": 6.0,
+   "flags": []
+  }
+ },
+ {
+  "name": "winogrande",
+  "family": "commonsense",
+  "kind": "pick",
+  "held_out": false,
+  "path": "allenai/winogrande",
+  "config": "winogrande_xl",
+  "train": {
+   "n": 200,
+   "classes": 128,
+   "options": 2,
+   "majority": 0.025,
+   "hist": {
+    "William": 5,
+    "Jessica": 5,
+    "Adam": 4,
+    "Tanya": 4,
+    "Megan": 4,
+    "Dennis": 4,
+    "Katrina": 4,
+    "Maria": 3
+   },
+   "state_chars": 115,
+   "seconds": 6.7,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 140,
+   "options": 2,
+   "majority": 0.025,
+   "hist": {
+    "Elena": 5,
+    "Tanya": 5,
+    "Monica": 5,
+    "Carrie": 4,
+    "Sarah": 4,
+    "Patricia": 4,
+    "Benjamin": 4,
+    "Christine": 3
+   },
+   "state_chars": 117,
+   "seconds": 6.2,
+   "flags": []
+  }
+ },
+ {
+  "name": "commonsense_qa",
+  "family": "commonsense",
+  "kind": "pick",
+  "held_out": true,
+  "path": "tau/commonsense_qa",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 188,
+   "options": 5,
+   "majority": 0.015,
+   "hist": {
+    "basement": 3,
+    "school": 2,
+    "neighbor's house": 2,
+    "michigan": 2,
+    "town": 2,
+    "apply for job": 2,
+    "work hard": 2,
+    "office": 2
+   },
+   "state_chars": 86,
+   "seconds": 6.5,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 188,
+   "options": 5,
+   "majority": 0.015,
+   "hist": {
+    "music store": 3,
+    "show": 2,
+    "drawer": 2,
+    "desk drawer": 2,
+    "relaxation": 2,
+    "death": 2,
+    "countryside": 2,
+    "new york city": 2
+   },
+   "state_chars": 81,
+   "seconds": 6.1,
+   "flags": []
+  }
+ },
+ {
+  "name": "openbookqa",
+  "family": "commonsense",
+  "kind": "pick",
+  "held_out": false,
+  "path": "allenai/openbookqa",
+  "config": "main",
+  "train": {
+   "n": 200,
+   "classes": 199,
+   "options": 4,
+   "majority": 0.01,
+   "hist": {
+    "starve": 2,
+    "substantial objects": 1,
+    "obtained without fear of using up": 1,
+    "people contact": 1,
+    "gray": 1,
+    "use continuous motion on a device": 1,
+    "having reflectors": 1,
+    "xylem": 1
+   },
+   "state_chars": 76,
+   "seconds": 6.5,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 198,
+   "options": 4,
+   "majority": 0.01,
+   "hist": {
+    "heat": 2,
+    "H2O": 2,
+    "is removed": 1,
+    "Clearing for farming": 1,
+    "earth": 1,
+    "soil with worms burrowing around": 1,
+    "transformation": 1,
+    "quit eating lunch out": 1
+   },
+   "state_chars": 73,
+   "seconds": 5.8,
+   "flags": []
+  }
+ },
+ {
+  "name": "arc_easy",
+  "family": "commonsense",
+  "kind": "pick",
+  "held_out": false,
+  "path": "allenai/ai2_arc",
+  "config": "ARC-Easy",
+  "train": {
+   "n": 200,
+   "classes": 197,
+   "options": 4,
+   "majority": 0.01,
+   "hist": {
+    "mass": 2,
+    "water": 2,
+    "decomposers": 2,
+    "galaxies": 1,
+    "impacts the surface of a planet.": 1,
+    "an atom": 1,
+    "lying down": 1,
+    "the Appalachian Mountains": 1
+   },
+   "state_chars": 132,
+   "seconds": 6.7,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 197,
+   "options": 4,
+   "majority": 0.01,
+   "hist": {
+    "compound": 2,
+    "brain": 2,
+    "atmosphere.": 2,
+    "a pulley": 1,
+    "respiration": 1,
+    "have insulation.": 1,
+    "Solid -> liquid -> gas": 1,
+    "hydropower": 1
+   },
+   "state_chars": 131,
+   "seconds": 6.1,
+   "flags": []
+  }
+ },
+ {
+  "name": "sciq",
+  "family": "commonsense",
+  "kind": "pick",
+  "held_out": false,
+  "path": "allenai/sciq",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 186,
+   "options": 4,
+   "majority": 0.015,
+   "hist": {
+    "water": 3,
+    "soil": 3,
+    "nuclear fusion": 2,
+    "four": 2,
+    "diffusion": 2,
+    "mammals": 2,
+    "evolution": 2,
+    "kinetic energy": 2
+   },
+   "state_chars": 516,
+   "seconds": 6.9,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 188,
+   "options": 4,
+   "majority": 0.01,
+   "hist": {
+    "hydrogen": 2,
+    "cytosol": 2,
+    "stem cells": 2,
+    "atoms": 2,
+    "two": 2,
+    "water": 2,
+    "photosynthesis": 2,
+    "cancer": 2
+   },
+   "state_chars": 526,
+   "seconds": 6.2,
+   "flags": []
+  }
+ },
+ {
+  "name": "swag",
+  "family": "commonsense",
+  "kind": "pick",
+  "held_out": false,
+  "path": "allenai/swag",
+  "config": "regular",
+  "train": {
+   "n": 200,
+   "classes": 200,
+   "options": 4,
+   "majority": 0.005,
+   "hist": {
+    "relaxes back onto his shoulder.": 1,
+    "begins performing several different tricks using the hula hoops.": 1,
+    "gently takes someone's hand.": 1,
+    "measure it, cut it and taped it.": 1,
+    "stands up and knocks him to the ground.": 1,
+    "swipes another snack cake.": 1,
+    "gets up from a chair.": 1,
+    "yanks his shirt out and rolls backwards down a flight of steps.": 1
+   },
+   "state_chars": 88,
+   "seconds": 7.5,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 200,
+   "options": 4,
+   "majority": 0.005,
+   "hist": {
+    "lays on the ground.": 1,
+    "continue to teach their students.": 1,
+    "walks the battlements as the huge boulders rain onto the orc army below.": 1,
+    "walks away with her friend.": 1,
+    "crack another nut over a black tray.": 1,
+    "gives him a haughty look.": 1,
+    "enters the living room.": 1,
+    "is a man using a hedging and trimming equipment trimming the bushes.": 1
+   },
+   "state_chars": 90,
+   "seconds": 6.8,
+   "flags": []
+  }
+ },
+ {
+  "name": "cosmos_qa",
+  "family": "commonsense",
+  "kind": "pick",
+  "held_out": false,
+  "path": "allenai/cosmos_qa",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 187,
+   "options": 4,
+   "majority": 0.07,
+   "hist": {
+    "None of the above choices .": 14,
+    "The horses will eat her pasture .": 1,
+    "They run in marathon races .": 1,
+    "Finding new bands and concerts to attend": 1,
+    "They were romantic from a young age .": 1,
+    "The scientists believe that the material is light .": 1,
+    "My dentist will work on my teeth .": 1,
+    "The narrator is a knowledgeable baseball fan .": 1
+   },
+   "state_chars": 404,
+   "seconds": 0.7,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 184,
+   "options": 4,
+   "majority": 0.085,
+   "hist": {
+    "None of the above choices .": 17,
+    "I baked cookies for the first time": 1,
+    "They thought we were watching too much TV .": 1,
+    "Football , which has a player in the safety position .": 1,
+    "She wants to let them know that she thinks they were being nasty to someone .": 1,
+    "Because I lack discipline .": 1,
+    "He takes teaching earnestly while also making it entertaining .": 1,
+    "It might be because she does n't have anything better to do .": 1
+   },
+   "state_chars": 426,
+   "seconds": 0.3,
+   "flags": []
+  }
+ },
+ {
+  "name": "social_iqa",
+  "family": "commonsense",
+  "kind": "pick",
+  "held_out": false,
+  "path": "allenai/social_i_qa",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 196,
+   "options": 3,
+   "majority": 0.015,
+   "hist": {
+    "helpful": 3,
+    "bad": 2,
+    "proud": 2,
+    "carve the pumpkins & bake pie": 1,
+    "clean up the scrape": 1,
+    "pull her hair hard": 1,
+    "call before everyone else did": 1,
+    "not be scared": 1
+   },
+   "state_chars": 139,
+   "seconds": 0.6,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 199,
+   "options": 3,
+   "majority": 0.01,
+   "hist": {
+    "loved": 2,
+    "Contact family friends to have a party": 1,
+    "eat popcorn": 1,
+    "very aggressive": 1,
+    "escape the fire": 1,
+    "surprise his dad": 1,
+    "Relieved": 1,
+    "indifferent": 1
+   },
+   "state_chars": 143,
+   "seconds": 0.3,
+   "flags": []
+  }
+ },
+ {
+  "name": "race",
+  "family": "qa",
+  "kind": "pick",
+  "held_out": false,
+  "path": "ehovy/race",
+  "config": "middle",
+  "train": {
+   "n": 200,
+   "classes": 197,
+   "options": 4,
+   "majority": 0.01,
+   "hist": {
+    "All of the above.": 2,
+    "basketball": 2,
+    "sad": 2,
+    "Dongdong has seen an Italian film before.": 1,
+    "It can help the blind to see the man doing the test.": 1,
+    "Sending emails to them.": 1,
+    "many people walked with him": 1,
+    "The art club has an e-mail address.": 1
+   },
+   "state_chars": 1071,
+   "seconds": 7.5,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 198,
+   "options": 4,
+   "majority": 0.015,
+   "hist": {
+    "America": 3,
+    "They always forget easily.": 1,
+    "Dining halls.": 1,
+    "a doorman": 1,
+    "Draper's achievements": 1,
+    "Why do women like \"Queen's Secret\"?": 1,
+    "mines": 1,
+    "If Tom has some problem with his leg, he can enjoy the program.": 1
+   },
+   "state_chars": 1095,
+   "seconds": 6.6,
+   "flags": []
+  }
+ },
+ {
+  "name": "dream",
+  "family": "qa",
+  "kind": "pick",
+  "held_out": false,
+  "path": "dataset-org/dream",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 199,
+   "options": 3,
+   "majority": 0.01,
+   "hist": {
+    "At a hotel.": 2,
+    "70 pounds.": 1,
+    "Thursday": 1,
+    "Sit at another table.": 1,
+    "In the underpass of a certain road.": 1,
+    "when he drinks something cold": 1,
+    "Next Saturday.": 1,
+    "At a newspaper office.": 1
+   },
+   "state_chars": 648,
+   "seconds": 0.8,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 200,
+   "options": 3,
+   "majority": 0.005,
+   "hist": {
+    "The man is meeting the woman on behalf of Mr. Brown.": 1,
+    "The woman drives to work everyday.": 1,
+    "He saw her in a language class.": 1,
+    "Likes and dislikes": 1,
+    "10 yuan for the first 30 words.": 1,
+    "Doing her schoolwork.": 1,
+    "He can't find the switch.": 1,
+    "Journalist and passer-by.": 1
+   },
+   "state_chars": 587,
+   "seconds": 0.3,
+   "flags": []
+  }
+ },
+ {
+  "name": "cola",
+  "family": "acceptability",
+  "kind": "claim",
+  "held_out": false,
+  "path": "nyu-mll/glue",
+  "config": "cola",
+  "train": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.5,
+   "hist": {
+    "True": 100,
+    "False": 100
+   },
+   "state_chars": 45,
+   "seconds": 6.3,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.5,
+   "hist": {
+    "True": 100,
+    "False": 100
+   },
+   "state_chars": 44,
+   "seconds": 5.9,
+   "flags": []
+  }
+ },
+ {
+  "name": "go_emotions",
+  "family": "emotion",
+  "kind": "pick",
+  "held_out": false,
+  "path": "google-research-datasets/go_emotions",
+  "config": "simplified",
+  "train": {
+   "n": 200,
+   "classes": 24,
+   "options": 28,
+   "majority": 0.345,
+   "hist": {
+    "neutral": 69,
+    "admiration": 15,
+    "curiosity": 14,
+    "gratitude": 12,
+    "approval": 10,
+    "disapproval": 8,
+    "sadness": 7,
+    "annoyance": 7
+   },
+   "state_chars": 71,
+   "seconds": 6.5,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 26,
+   "options": 28,
+   "majority": 0.31,
+   "hist": {
+    "neutral": 62,
+    "gratitude": 16,
+    "annoyance": 13,
+    "admiration": 11,
+    "approval": 10,
+    "curiosity": 10,
+    "anger": 9,
+    "amusement": 8
+   },
+   "state_chars": 69,
+   "seconds": 6.1,
+   "flags": []
+  }
+ },
+ {
+  "name": "tweet_emotion",
+  "family": "emotion",
+  "kind": "pick",
+  "held_out": false,
+  "path": "cardiffnlp/tweet_eval",
+  "config": "emotion",
+  "train": {
+   "n": 200,
+   "classes": 4,
+   "options": 4,
+   "majority": 0.435,
+   "hist": {
+    "anger": 87,
+    "sadness": 55,
+    "joy": 40,
+    "optimism": 18
+   },
+   "state_chars": 96,
+   "seconds": 6.5,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 4,
+   "options": 4,
+   "majority": 0.435,
+   "hist": {
+    "anger": 87,
+    "joy": 49,
+    "sadness": 47,
+    "optimism": 17
+   },
+   "state_chars": 97,
+   "seconds": 6.2,
+   "flags": []
+  }
+ },
+ {
+  "name": "emotion_setfit",
+  "family": "emotion",
+  "kind": "pick",
+  "held_out": false,
+  "path": "SetFit/emotion",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 6,
+   "options": 6,
+   "majority": 0.34,
+   "hist": {
+    "sadness": 68,
+    "joy": 58,
+    "fear": 27,
+    "anger": 26,
+    "surprise": 11,
+    "love": 10
+   },
+   "state_chars": 101,
+   "seconds": 1.5,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 6,
+   "options": 6,
+   "majority": 0.34,
+   "hist": {
+    "joy": 68,
+    "sadness": 49,
+    "anger": 33,
+    "fear": 26,
+    "love": 18,
+    "surprise": 6
+   },
+   "state_chars": 96,
+   "seconds": 0.5,
+   "flags": []
+  }
+ },
+ {
+  "name": "tweet_irony",
+  "family": "sarcasm",
+  "kind": "claim",
+  "held_out": true,
+  "path": "cardiffnlp/tweet_eval",
+  "config": "irony",
+  "train": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.51,
+   "hist": {
+    "True": 102,
+    "False": 98
+   },
+   "state_chars": 80,
+   "seconds": 6.1,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.57,
+   "hist": {
+    "False": 114,
+    "True": 86
+   },
+   "state_chars": 89,
+   "seconds": 6.1,
+   "flags": []
+  }
+ },
+ {
+  "name": "stance_abortion",
+  "family": "stance",
+  "kind": "pick",
+  "held_out": false,
+  "path": "cardiffnlp/tweet_eval",
+  "config": "stance_abortion",
+  "train": {
+   "n": 200,
+   "classes": 3,
+   "options": 3,
+   "majority": 0.55,
+   "hist": {
+    "against": 110,
+    "none": 55,
+    "favor": 35
+   },
+   "state_chars": 107,
+   "seconds": 6.1,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 3,
+   "options": 3,
+   "majority": 0.69,
+   "hist": {
+    "against": 138,
+    "favor": 34,
+    "none": 28
+   },
+   "state_chars": 108,
+   "seconds": 6.1,
+   "flags": []
+  }
+ },
+ {
+  "name": "stance_climate",
+  "family": "stance",
+  "kind": "pick",
+  "held_out": false,
+  "path": "cardiffnlp/tweet_eval",
+  "config": "stance_climate",
+  "train": {
+   "n": 200,
+   "classes": 3,
+   "options": 3,
+   "majority": 0.53,
+   "hist": {
+    "favor": 106,
+    "none": 85,
+    "against": 9
+   },
+   "state_chars": 102,
+   "seconds": 6.1,
+   "flags": []
+  },
+  "eval": {
+   "n": 169,
+   "classes": 3,
+   "options": 3,
+   "majority": 0.728,
+   "hist": {
+    "favor": 123,
+    "none": 35,
+    "against": 11
+   },
+   "state_chars": 108,
+   "seconds": 5.8,
+   "flags": []
+  }
+ },
+ {
+  "name": "stance_feminist",
+  "family": "stance",
+  "kind": "pick",
+  "held_out": false,
+  "path": "cardiffnlp/tweet_eval",
+  "config": "stance_feminist",
+  "train": {
+   "n": 200,
+   "classes": 3,
+   "options": 3,
+   "majority": 0.515,
+   "hist": {
+    "against": 103,
+    "favor": 60,
+    "none": 37
+   },
+   "state_chars": 109,
+   "seconds": 6.2,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 3,
+   "options": 3,
+   "majority": 0.66,
+   "hist": {
+    "against": 132,
+    "favor": 42,
+    "none": 26
+   },
+   "state_chars": 107,
+   "seconds": 6.2,
+   "flags": []
+  }
+ },
+ {
+  "name": "code_defect",
+  "family": "code",
+  "kind": "claim",
+  "held_out": false,
+  "path": "google/code_x_glue_cc_defect_detection",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.575,
+   "hist": {
+    "False": 115,
+    "True": 85
+   },
+   "state_chars": 1042,
+   "seconds": 8.8,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.555,
+   "hist": {
+    "False": 111,
+    "True": 89
+   },
+   "state_chars": 988,
+   "seconds": 6.9,
+   "flags": []
+  }
+ },
+ {
+  "name": "code_clone",
+  "family": "code",
+  "kind": "claim",
+  "held_out": false,
+  "path": "google/code_x_glue_cc_clone_detection_big_clone_bench",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.5,
+   "hist": {
+    "True": 100,
+    "False": 100
+   },
+   "state_chars": 1987,
+   "seconds": 19.7,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.5,
+   "hist": {
+    "False": 100,
+    "True": 100
+   },
+   "state_chars": 2002,
+   "seconds": 10.8,
+   "flags": []
+  }
+ },
+ {
+  "name": "ade",
+  "family": "qa",
+  "kind": "claim",
+  "held_out": false,
+  "path": "SetFit/ade_corpus_v2_classification",
+  "config": null,
+  "train": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.5,
+   "hist": {
+    "False": 100,
+    "True": 100
+   },
+   "state_chars": 142,
+   "seconds": 1.6,
+   "flags": []
+  },
+  "eval": {
+   "n": 200,
+   "classes": 2,
+   "options": 2,
+   "majority": 0.5,
+   "hist": {
+    "False": 100,
+    "True": 100
+   },
+   "state_chars": 132,
+   "seconds": 0.7,
+   "flags": []
+  }
+ }
+]

@@ -32,6 +32,7 @@ class Spec:
     ordered: bool = False                       # source stored in label order: load whole and shuffle
     filt: Optional[Callable] = None
     held_out: bool = False
+    revision: Optional[str] = None              # e.g. "refs/convert/parquet" for sources that only exist as scripts
     family: str = ""                            # topic | sentiment | nli | paraphrase | intent | toxicity | spam | factcheck | qa | commonsense | acceptability | emotion | sarcasm | stance | ordinal | code
     note: str = ""
 
@@ -62,32 +63,28 @@ SPECS = [
          filt=lambda r: len(r["text"].strip()) > 40, family="topic"),
     Spec("yahoo_topics", "community-datasets/yahoo_answers_topics", None, "train", "test", "pick", "topic", "the topic category of this question and its best answer",
          lambda r: {"question": _cut(r["question_title"] + " " + r["question_content"]), "answer": _cut(r["best_answer"])},
-         _label_text(("Society & Culture", "Science & Mathematics", "Health", "Education & Reference", "Computers & Internet", "Sports", "Business & Finance", "Entertainment & Music", "Family & Relationships", "Politics & Government")),
+         (lambda r: ("Society & Culture", "Science & Mathematics", "Health", "Education & Reference", "Computers & Internet", "Sports", "Business & Finance", "Entertainment & Music", "Family & Relationships", "Politics & Government")[int(r["topic"])]) if True else _label_text(("Society & Culture", "Science & Mathematics", "Health", "Education & Reference", "Computers & Internet", "Sports", "Business & Finance", "Entertainment & Music", "Family & Relationships", "Politics & Government")),
          labels=("Society & Culture", "Science & Mathematics", "Health", "Education & Reference", "Computers & Internet", "Sports", "Business & Finance", "Entertainment & Music", "Family & Relationships", "Politics & Government"), family="topic"),
     Spec("trec", "CogComp/trec", None, "train", "test", "pick", "asks_for", "what kind of thing this question asks for",
          _text("text"), lambda r: ("abbreviation", "entity", "description", "human", "location", "number")[int(r["coarse_label"])],
-         labels=("abbreviation", "entity", "description", "human", "location", "number"), held_out=True, family="topic"),
-    Spec("banking_intent_full", "PolyAI/banking77", None, "train", "test", "pick", "intent", "what the customer wants",
-         _text("text"), lambda r: r["label"], labels=(), options=None, family="intent", note="77 intents, names from the dataset features"),
+         labels=("abbreviation", "entity", "description", "human", "location", "number"), held_out=True, revision="refs/convert/parquet", family="topic"),
+
     # ---- sentiment / ordinal ----
     Spec("rotten_tomatoes", "cornell-movie-review-data/rotten_tomatoes", None, "train", "test", "claim", "positive", "this review is positive about the film",
-         _text("text"), lambda r: int(r["label"]) == 1, family="sentiment"),
+         _text("text"), lambda r: int(r["label"]) == 1, ordered=True, family="sentiment"),
     Spec("amazon_polarity", "fancyzhx/amazon_polarity", None, "train", "test", "claim", "positive", "this product review is positive",
          lambda r: {"title": r["title"], "review": _cut(r["content"])}, lambda r: int(r["label"]) == 1, family="sentiment"),
     Spec("tweet_sentiment", "cardiffnlp/tweet_eval", "sentiment", "train", "test", "grade", "sentiment", "the sentiment of this tweet",
          _text("text"), lambda r: ("negative", "neutral", "positive")[int(r["label"])], labels=("negative", "neutral", "positive"), family="sentiment"),
-    Spec("financial_phrasebank", "takala/financial_phrasebank", "sentences_allagree", "train", "train", "grade", "sentiment", "the sentiment of this financial news sentence for the company",
-         _text("sentence"), lambda r: ("negative", "neutral", "positive")[int(r["label"])], labels=("negative", "neutral", "positive"), held_out=True, family="sentiment",
-         note="one split; train and eval are disjoint halves by seed"),
+    Spec("financial_news", "zeroshot/twitter-financial-news-sentiment", None, "train", "validation", "grade", "sentiment", "the market sentiment of this financial news headline",
+         _text("text"), lambda r: ("bearish", "bullish", "neutral")[int(r["label"])], labels=("bearish", "neutral", "bullish"), held_out=True, family="sentiment"),
     Spec("app_reviews", "sealuzh/app_reviews", None, "train", "train", "grade", "stars", "the star rating this app review gives",
          lambda r: {"app": r["package_name"], "review": _cut(r["review"])}, lambda r: str(int(r["star"])), labels=("1", "2", "3", "4", "5"), family="ordinal",
          note="one split; disjoint halves by seed"),
-    Spec("amazon_reviews_multi", "mteb/amazon_reviews_multi", "en", "train", "test", "grade", "stars", "the star rating this product review gives",
+    Spec("amazon_reviews_multi", "SetFit/amazon_reviews_multi_en", None, "train", "test", "grade", "stars", "the star rating this product review gives",
          _text("text"), lambda r: str(int(r["label"]) + 1), labels=("1", "2", "3", "4", "5"), family="ordinal"),
     Spec("poem_sentiment", "google-research-datasets/poem_sentiment", None, "train", "test", "pick", "sentiment", "the sentiment of this line of verse",
          _text("verse_text"), lambda r: ("negative", "positive", "no impact", "mixed")[int(r["label"])], labels=("negative", "positive", "no impact", "mixed"), family="sentiment"),
-    Spec("dynasent", "dynabench/dynasent", "dynabench.dynasent.r1.all", "train", "test", "grade", "sentiment", "the sentiment of this sentence",
-         _text("sentence"), lambda r: r["gold_label"], labels=("negative", "neutral", "positive"), family="sentiment"),
     Spec("counterfactual", "SetFit/amazon_counterfactual_en", None, "train", "test", "claim", "counterfactual", "this review sentence describes something that did not happen or a hypothetical",
          _text("text"), lambda r: int(r["label"]) == 1, balance=True, family="sentiment"),
     Spec("subjectivity", "SetFit/subj", None, "train", "test", "claim", "subjective", "this sentence expresses an opinion rather than a fact",
@@ -107,10 +104,10 @@ SPECS = [
     Spec("scitail", "allenai/scitail", "tsv_format", "train", "test", "claim", "entailed", "the hypothesis follows from the premise",
          lambda r: {"premise": r["premise"], "hypothesis": r["hypothesis"]}, lambda r: r["label"] == "entails", family="nli"),
     Spec("hans", "jhu-cogsci/hans", None, "train", "validation", "claim", "entailed", "the hypothesis follows from the premise",
-         lambda r: {"premise": r["premise"], "hypothesis": r["hypothesis"]}, lambda r: int(r["label"]) == 0, family="nli"),
+         lambda r: {"premise": r["premise"], "hypothesis": r["hypothesis"]}, lambda r: int(r["label"]) == 0, revision="refs/convert/parquet", family="nli"),
     Spec("sick", "RobZamp/sick", None, "train", "test", "pick", "relation", "how the second sentence relates to the first",
          lambda r: {"first": r["sentence_A"], "second": r["sentence_B"]}, lambda r: ("entailment", "neutral", "contradiction")[int(r["label"])],
-         labels=("entailment", "neutral", "contradiction"), family="nli"),
+         labels=("entailment", "neutral", "contradiction"), revision="refs/convert/parquet", family="nli"),
     Spec("cb", "aps/super_glue", "cb", "train", "validation", "pick", "relation", "how the hypothesis relates to the premise",
          lambda r: {"premise": _cut(r["premise"]), "hypothesis": r["hypothesis"]}, lambda r: ("entailment", "contradiction", "neutral")[int(r["label"])],
          labels=("entailment", "contradiction", "neutral"), family="nli"),
@@ -137,20 +134,20 @@ SPECS = [
          _text("text"), lambda r: int(r["label"]) == 1, family="toxicity"),
     Spec("tweet_offensive", "cardiffnlp/tweet_eval", "offensive", "train", "test", "claim", "offensive", "this tweet is offensive",
          _text("text"), lambda r: int(r["label"]) == 1, balance=True, family="toxicity"),
-    Spec("ethos", "iamollas/ethos", "binary", "train", "train", "claim", "hateful", "this comment contains hate speech",
-         _text("text"), lambda r: int(r["label"]) == 1, family="toxicity", note="one split; disjoint halves by seed"),
+
     # ---- spam ----
     Spec("sms_spam", "ucirvine/sms_spam", None, "train", "train", "claim", "spam", "this text message is spam",
          _text("sms"), lambda r: int(r["label"]) == 1, balance=True, held_out=True, family="spam", note="one split; disjoint halves by seed"),
     Spec("enron_spam", "SetFit/enron_spam", None, "train", "test", "claim", "spam", "this email is spam",
          lambda r: {"subject": r["subject"], "body": _cut(r["text"])}, lambda r: int(r["label"]) == 1, family="spam"),
     # ---- fact-checking / claims ----
-    Spec("liar", "ucsbnlp/liar", None, "train", "test", "grade", "truthfulness", "how truthful this political statement is",
+    Spec("liar", "chengxuphd/liar2", None, "train", "test", "grade", "truthfulness", "how truthful this political statement is",
          lambda r: {"speaker": r["speaker"], "statement": r["statement"], "context": r["context"]},
-         lambda r: LIAR[int(r["label"])], labels=("pants on fire", "false", "barely true", "half true", "mostly true", "true"), family="factcheck"),
+         lambda r: ("pants on fire", "false", "barely true", "half true", "mostly true", "true")[int(r["label"])],
+         labels=("pants on fire", "false", "barely true", "half true", "mostly true", "true"), family="factcheck"),
     Spec("health_fact", "ImperialCollegeLondon/health_fact", None, "train", "test", "pick", "verdict", "the verdict on this health claim given the evidence",
          lambda r: {"claim": r["claim"], "evidence": _cut(r["main_text"])}, lambda r: ("false", "mixture", "true", "unproven")[int(r["label"])],
-         labels=("false", "mixture", "true", "unproven"), filt=lambda r: int(r["label"]) >= 0, family="factcheck"),
+         labels=("false", "mixture", "true", "unproven"), filt=lambda r: int(r["label"]) >= 0, revision="refs/convert/parquet", family="factcheck"),
     Spec("climate_fever", "tdiggelm/climate_fever", None, "test", "test", "pick", "verdict", "what the evidence says about the claim",
          lambda r: {"claim": r["claim"], "evidence": _cut(r["evidences"][0]["evidence"])}, lambda r: ("supports", "refutes", "not enough info", "disputed")[int(r["claim_label"])],
          labels=("supports", "refutes", "not enough info", "disputed"), family="factcheck", note="one split; disjoint halves by seed"),
@@ -161,7 +158,7 @@ SPECS = [
          lambda r: {"question": r["question"], "sentence": r["answer"]}, lambda r: int(r["label"]) == 1, balance=True, family="qa"),
     # ---- commonsense multiple choice over candidate texts ----
     Spec("piqa", "ybisk/piqa", None, "train", "validation", "pick", "solution", "which solution achieves the goal",
-         lambda r: {"goal": r["goal"]}, lambda r: (r["sol1"], r["sol2"])[int(r["label"])], options=lambda r: (r["sol1"], r["sol2"]), family="commonsense"),
+         lambda r: {"goal": r["goal"]}, lambda r: (r["sol1"], r["sol2"])[int(r["label"])], options=lambda r: (r["sol1"], r["sol2"]), revision="refs/convert/parquet", family="commonsense"),
     Spec("hellaswag", "Rowan/hellaswag", None, "train", "validation", "pick", "continuation", "which continuation is the most plausible",
          lambda r: {"context": r["ctx"]}, lambda r: r["endings"][int(r["label"])], options=lambda r: tuple(r["endings"]), family="commonsense"),
     Spec("copa", "aps/super_glue", "copa", "train", "validation", "pick", "alternative", "which alternative is the more plausible cause or effect",
@@ -182,14 +179,14 @@ SPECS = [
          options=lambda r: (r["ending0"], r["ending1"], r["ending2"], r["ending3"]), family="commonsense"),
     Spec("cosmos_qa", "allenai/cosmos_qa", None, "train", "validation", "pick", "answer", "the answer to the question about the passage",
          lambda r: {"passage": _cut(r["context"]), "question": r["question"]}, lambda r: (r["answer0"], r["answer1"], r["answer2"], r["answer3"])[int(r["label"])],
-         options=lambda r: (r["answer0"], r["answer1"], r["answer2"], r["answer3"]), family="commonsense"),
+         options=lambda r: (r["answer0"], r["answer1"], r["answer2"], r["answer3"]), revision="refs/convert/parquet", family="commonsense"),
     Spec("social_iqa", "allenai/social_i_qa", None, "train", "validation", "pick", "answer", "the answer to the question about the situation",
          lambda r: {"situation": r["context"], "question": r["question"]}, lambda r: (r["answerA"], r["answerB"], r["answerC"])[int(r["label"]) - 1],
-         options=lambda r: (r["answerA"], r["answerB"], r["answerC"]), family="commonsense"),
+         options=lambda r: (r["answerA"], r["answerB"], r["answerC"]), revision="refs/convert/parquet", family="commonsense"),
     Spec("race", "ehovy/race", "middle", "train", "test", "pick", "answer", "the answer to the question about the passage",
          lambda r: {"passage": _cut(r["article"]), "question": r["question"]}, lambda r: r["options"]["ABCD".index(r["answer"])], options=lambda r: tuple(r["options"]), family="qa"),
     Spec("dream", "dataset-org/dream", None, "train", "test", "pick", "answer", "the answer to the question about the dialogue",
-         lambda r: {"dialogue": _cut("\n".join(r["dialogue"])), "question": r["question"]}, lambda r: r["answer"], options=lambda r: tuple(r["choice"]), family="qa"),
+         lambda r: {"dialogue": _cut("\n".join(r["dialogue"])), "question": r["question"]}, lambda r: r["answer"], options=lambda r: tuple(r["choice"]), revision="refs/convert/parquet", family="qa"),
     # ---- acceptability ----
     Spec("cola", "nyu-mll/glue", "cola", "train", "validation", "claim", "acceptable", "this sentence is grammatically acceptable",
          _text("sentence"), lambda r: int(r["label"]) == 1, balance=True, family="acceptability"),
@@ -220,8 +217,22 @@ SPECS = [
          _text("text"), lambda r: int(r["label"]) == 1, balance=True, family="qa"),
 ]
 
-LIAR = {0: "false", 1: "half true", 2: "mostly true", 3: "true", 4: "barely true", 5: "pants on fire"}
 GO_EMOTIONS = ("admiration", "amusement", "anger", "annoyance", "approval", "caring", "confusion", "curiosity", "desire", "disappointment", "disapproval", "disgust", "embarrassment", "excitement", "fear", "gratitude", "grief", "joy", "love", "nervousness", "optimism", "pride", "realization", "relief", "remorse", "sadness", "surprise", "neutral")
+
+
+def _stream_rev(spec, part, n, seed):
+    """_stream, with the auto-converted parquet branch for sources whose canonical form is a script."""
+    if not spec.revision:
+        return _stream(spec.path, spec.config, part, n, seed, filt=spec.filt, ordered=spec.ordered)
+    from datasets import load_dataset
+    ds = load_dataset(spec.path, spec.config, split=part, revision=spec.revision).shuffle(seed=seed)
+    out = []
+    for row in ds:
+        if spec.filt is None or spec.filt(row):
+            out.append(row)
+            if len(out) >= n:
+                break
+    return out
 
 
 def _fixed_labels(spec, rows):
@@ -231,7 +242,7 @@ def _fixed_labels(spec, rows):
     if spec.name == "go_emotions":
         return GO_EMOTIONS
     from datasets import load_dataset_builder
-    feats = load_dataset_builder(spec.path, spec.config).info.features
+    feats = load_dataset_builder(spec.path, spec.config, revision=spec.revision).info.features
     col = "intent" if "intent" in feats else "label"
     return tuple(feats[col].names)
 
@@ -261,14 +272,14 @@ def load(spec, n, seed=0, split="all", uncertain=0.0):
     draw_seed = seed if not same else (seed + (0 if split == "train" else 7919))
     want = 2 * n + 200 if same else n
     pool = want * (30 if spec.balance else 1)
-    rows = _stream(spec.path, spec.config, part, pool, draw_seed, filt=spec.filt, ordered=spec.ordered)
+    rows = _stream_rev(spec, part, pool, draw_seed)
     if same:
         half = len(rows) // 2
         rows = rows[:half] if split == "train" else rows[half:]
     if spec.balance:
         rows = _balance(rows, n, lambda r: bool(spec.label(r)))
     rows = rows[:n]
-    labels = None if spec.options else _fixed_labels(spec, rows)
+    labels = ("yes", "no") if spec.kind == "claim" else (None if spec.options else _fixed_labels(spec, rows))
     feat_names = labels if labels else ()
     out = []
     for r in rows:
