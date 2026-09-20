@@ -118,7 +118,7 @@ def cmd_fetch(a):
         print(f"adapters/{asset}")
 
 
-if __name__ == "__main__":
+def main():
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
     f = sub.add_parser("fetch")
@@ -136,3 +136,7 @@ if __name__ == "__main__":
     c.add_argument("--out", default="results")
     a = ap.parse_args()
     {"calibrate": cmd_calibrate, "fetch": cmd_fetch}[a.cmd](a)
+
+
+if __name__ == "__main__":
+    main()

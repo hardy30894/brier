@@ -52,4 +52,21 @@ def toolcall(ex, answers, rng):
     return {"tool": 1.0 if answers["tool"] == truth else 0.0}
 
 
-ENVS = {"tickets": tickets, "toolcall": toolcall}
+def typed(ex, answers, rng):
+    """The public benchmark as bandit feedback: the sampled answer is marked against the
+    benchmark's hard label (1 or 0; for an ordered scale, 1 minus the distance in levels over the
+    scale), and nothing else is revealed. The gold distribution is never used."""
+    out = {}
+    for q in ex["questions"]:
+        g = ex["gold"][q.id]["label"]
+        g = {"true": "yes", "false": "no"}.get(str(g).lower(), str(g))
+        chosen = answers[q.id]
+        if isinstance(q, Grade):
+            levels = list(q.labels)
+            out[q.id] = 1.0 - abs(levels.index(chosen) - levels.index(g)) / max(1, len(levels) - 1)
+        else:
+            out[q.id] = 1.0 if chosen == g else 0.0
+    return out
+
+
+ENVS = {"tickets": tickets, "toolcall": toolcall, "typed": typed}

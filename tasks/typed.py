@@ -41,13 +41,18 @@ def _labels(gold, qs):
 def generate(n, seed=0, split="all", uncertain=0.0, workflows=WORKFLOWS):
     """`split` train -> the 1,200 training cases; eval -> the 400 test cases. `n` caps the
     total, spread evenly over the workflows, in file order (the benchmark is already fixed)."""
+    import random
     from datasets import load_dataset
     part = "train" if split == "train" else "test"
     per = max(1, n // len(workflows))
+    rng = random.Random(seed)
     out = []
     for wf in workflows:
         ds = load_dataset("LocalLLaMA/typed-decisions", wf, split=part)
-        for r in list(ds)[:per]:
+        rows = list(ds)
+        if per < len(rows):   # a sample: seeded, so outcome training sees fresh states each step
+            rows = rng.sample(rows, per)
+        for r in rows:
             qdefs = json.loads(r["questions"]) if isinstance(r["questions"], str) else r["questions"]
             gold = json.loads(r["gold"]) if isinstance(r["gold"], str) else r["gold"]
             state = json.loads(r["state"]) if isinstance(r["state"], str) and r["state"].lstrip().startswith("{") else r["state"]

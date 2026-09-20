@@ -251,7 +251,7 @@ def make_handler(engine, page):
     return H
 
 
-if __name__ == "__main__":
+def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", default="Qwen/Qwen3-0.6B")
     ap.add_argument("--adapter", default=None)
@@ -269,3 +269,7 @@ if __name__ == "__main__":
     srv = ThreadingHTTPServer(("0.0.0.0", a.port), make_handler(engine, Path(a.page)))
     print(f"serving on :{a.port}  models={engine.names}  mock={engine.mock}", file=sys.stderr)
     srv.serve_forever()
+
+
+if __name__ == "__main__":
+    main()

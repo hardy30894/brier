@@ -4,6 +4,7 @@ closer to the exit. The loss has two parts: a policy-gradient term on the outcom
 drives accuracy, and the Brier score of the stated probability against the outcome, which
 drives honesty and is the reinforcement form of the calibrated-decisions objective."""
 import argparse
+import contextlib
 import json
 import os
 import random
@@ -40,31 +41,58 @@ def main():
     ap.add_argument("--episode", type=int, default=1, help="steps per episode; >1 uses the delayed episode outcome (reached the exit) as the reward for every step")
     ap.add_argument("--seed", type=int, default=300)
     ap.add_argument("--out", default="adapters")
-    ap.add_argument("--task", default="gridworld", help="gridworld | tickets | toolcall: text tasks use the environments in tasks/outcomes.py")
+    ap.add_argument("--task", default="gridworld", help="gridworld | tickets | toolcall | typed: text tasks use the environments in tasks/outcomes.py")
     ap.add_argument("--uncertain", type=float, default=0.3, help="text tasks: fraction of ambiguous states, whose outcomes are drawn from the soft posterior")
+    ap.add_argument("--pointer", action="store_true", help="act through the pointer head (one row per state); required for encoder backbones")
+    ap.add_argument("--full", action="store_true", help="with --pointer: fine-tune every backbone weight instead of a LoRA adapter (encoders)")
+    ap.add_argument("--head-lr", type=float, default=1e-4)
     a = ap.parse_args()
 
     torch.manual_seed(a.seed)
     random.seed(a.seed)
+    from brier.scorer import is_encoder
+    encoder = is_encoder(a.model)
+    if encoder:
+        a.pointer = True
     tok = AutoTokenizer.from_pretrained(a.model)
-    base = AutoModelForCausalLM.from_pretrained(a.model, dtype=torch.bfloat16)
-    base.gradient_checkpointing_enable()
-    base.enable_input_require_grads()
-    if a.init:
-        model = PeftModel.from_pretrained(base, a.init, is_trainable=True)
+    if encoder:
+        from transformers import AutoModel
+        base = AutoModel.from_pretrained(a.model, dtype=torch.float32 if a.full else torch.bfloat16, **({"reference_compile": False} if "modernbert" in a.model.lower() else {}))
     else:
-        model = get_peft_model(base, LoraConfig(r=a.rank, lora_alpha=2 * a.rank, lora_dropout=0.05, target_modules=lora_targets(base), task_type="CAUSAL_LM"))
-    model.print_trainable_parameters()
+        base = AutoModelForCausalLM.from_pretrained(a.model, dtype=torch.bfloat16)
+    try:
+        base.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})
+    except (ValueError, TypeError):
+        pass
+    head = None
+    if a.full:
+        model = base
+        for prm in model.parameters():
+            prm.requires_grad_(True)
+    else:
+        base.enable_input_require_grads()
+        if a.init:
+            model = PeftModel.from_pretrained(base, a.init, is_trainable=True)
+        else:
+            model = get_peft_model(base, LoraConfig(r=a.rank, lora_alpha=2 * a.rank, lora_dropout=0.05, target_modules=lora_targets(base), task_type="FEATURE_EXTRACTION" if encoder else "CAUSAL_LM"))
+        model.print_trainable_parameters()
     scorer = Scorer(a.model, model=model, tok=tok)
     scorer.model = scorer.model.to(scorer.device)
-    opt = torch.optim.AdamW([p for p in model.parameters() if p.requires_grad], lr=a.lr)
+    groups = [{"params": [p for p in model.parameters() if p.requires_grad], "lr": a.lr}]
+    if a.pointer:
+        from brier.pointer import PointerHead
+        head = PointerHead(base.config.hidden_size).to(scorer.device)
+        if a.init and os.path.exists(os.path.join(a.init, "pointer.pt")):
+            head.load_state_dict(torch.load(os.path.join(a.init, "pointer.pt"), map_location=scorer.device), strict=False)
+        groups.append({"params": list(head.parameters()), "lr": a.head_lr})
+    opt = torch.optim.AdamW(groups)
     q = gridworld.QUESTIONS[0]
     baseline, t0 = 0.5, time.perf_counter()
     stats = {"reward": 0.0, "brier": 0.0, "conf": 0.0, "n": 0}
     model.train()
     if a.task != "gridworld":
-        train_text(a, scorer, model, opt, stats, t0)
-        save(a, model)
+        train_text(a, scorer, model, opt, stats, t0, head)
+        save(a, model, head)
         return
     for it in range(a.steps):
         exs = gridworld.generate_q(a.batch, seed=a.seed * 100000 + it)
@@ -108,37 +136,54 @@ def main():
     save(a, model)
 
 
-def save(a, model):
-    name = f"{a.model.split('/')[-1]}-brier-rl-{a.task}-s{a.steps}" + (f"-ep{a.episode}" if a.episode > 1 else "") + ("-from-sup" if a.init else "")
+def save(a, model, head=None):
+    name = f"{a.model.split('/')[-1]}-brier-rl-{a.task}-s{a.steps}" + (f"-ep{a.episode}" if a.episode > 1 else "") + ("-from-sup" if a.init else "") + ("-pointer" if a.pointer else "") + ("-full" if a.full else "")
     path = os.path.join(a.out, name)
-    model.save_pretrained(path)
+    os.makedirs(path, exist_ok=True)
+    if a.full:
+        torch.save(model.state_dict(), os.path.join(path, "backbone.pt"))
+    else:
+        model.save_pretrained(path)
+    if head is not None:
+        torch.save(head.state_dict(), os.path.join(path, "pointer.pt"))
+        json.dump({"ordinal": "quadratic", "grade_numbers": False}, open(os.path.join(path, "pointer.json"), "w"))
     json.dump(vars(a), open(os.path.join(path, "train_args.json"), "w"), indent=1)
     print(f"saved {path}")
 
 
-def train_text(a, scorer, model, opt, stats, t0):
+def train_text(a, scorer, model, opt, stats, t0, head=None):
     """Bandit feedback on text decisions: one answer sampled per question, the environment
     returns a reward for that answer only, and the loss is the policy-gradient term against a
-    per-question running baseline plus the Brier score of the stated probability."""
+    per-question running baseline plus the Brier score of the stated probability. With a
+    pointer head the whole state is one row; otherwise the row scorer's candidate rows."""
     from tasks import examples
     from tasks.outcomes import ENVS
+    from brier.pointer import pointer_scores
     env = ENVS[a.task]
     rng = random.Random(a.seed)
     baselines = {}
+    autocast = torch.autocast("cuda", dtype=torch.bfloat16) if (a.full and torch.cuda.is_available()) else contextlib.nullcontext()
     for it in range(a.steps):
         exs = examples(a.task, a.batch, seed=a.seed * 100000 + it, split="train", uncertain=a.uncertain)
         opt.zero_grad(set_to_none=True)
         loss, count = 0.0, 0
         for ex in exs:
             qs = ex["questions"]
-            seqs, spans = scorer.build_rows(build_prompt(scorer, ex["state"], qs), groups_for(qs))
-            input_ids, attn = scorer.batch(seqs)
-            cand = scorer.scores_from_rows(input_ids, attn, spans)
+            if head is not None:
+                with autocast:
+                    per_q = pointer_scores(scorer, head, ex["state"], qs, grad=True)
+            else:
+                seqs, spans = scorer.build_rows(build_prompt(scorer, ex["state"], qs), groups_for(qs))
+                input_ids, attn = scorer.batch(seqs)
+                cand = scorer.scores_from_rows(input_ids, attn, spans)
             answers, picks, k = {}, [], 0
-            for q in qs:
-                s_q = cand[k : k + len(q.labels)]
-                k += len(q.labels)
-                logp = torch.log_softmax(s_q, dim=0)
+            for qi, q in enumerate(qs):
+                if head is not None:
+                    s_q = per_q[qi]
+                else:
+                    s_q = cand[k : k + len(q.labels)]
+                    k += len(q.labels)
+                logp = torch.log_softmax(s_q.float(), dim=0)
                 i = torch.multinomial(logp.exp().detach(), 1).item()
                 answers[q.id] = q.labels[i]
                 picks.append((q.id, logp[i]))
@@ -157,7 +202,7 @@ def train_text(a, scorer, model, opt, stats, t0):
                 stats["n"] += 1
                 count += 1
         (loss / max(count, 1)).backward()
-        torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+        torch.nn.utils.clip_grad_norm_([p for p in model.parameters() if p.requires_grad] + (list(head.parameters()) if head is not None else []), 1.0)
         opt.step()
         if (it + 1) % 25 == 0:
             n = max(1, stats["n"])
