@@ -193,6 +193,25 @@ made the shipped hybrid dispatch score below the untrained model on Grade; a joi
 objective restores the row path (priority 0.21 → 0.70) without costing the pointer path,
 and is now the default.
 
+## Round seven, the non-generative model and learning from outcomes
+
+*2026-09-20. Done; tables in TRAINING.md.*
+
+**Question.** Is the method tied to a generative language model, and can consequences
+replace labels on text decisions.
+
+**Delivered.** Encoder-only backbones through the pointer head with full fine-tuning,
+LoRA and frozen ablations across seeds; environments for ticket routing and tool
+selection that return a consequence and never a label; outcome-reward training on text
+against supervised training on the same states, three seeds each.
+
+**Found.** From outcomes alone the 0.6B reaches 0.80 on routing against 0.83 with
+labels, 1.00 on the hand-off claim, and 0.98 on tool selection; the ordered priority
+scale trails at 0.57 against 0.71 because a shaped cost tells the model which direction
+is expensive, not which level is right. A fully fine-tuned 395M encoder, once the head's learning rate was matched to a
+trainable body, equals the 0.6B language-model scorer on every seen question type and
+trails it only on the unseen tasks, which is what language pretraining buys.
+
 ## Next
 
 - Three seeds for the 8B and Phi recipes, and a second unseen ordered scale.

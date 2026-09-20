@@ -126,6 +126,7 @@ def main():
     ap.add_argument("--pointer-only", dest="joint", action="store_false", help="train the pointer head alone; the row scorer under this adapter is not usable")
     ap.add_argument("--full", action="store_true", help="fine-tune every backbone weight instead of a LoRA adapter (encoder backbones)")
     ap.add_argument("--freeze", action="store_true", help="freeze the backbone and train only the head(s)")
+    ap.add_argument("--warmup", type=int, default=50, help="linear warm-up steps")
     a = ap.parse_args()
 
     torch.manual_seed(a.seed)
@@ -193,7 +194,7 @@ def main():
     if pointer is not None:
         groups.append({"params": list(pointer.parameters()), "lr": a.head_lr})
     opt = torch.optim.AdamW(groups, weight_decay=0.0)
-    sched = torch.optim.lr_scheduler.LambdaLR(opt, lambda s: min(1.0, (s + 1) / 50) * max(0.05, 1 - s / a.steps))
+    sched = torch.optim.lr_scheduler.LambdaLR(opt, lambda s: min(1.0, (s + 1) / a.warmup) * max(0.05, 1 - s / a.steps))
     scorer.model.train()
     t0, running, i = time.perf_counter(), 0.0, 0
     for step in range(a.steps):
@@ -218,7 +219,7 @@ def main():
         if (step + 1) % 50 == 0:
             log(f"step {step + 1}/{a.steps} loss {running / 50:.4f} lr {sched.get_last_lr()[0]:.2e} ({time.perf_counter() - t0:.0f}s)")
             running = 0.0
-    name = f"{a.model.split('/')[-1]}-brier-r{a.rank}-s{a.steps}" + (f"-u{a.uncertain:g}" if a.uncertain else "") + (f"-{a.split}" if a.split != "all" else "") + ("-head" if a.head else "") + ("-pointer" if a.pointer else "") + ("-distill" if a.distill else "") + ("-cum" if a.ordinal == "cumulative" else "") + ("-num" if a.grade_numbers else "") + (f"-gb{a.grade_boost}" if a.grade_boost > 1 else "") + ("-joint" if a.joint and a.pointer else "") + ("-full" if a.full else "") + ("-frozen" if a.freeze else "")
+    name = f"{a.model.split('/')[-1]}-brier-r{a.rank}-s{a.steps}" + (f"-u{a.uncertain:g}" if a.uncertain else "") + (f"-{a.split}" if a.split != "all" else "") + ("-head" if a.head else "") + ("-pointer" if a.pointer else "") + ("-distill" if a.distill else "") + ("-cum" if a.ordinal == "cumulative" else "") + ("-num" if a.grade_numbers else "") + (f"-gb{a.grade_boost}" if a.grade_boost > 1 else "") + ("-joint" if a.joint and a.pointer else "") + ("-full" if a.full else "") + ("-frozen" if a.freeze else "") + (f"-w{a.warmup}" if a.warmup != 50 else "")
     path = os.path.join(a.out, name)
     if rank == 0:
         os.makedirs(path, exist_ok=True)

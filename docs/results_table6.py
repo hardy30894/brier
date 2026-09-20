@@ -159,9 +159,10 @@ def eight_b_table():
 
 def encoder_table():
     print("\n### Encoder backbones · pointer head only, every question through the head (accuracy · raw ECE)\n")
-    cols = [("ModernBERT-large, full fine-tune, 3 seeds", "enc-large-full-seed"), ("ModernBERT-base, full", "enc-base-full-seed"),
-            ("ModernBERT-large, LoRA", "enc-large-lora-seed"), ("ModernBERT-large, frozen, head only", "enc-large-frozen-seed"),
-            ("Qwen3-0.6B, LoRA, row scorer, 3 seeds", "row-seed"), ("Qwen3-0.6B, pointer head (joint), row dispatch", "grade-joint-gb3@eval")]
+    cols = [("ModernBERT-large, full, head lr 1e-4, 3 seeds", "enc-large-full-w400-h1e4-seed"),
+            ("ModernBERT-large, full, head lr 1e-3, 3 seeds (one learned)", "enc-large-full-seed"),
+            ("ModernBERT-large, LoRA", "enc-large-lora-seed"), ("ModernBERT-base, full", "enc-base-full-seed"), ("ModernBERT-large, frozen, head only", "enc-large-frozen-seed"),
+            ("Qwen3-0.6B, LoRA, row scorer, 3 seeds", "row-seed")]
     print("| task · question | " + " | ".join(c[0] for c in cols) + " |")
     print("|---|" + "---|" * len(cols))
     for t in TASKS:

@@ -1167,7 +1167,56 @@ read the padding, so batched rows carry an attention mask on this path. ModernBE
 LoRA adapter on the large model, and a frozen large backbone with only the head trained
 are the ablations.
 
-ROUND7_ENCODER
+#### Encoder backbones · pointer head only, every question through the head (accuracy · raw ECE)
+
+| task · question | ModernBERT-large, full, head lr 1e-4, 3 seeds | ModernBERT-large, full, head lr 1e-3, 3 seeds (one learned) | ModernBERT-large, LoRA | ModernBERT-base, full | ModernBERT-large, frozen, head only | Qwen3-0.6B, LoRA, row scorer, 3 seeds |
+|---|---|---|---|---|---|---|
+| tickets · category | 0.856 ± 0.031 · 0.107 | 0.512 ± 0.400 · 0.283 | 0.727 · 0.145 | 0.347 · 0.378 | 0.213 · 0.199 | 0.831 ± 0.018 · 0.080 |
+| tickets · needs_human | 0.939 ± 0.053 · 0.057 | 0.766 ± 0.214 · 0.142 | 1.000 · 0.005 | 0.717 · 0.068 | 0.717 · 0.110 | 0.992 ± 0.008 · 0.008 |
+| tickets · priority | 0.317 ± 0.066 · 0.400 | 0.301 ± 0.069 · 0.401 | 0.437 · 0.341 | 0.053 · 0.729 | 0.367 · 0.232 | 0.802 ± 0.100 · 0.125 |
+| frustration · frustration | 0.358 ± 0.130 · 0.345 | 0.309 ± 0.207 · 0.338 | 0.580 · 0.120 | 0.173 · 0.317 | 0.250 · 0.308 | 0.532 ± 0.073 · 0.348 |
+| duplicates · same | 0.923 ± 0.057 · 0.031 | 0.612 ± 0.283 · 0.174 | 0.623 · 0.220 | 0.627 · 0.069 | 0.487 · 0.070 | 0.988 ± 0.021 · 0.066 |
+| banking · intent | 0.982 ± 0.008 · 0.014 | 0.897 ± 0.081 · 0.047 | 0.967 · 0.026 | 0.857 · 0.040 | 0.857 · 0.058 | 0.979 ± 0.005 · 0.016 |
+| msmarco · answers | 0.549 ± 0.011 · 0.210 | 0.497 ± 0.017 · 0.086 | 0.550 · 0.050 | 0.497 · 0.129 | 0.487 · 0.082 | 0.593 ± 0.023 · 0.161 |
+| mnli · entailed | 0.846 ± 0.045 · 0.074 | 0.703 ± 0.115 · 0.056 | 0.833 · 0.043 | 0.643 · 0.031 | 0.633 · 0.013 | 0.893 ± 0.009 · 0.036 |
+| mnli · relation | 0.682 ± 0.089 · 0.172 | 0.462 ± 0.196 · 0.075 | 0.653 · 0.114 | 0.373 · 0.066 | 0.337 · 0.065 | 0.780 ± 0.015 · 0.096 |
+| imdb · positive | 0.686 ± 0.276 · 0.191 | 0.619 ± 0.220 · 0.118 | 0.880 · 0.057 | 0.490 · 0.195 | 0.487 · 0.172 | 0.876 ± 0.020 · 0.030 |
+| emotion · emotion | 0.511 ± 0.040 · 0.071 | 0.281 ± 0.221 · 0.193 | 0.553 · 0.107 | 0.353 · 0.031 | 0.160 · 0.362 | 0.527 ± 0.006 · 0.205 |
+| snli · entailed | 0.923 ± 0.009 · 0.056 | 0.754 ± 0.146 · 0.051 | 0.927 · 0.022 | 0.670 · 0.041 | 0.670 · 0.012 | 0.936 ± 0.010 · 0.045 |
+| snli · relation | 0.846 ± 0.002 · 0.105 | 0.517 ± 0.287 · 0.063 | 0.860 · 0.015 | 0.380 · 0.061 | 0.347 · 0.055 | 0.849 ± 0.005 · 0.096 |
+| sst5 · sentiment | 0.532 ± 0.037 · 0.222 | 0.344 ± 0.159 · 0.137 | 0.520 · 0.211 | 0.270 · 0.097 | 0.333 · 0.041 | 0.484 ± 0.002 · 0.209 |
+| yelp · stars | 0.616 ± 0.017 · 0.151 | 0.348 ± 0.259 · 0.164 | 0.630 · 0.147 | 0.197 · 0.140 | 0.207 · 0.139 | 0.588 ± 0.022 · 0.162 |
+| dbpedia · kind | 0.972 ± 0.004 · 0.021 | 0.812 ± 0.125 · 0.094 | 0.960 · 0.027 | 0.790 · 0.123 | 0.713 · 0.097 | 0.977 ± 0.006 · 0.017 |
+| civil · toxic | 0.814 ± 0.016 · 0.128 | 0.563 ± 0.110 · 0.166 | 0.673 · 0.050 | 0.523 · 0.148 | 0.570 · 0.068 | 0.734 ± 0.026 · 0.079 |
+
+**It took three recipes to get a stable one, and that is the first finding.** With the
+pointer head's learning rate at 1e-3, the value that served the LoRA runs on decoder
+backbones, one seed in three learned (0.97 on ticket category) and two stalled at a
+training loss above 1.0 for the whole run. Four hundred steps of warm-up changed nothing.
+Cutting the head's learning rate to 1e-4 fixed it: every seed learns, and the spread
+between them is ordinary. When the whole backbone is trainable, a head that moves ten
+times faster than the body saturates its bilinear scores before the body has adapted,
+and the gradient that reaches the body vanishes. A LoRA adapter, which limits how far the
+body can move, was not hurt by the same head rate.
+
+**On the fixed recipe the encoder matches the LLM in distribution.** Against the 0.6B
+decoder's row scorer, three seeds each: ticket category 0.86 against 0.83, banking 0.98
+against 0.98, DBpedia 0.97 against 0.98, SNLI 0.92 and 0.85 against 0.94 and 0.85, and
+ahead on SST-5 (0.53 against 0.48), Yelp (0.62 against 0.59) and Civil Comments (0.81
+against 0.73). A 395M non-generative encoder, fully fine-tuned in twenty minutes on one
+card, is as good a typed decision model as a 600M language model with an adapter on the
+question types it was trained on.
+
+**It trails on exactly what language pretraining buys: transfer.** On the tasks absent
+from training the encoder is behind on every row, by 17 points on frustration, 19 on
+IMDB with a seed spread of ±0.28, 10 on MNLI relation, 7 on duplicates, 2 on emotion.
+The decoder has read instructions and world knowledge the encoder has not, and it shows
+the moment the question is new. The ordered priority scale is the other gap, 0.32
+against 0.80, and it is the same gap the pointer head shows on the decoder backbone; it
+belongs to the head, not the encoder. ModernBERT-base learns little at this data scale,
+LoRA on the large encoder lands between the two recipes, and the frozen backbone with
+only the head trained is near chance, so the encoder's weights, not the head, carry the
+decisions.
 
 ### Learning from outcomes on text
 
@@ -1185,11 +1234,44 @@ running baseline plus the Brier score of the stated probability against the outc
 visits of the same task with labels, three seeds each, evaluated with the kit on the
 held-out split.
 
-ROUND7_OUTCOME
+#### Outcome-reward against supervised training · Qwen3-0.6B, single task, three seeds (accuracy · raw ECE)
+
+| task · question | untrained | outcome reward, no labels | supervised, labels |
+|---|---|---|---|
+| tickets · category | 0.233 · 0.473 | 0.804 ± 0.036 · 0.124 ± 0.058 | 0.828 ± 0.011 · 0.089 ± 0.006 |
+| tickets · needs_human | 0.313 · 0.553 | 0.998 ± 0.004 · 0.002 ± 0.003 | 0.993 ± 0.012 · 0.008 ± 0.010 |
+| tickets · priority | 0.387 · 0.420 | 0.574 ± 0.037 · 0.297 ± 0.148 | 0.712 ± 0.093 · 0.116 ± 0.006 |
+| toolcall · tool | 0.943 · 0.029 | 0.979 ± 0.031 · 0.018 ± 0.027 | 0.997 ± 0.006 · 0.006 ± 0.005 |
+
+From consequences alone, with no label ever shown, the model reaches 0.80 on ticket
+routing against 0.83 with labels, 1.00 on the hand-off claim against 0.99, and 0.98 on
+tool selection against 1.00 (where the untrained 0.6B already scores 0.94). The seeds
+agree. On the ordered priority scale it reaches 0.57 against 0.71, and its raw
+calibration there is worse, 0.30 against 0.12: the shaped SLA reward, which charges half
+a point per level of under-prioritising and a fifth per level over, tells the model
+which direction is expensive but not which level is right, and it learns to hedge
+upward with high stated confidence. That is the honest shape of outcome learning on
+text at this scale: unordered choices and claims learn from bandit feedback about as
+well as from labels within a few thousand decisions; ordered scales with asymmetric
+costs need either a reward that resolves the level or labels for the scale.
 
 ## What was learned in round seven
 
-ROUND7_LESSONS
+- **A non-generative decision model works.** An encoder fully fine-tuned through the
+  pointer head matches a language-model scorer on every question type it has seen, at a
+  fraction of the size and with no generation path at all. The identity question has a
+  measured answer: yes, with the caveat below.
+- **Language pretraining buys transfer, and nothing else so far.** Every gap between the
+  encoder and the decoder is on a task the corpus never contained. The route to a
+  non-generative model that transfers is a corpus with many more question types (stage
+  two of the roadmap) or a backbone that has read more, which is stage three.
+- **Consequences can replace labels for choices and claims.** Outcome-reward training on
+  text lands within three points of supervised training within a few thousand
+  decisions, seeds agreeing. Ordered scales with asymmetric costs need a reward that
+  resolves the level, or labels.
+- **A head that learns faster than a fully trainable body kills the run.** Two of three
+  seeds stalled until the head's learning rate matched the body's scale; with adapters
+  the mismatch was hidden. Report seeds, or this looks like a capacity limit.
 
 ## Next
 

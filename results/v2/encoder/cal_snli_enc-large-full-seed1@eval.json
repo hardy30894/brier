@@ -1,0 +1,119 @@
+{
+ "model": "enc-large-full-seed1@eval",
+ "created": 1789878114.1139464,
+ "questions": {
+  "relation": {
+   "id": "relation",
+   "T": 9.412973848181222,
+   "n": 300,
+   "accuracy": 0.33,
+   "ece_raw": 0.07865159794478437,
+   "ece_cal": 0.014869451561185076,
+   "brier_raw": 0.22656402485045538,
+   "brier_cal": 0.22198317615044508,
+   "mean_conf_raw": 0.40865159794478434,
+   "mean_conf_cal": 0.3448694515611851,
+   "reliability_raw": [
+    [
+     0.30000000000000004,
+     0.4,
+     67,
+     0.39518389504144186,
+     0.2835820895522388
+    ],
+    [
+     0.4,
+     0.5,
+     233,
+     0.4125242850457455,
+     0.34334763948497854
+    ]
+   ],
+   "reliability_cal": [
+    [
+     0.30000000000000004,
+     0.4,
+     300,
+     0.3448694515611851,
+     0.33
+    ]
+   ],
+   "tiers": [
+    {
+     "name": "auto",
+     "target_precision": 0.95,
+     "min_confidence": null,
+     "precision": null,
+     "coverage": null
+    },
+    {
+     "name": "review",
+     "target_precision": 0.8,
+     "min_confidence": null,
+     "precision": null,
+     "coverage": null
+    }
+   ]
+  },
+  "entailed": {
+   "id": "entailed",
+   "T": 0.5171419269930333,
+   "n": 300,
+   "accuracy": 0.67,
+   "ece_raw": 0.07921368639232898,
+   "ece_cal": 0.018884834728028203,
+   "brier_raw": 0.22656998533379435,
+   "brier_cal": 0.22128190307471557,
+   "mean_conf_raw": 0.5907863136076711,
+   "mean_conf_cal": 0.6729138502752817,
+   "reliability_raw": [
+    [
+     0.5,
+     0.6000000000000001,
+     238,
+     0.5860806513856897,
+     0.6596638655462185
+    ],
+    [
+     0.6000000000000001,
+     0.7000000000000001,
+     62,
+     0.6088499847178576,
+     0.7096774193548387
+    ]
+   ],
+   "reliability_cal": [
+    [
+     0.6000000000000001,
+     0.7000000000000001,
+     255,
+     0.6651151071846589,
+     0.6745098039215687
+    ],
+    [
+     0.7000000000000001,
+     0.8,
+     45,
+     0.7171067277888107,
+     0.6444444444444445
+    ]
+   ],
+   "tiers": [
+    {
+     "name": "auto",
+     "target_precision": 0.95,
+     "min_confidence": null,
+     "precision": null,
+     "coverage": null
+    },
+    {
+     "name": "review",
+     "target_precision": 0.8,
+     "min_confidence": null,
+     "precision": null,
+     "coverage": null
+    }
+   ]
+  }
+ }
+}

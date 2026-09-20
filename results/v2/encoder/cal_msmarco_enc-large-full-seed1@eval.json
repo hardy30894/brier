@@ -1,0 +1,52 @@
+{
+ "model": "enc-large-full-seed1@eval",
+ "created": 1789878047.6008677,
+ "questions": {
+  "answers": {
+   "id": "answers",
+   "T": 0.7827561317090497,
+   "n": 300,
+   "accuracy": 0.49666666666666665,
+   "ece_raw": 0.025578345949486547,
+   "ece_cal": 0.03171541407300288,
+   "brier_raw": 0.2488727147165691,
+   "brier_cal": 0.2497738480704209,
+   "mean_conf_raw": 0.5222450126161532,
+   "mean_conf_cal": 0.5283820807396695,
+   "reliability_raw": [
+    [
+     0.5,
+     0.6000000000000001,
+     300,
+     0.5222450126161532,
+     0.49666666666666665
+    ]
+   ],
+   "reliability_cal": [
+    [
+     0.5,
+     0.6000000000000001,
+     300,
+     0.5283820807396695,
+     0.49666666666666665
+    ]
+   ],
+   "tiers": [
+    {
+     "name": "auto",
+     "target_precision": 0.95,
+     "min_confidence": null,
+     "precision": null,
+     "coverage": null
+    },
+    {
+     "name": "review",
+     "target_precision": 0.8,
+     "min_confidence": null,
+     "precision": null,
+     "coverage": null
+    }
+   ]
+  }
+ }
+}

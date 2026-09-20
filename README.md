@@ -42,9 +42,10 @@ card.
 
 ## Contributions
 
-1. **A single-pass typed decision function** for any open-weight causal language model:
-   `ask(scorer, state, questions)` returns a distribution per question with the type
-   guarantee built in. Five backbones from three families run unchanged.
+1. **A single-pass typed decision function** for any open-weight backbone, decoder or
+   encoder: `ask(scorer, state, questions)` returns a distribution per question with the
+   type guarantee built in. Five language models from three families and an encoder-only
+   model with no generation path run unchanged.
 2. **A calibration kit** that turns those distributions into a decision policy:
    per-question temperature by cross-fitted maximum likelihood, expected calibration
    error and Brier score raw and corrected, and precision-targeted act / review / defer
@@ -118,6 +119,8 @@ the label set it was fit on.
 | Banking77, Qwen3-0.6B | 0.85 acc · 0.09 ECE | **0.98 ± 0.01 acc · 0.02 ECE** | real, three seeds |
 | Civil Comments toxicity, balanced, Qwen3-8B | 0.70 acc · 0.27 ECE | **0.77 acc · 0.05 ECE** | real, raw |
 | Ticket category, Phi-4-mini | 0.71 acc | **0.87 acc** | held-out templates |
+| Ticket routing from outcomes only, Qwen3-0.6B | 0.23 acc | **0.80 ± 0.04 acc** | no labels, three seeds; 0.83 with labels |
+| Hand-off claim from outcomes only, Qwen3-0.6B | 0.31 acc | **1.00 acc** | no labels; 0.99 with labels |
 | Gridworld from outcomes only, Qwen3-0.6B | 0.35 acc | **0.81 acc** | no labels; 0.84 supervised |
 
 Three findings shape the recipe. Clean labels alone teach overconfidence, and the fix is
@@ -125,7 +128,27 @@ training data with irreducible uncertainty and soft labels equal to the generato
 posterior. A shortcut learned from cue-triggered claims transfers as a bias, and the fix is
 a contrastive claim where the cue is present and the answer is no. The recipe holds from
 0.6B to 8B unchanged, and the trained 0.6B is within five points of the trained 8B on ten
-of seventeen rows at a thirteenth of the parameters.
+of seventeen rows at a thirteenth of the parameters. And labels are not required: trained
+only on what happened after each decision, a bounced ticket, a missed hand-off, a failed
+tool call, the model lands within three points of label training on unordered choices and
+claims, and fourteen behind on an ordered scale whose reward does not resolve the level.
+
+### A non-generative backbone
+
+| task | Qwen3-0.6B, language model as scorer | ModernBERT-large, encoder only, 395M |
+|---|---|---|
+| Ticket category | 0.83 ± 0.02 | **0.86 ± 0.03** |
+| Banking77 | 0.98 ± 0.01 | 0.98 ± 0.01 |
+| SNLI relation | 0.85 ± 0.01 | 0.85 ± 0.00 |
+| Yelp stars | 0.59 ± 0.02 | **0.62 ± 0.02** |
+| Civil Comments, balanced | 0.73 ± 0.03 | **0.81 ± 0.02** |
+| Frustration (never trained on) | **0.53 ± 0.07** | 0.36 ± 0.13 |
+| MNLI relation (never trained on) | **0.78 ± 0.02** | 0.68 ± 0.09 |
+
+An encoder with no generation path, fully fine-tuned through the pointer head in twenty
+minutes on one card, equals the language model on every question type it was trained on
+and trails it only on the unseen ones. That gap is what language pretraining buys, and
+closing it with more question types is the next stage of the [roadmap](docs/ROADMAP.md).
 
 ### Serving
 
