@@ -2,6 +2,7 @@
 from . import tickets, gridworld, toolcall, passages, frustration, duplicates, banking, matching
 from .public import PUBLIC
 from .typed import TYPED
+from .hub import HUB
 
 REGISTRY = {
     "tickets": tickets.generate_q,
@@ -14,6 +15,7 @@ REGISTRY = {
     "matching": matching.generate,
     **PUBLIC,
     **TYPED,
+    **HUB,
 }
 
 

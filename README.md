@@ -214,11 +214,20 @@ The [architecture document](docs/ARCHITECTURE.md) explains all of this from noth
 ### Install
 
 ```sh
-pip install torch transformers peft numpy
+pip install brier-decisions                        # the library, the calibration kit, `brier` and `brier-serve`
 ```
 
-Any open-weight causal language model is a valid backbone. The results above use Qwen3
-at three sizes, SmolLM2 and Phi-4-mini with no code changes.
+or from a checkout, for training and the pods:
+
+```sh
+pip install torch transformers peft numpy datasets
+pip install -e .
+```
+
+Any open-weight causal language model or encoder is a valid backbone. The results above
+use Qwen3 at three sizes, SmolLM2, Phi-4-mini and ModernBERT with no code changes.
+Trained adapters and the fine-tuned encoder are published on the Hub under `brier-lab`;
+`release/README.md` describes how each was produced.
 
 ### Ask
 

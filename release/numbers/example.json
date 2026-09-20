@@ -1,0 +1,1 @@
+[{"task":"tickets","question":"category","accuracy":0.877,"ece":0.100,"note":"held-out templates"},{"task":"snli","question":"entailed","accuracy":0.937,"ece":0.051}]
