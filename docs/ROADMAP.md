@@ -34,19 +34,24 @@ training recipe can be outcome-first. Either answer is publishable; both are mea
 
 **Question.** What does a model need to have seen to answer questions it has not seen?
 
-**Data.** On the order of ten million typed decisions across thousands of question types,
-from three sources, each passing the audit that round six made mandatory (label
-histograms per split, balance for Claim tasks, no label-sorted streaming):
+**Data.** Training consumes decisions, not text: a state, a set of typed questions, and
+an answer or an outcome. Internet text has none of these; it is what the backbone was
+pretrained on and teaches reading, not deciding. The sources, in the order they are used,
+each passing the audit that round six made mandatory (label histograms per split, balance
+for Claim tasks, no label-sorted streaming):
 
-1. Public datasets converted into typed questions: classification, entailment, ranking,
-   preference, retrieval and QA sets, several hundred of them, the way instruction-tuned
-   models were built. Covers the question types that exist as datasets.
-2. Synthetic decisions from a strong language model: novel question sets and options on
-   realistic states, with verified labels, deliberate ambiguity carried as soft labels,
-   and contrastive near-misses. Covers the question types that do not exist as datasets,
-   which is the point. Needs an API budget: a few billion generated tokens, one to three
-   thousand dollars at ten million decisions, linear below that.
-3. Outcome logs. None exist yet without users; simulated environments stand in, as in
+1. **Public datasets converted into typed questions**: classification, entailment,
+   ranking, preference, retrieval and QA sets, several hundred of them, the way
+   instruction-tuned models were built. Free. Covers every question type that exists as a
+   dataset, on the order of ten million decisions. The first training runs use only this,
+   and the measurement that matters is transfer to question types held out entirely.
+2. **Generated decisions, only if that transfer plateaus**: a strong language model
+   writes novel question sets and options on realistic states with verified answers,
+   deliberate ambiguity as soft labels, and contrastive near-misses. This is distillation
+   of a large model's judgement into a small non-generative one, and it exists to cover
+   the question types no dataset has. Added at one million decisions for a few hundred
+   dollars of API cost before anything larger is considered.
+3. **Outcome logs.** None exist yet without users; simulated environments stand in, as in
    stage 1.
 
 **Also.** A public benchmark drawn from held-out datasets and held-out question types,
