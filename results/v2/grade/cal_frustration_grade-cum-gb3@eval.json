@@ -1,0 +1,73 @@
+{
+ "model": "grade-cum-gb3@eval",
+ "created": 1789868837.5824718,
+ "questions": {
+  "frustration": {
+   "id": "frustration",
+   "T": 19.999999999999996,
+   "n": 300,
+   "accuracy": 0.2733333333333333,
+   "ece_raw": 0.695599945239839,
+   "ece_cal": 0.07502325310475,
+   "brier_raw": 0.6836394531313233,
+   "brier_cal": 0.20765884586884165,
+   "mean_conf_raw": 0.9421166879907321,
+   "mean_conf_cal": 0.3202612382478635,
+   "reliability_raw": [
+    [
+     0.7000000000000001,
+     0.8,
+     18,
+     0.7765284118129977,
+     1.0
+    ],
+    [
+     0.8,
+     0.9,
+     40,
+     0.8559285903220182,
+     0.85
+    ],
+    [
+     0.9,
+     1.0,
+     242,
+     0.9686791378996072,
+     0.12396694214876033
+    ]
+   ],
+   "reliability_cal": [
+    [
+     0.2,
+     0.30000000000000004,
+     6,
+     0.29761629524450334,
+     1.0
+    ],
+    [
+     0.30000000000000004,
+     0.4,
+     294,
+     0.3207233799418096,
+     0.2585034013605442
+    ]
+   ],
+   "tiers": [
+    {
+     "name": "auto",
+     "target_precision": 0.95,
+     "min_confidence": null,
+     "precision": null,
+     "coverage": null
+    },
+    {
+     "name": "review",
+     "target_precision": 0.8,
+     "min_confidence": null,
+     "precision": null,
+     "coverage": null
+    }
+   ]
+  }
+ }
+}

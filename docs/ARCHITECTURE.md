@@ -297,7 +297,9 @@ thirty questions on the card at all. The head trains from scratch in ten to fort
 minutes and matches the row scorer on Pick and Claim questions across the real datasets;
 on Grade questions it trails, because the option words carry no order of their own, so
 `ask()` sends Grade questions through the row scorer and everything else through the
-head. The server goes one step further: concurrent requests are right-padded into one
+head. That only works because the adapter is trained through both paths at once: the two
+share the same LoRA weights, and an adapter trained through the head alone leaves the
+row scorer worse than the untrained model (TRAINING.md, round six). The server goes one step further: concurrent requests are right-padded into one
 pass, which cannot change any real position under causal attention, so a small backbone
 serves 170 requests a second on one card. [TRAINING.md](TRAINING.md) has the tables and
 the [primer](PRIMER.md) the equation.

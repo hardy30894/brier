@@ -1,2 +1,4 @@
 ssh ready: ssh -p 16729 root@64.247.201.61
 synced
+1
+LAUNCHED big8b big8b.sh

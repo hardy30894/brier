@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="340" viewBox="0 0 600 340" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
+<rect width="600" height="340" rx="14" fill="#FFFFFF" stroke="#D8DEE6"/>
+<text x="300.0" y="28" text-anchor="middle" font-size="14" font-weight="700" fill="#1B1F24">snli · untrained-eval9@eval</text>
+<text x="580" y="28" text-anchor="end" font-size="11" fill="#8A94A0"><tspan fill="#8A2BE2">●</tspan> raw   <tspan fill="#3557C4">●</tspan> calibrated</text>
+<line x1="60" y1="230" x2="230" y2="230" stroke="#5B6B7C"/><line x1="60" y1="230" x2="60" y2="60" stroke="#5B6B7C"/>
+<line x1="60" y1="230" x2="230" y2="60" stroke="#8A94A0" stroke-dasharray="4 4"/>
+<text x="60" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.0</text>
+<text x="54" y="233" font-size="9" fill="#8A94A0" text-anchor="end">0.0</text>
+<text x="145.0" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.5</text>
+<text x="54" y="148.0" font-size="9" fill="#8A94A0" text-anchor="end">0.5</text>
+<text x="230" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">1.0</text>
+<text x="54" y="63" font-size="9" fill="#8A94A0" text-anchor="end">1.0</text>
+<path d="M153.0 208.8 L171.0 230.0 L186.8 210.0 L205.7 219.0 L227.4 148.5" fill="none" stroke="#8A2BE2" stroke-width="2"/><circle cx="153.0" cy="208.8" r="3.5" fill="#8A2BE2"/><circle cx="171.0" cy="230.0" r="3.5" fill="#8A2BE2"/><circle cx="186.8" cy="210.0" r="3.5" fill="#8A2BE2"/><circle cx="205.7" cy="219.0" r="3.5" fill="#8A2BE2"/><circle cx="227.4" cy="148.5" r="3.5" fill="#8A2BE2"/>
+<path d="M125.7 216.7 L134.4 153.8 L147.2 102.5" fill="none" stroke="#3557C4" stroke-width="2"/><circle cx="125.7" cy="216.7" r="3.5" fill="#3557C4"/><circle cx="134.4" cy="153.8" r="3.5" fill="#3557C4"/><circle cx="147.2" cy="102.5" r="3.5" fill="#3557C4"/>
+<text x="145.0" y="260" text-anchor="middle" font-size="12" font-weight="700" fill="#1B1F24">relation</text>
+<text x="145.0" y="276" text-anchor="middle" font-size="10" fill="#5B6B7C">acc 0.37 · ECE 0.54 → 0.08 · T 20.0</text>
+<line x1="340" y1="230" x2="510" y2="230" stroke="#5B6B7C"/><line x1="340" y1="230" x2="340" y2="60" stroke="#5B6B7C"/>
+<line x1="340" y1="230" x2="510" y2="60" stroke="#8A94A0" stroke-dasharray="4 4"/>
+<text x="340" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.0</text>
+<text x="334" y="233" font-size="9" fill="#8A94A0" text-anchor="end">0.0</text>
+<text x="425.0" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.5</text>
+<text x="334" y="148.0" font-size="9" fill="#8A94A0" text-anchor="end">0.5</text>
+<text x="510" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">1.0</text>
+<text x="334" y="63" font-size="9" fill="#8A94A0" text-anchor="end">1.0</text>
+<path d="M425.0 230.0 L435.3 191.4 L450.9 203.8 L469.1 221.7 L485.3 201.7 L503.8 120.0" fill="none" stroke="#8A2BE2" stroke-width="2"/><circle cx="425.0" cy="230.0" r="3.5" fill="#8A2BE2"/><circle cx="435.3" cy="191.4" r="3.5" fill="#8A2BE2"/><circle cx="450.9" cy="203.8" r="3.5" fill="#8A2BE2"/><circle cx="469.1" cy="221.7" r="3.5" fill="#8A2BE2"/><circle cx="485.3" cy="201.7" r="3.5" fill="#8A2BE2"/><circle cx="503.8" cy="120.0" r="3.5" fill="#8A2BE2"/>
+<path d="M425.0 230.0 L433.0 176.3 L445.8 82.2" fill="none" stroke="#3557C4" stroke-width="2"/><circle cx="425.0" cy="230.0" r="3.5" fill="#3557C4"/><circle cx="433.0" cy="176.3" r="3.5" fill="#3557C4"/><circle cx="445.8" cy="82.2" r="3.5" fill="#3557C4"/>
+<text x="425.0" y="260" text-anchor="middle" font-size="12" font-weight="700" fill="#1B1F24">entailed</text>
+<text x="425.0" y="276" text-anchor="middle" font-size="10" fill="#5B6B7C">acc 0.40 · ECE 0.46 → 0.24 · T 10.5</text>
+</svg>

@@ -1,3 +1,4 @@
-runpod.error.QueryError: Something went wrong. Please try again later or contact support.
-no tracked pod
-no tracked pod
+ssh ready: ssh -p 16404 root@47.47.180.106
+synced
+1
+LAUNCHED grade1 grade1.sh

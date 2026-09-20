@@ -1,0 +1,33 @@
++ cd /workspace/brier
++ mkdir -p results/seeds
++ python3 train.py --model Qwen/Qwen3-0.6B --tasks tickets,gridworld,toolcall,passages,matching,ag_news,dbpedia,sst5,yelp,snli,qqp,civil,msmarco,massive,banking --examples 1500 --steps 3000 --split train --uncertain 0.3 --seed 2 --pointer --out adapters/seedptr2
+Repo card metadata block was not found. Setting CardData to empty.
+22296 training examples from tickets,gridworld,toolcall,passages,matching,ag_news,dbpedia,sst5,yelp,snli,qqp,civil,msmarco,massive,banking
+`use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`.
+/usr/local/lib/python3.11/dist-packages/torch/utils/checkpoint.py:1399: FutureWarning: `torch.cpu.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cpu', args...)` instead.
+  with device_autocast_ctx, torch.cpu.amp.autocast(**cpu_autocast_kwargs), recompute_context:  # type: ignore[attr-defined]
+step 50/3000 loss 2.2548 lr 9.83e-05 (69s)
+step 100/3000 loss 0.9917 lr 9.67e-05 (137s)
+step 150/3000 loss 0.8199 lr 9.50e-05 (204s)
+step 200/3000 loss 0.7549 lr 9.33e-05 (273s)
+step 250/3000 loss 0.7340 lr 9.17e-05 (339s)
+step 300/3000 loss 0.6439 lr 9.00e-05 (406s)
+step 350/3000 loss 0.6291 lr 8.83e-05 (475s)
+step 400/3000 loss 0.8484 lr 8.67e-05 (542s)
+step 450/3000 loss 0.7731 lr 8.50e-05 (610s)
+step 500/3000 loss 1.3948 lr 8.33e-05 (678s)
+step 550/3000 loss 1.3238 lr 8.17e-05 (746s)
+step 600/3000 loss 0.4867 lr 8.00e-05 (814s)
+step 650/3000 loss 0.8641 lr 7.83e-05 (882s)
+step 700/3000 loss 0.8522 lr 7.67e-05 (949s)
+step 750/3000 loss 0.5754 lr 7.50e-05 (1016s)
+step 800/3000 loss 0.5438 lr 7.33e-05 (1085s)
+step 850/3000 loss 0.7015 lr 7.17e-05 (1152s)
+step 900/3000 loss 0.7748 lr 7.00e-05 (1221s)
+step 950/3000 loss 0.5589 lr 6.83e-05 (1289s)
+step 1000/3000 loss 0.7796 lr 6.67e-05 (1357s)
+step 1050/3000 loss 0.4226 lr 6.50e-05 (1425s)
+step 1100/3000 loss 0.5234 lr 6.33e-05 (1494s)
+step 1150/3000 loss 0.5036 lr 6.17e-05 (1560s)
+step 1200/3000 loss 0.6145 lr 6.00e-05 (1627s)
+step 1250/3000 loss 1.4945 lr 5.83e-05 (1693s)

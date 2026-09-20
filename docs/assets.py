@@ -678,36 +678,24 @@ def fig_round6():
         _t(o, x + 16, y + 9, name, 10, MUTED)
 
     bx = 520
-    _caps(o, bx, 34, "B · Ordered scales: the pointer head closes the gap")
+    _caps(o, bx, 34, "B · Ordered scales, Qwen3-0.6B, clean corpus")
     cases = (("tickets", "priority", "ticket priority"), ("sst5", "sentiment", "SST-5"), ("yelp", "stars", "Yelp stars"), ("frustration", "frustration", "frustration (unseen)"))
-    variants = (("row scorer", "row-seed1@eval", BASE), ("pointer, before", "ptr-seed1@eval+ptrgrade", TINT), ("pointer, best variant", None, ACCENT))
-    best = None
-    cand = ("grade-cum@eval+ptrgrade", "grade-num@eval+ptrgrade", "grade-cum-num@eval+ptrgrade", "grade-cum-num-gb3@eval+ptrgrade")
-    score = {}
-    for tag in cand:
-        vals = [R6.cal("grade", t, tag).get(q, (None,))[0] for t, q, _ in cases]
-        if all(v is not None for v in vals):
-            score[tag] = sum(vals)
-    if score:
-        best = max(score, key=score.get)
+    variants = (("row scorer", "v2/seeds", "row-seed1@eval", BASE), ("pointer head", "v2/seeds", "ptr-seed1@eval+ptrgrade", TINT), ("pointer head, 3× Grade data", "v2/grade", "grade-gb3@eval+ptrgrade", ACCENT))
     for i, (t, q, label) in enumerate(cases):
         y = ay + i * 60
         _t(o, bx, y + 9, label, 10.5, INK, "700")
-        for j, (name, tag, col) in enumerate(variants):
-            tg = tag or best
-            v = R6.cal("", t, tg).get(q) if tg else None
+        for j, (name, d, tag, col) in enumerate(variants):
+            v = R6.cal(d, t, tag).get(q)
             if not v:
                 continue
             yy = y + 14 + j * 10
             _bar(o, bx + 120, yy, v[0] * scale, 7, col)
             _t(o, bx + 124 + v[0] * scale, yy + 7, f"{v[0]:.2f}", 9.5, INK if j == 2 else MUTED)
-    for j, (name, _, col) in enumerate(variants):
-        x = bx + j * 120
-        y = ay + 4 * 60 + 4
+    for j, (name, _, _, col) in enumerate(variants):
+        x = bx + (j % 2) * 120
+        y = ay + 4 * 60 + 4 + (j // 2) * 14
         o.append(f'<rect x="{x}" y="{y}" width="10" height="10" rx="2" fill="{col}"/>')
         _t(o, x + 16, y + 9, name, 10, MUTED)
-    if best:
-        _t(o, bx, ay + 4 * 60 + 30, "best variant: " + best.split("@")[0].replace("grade-", "").replace("-", " + ").replace("cum", "cumulative link").replace("num", "numbered levels").replace("gb3", "3× Grade data"), 10, MUTED)
     _write(o, "round6")
 
 fig_results()

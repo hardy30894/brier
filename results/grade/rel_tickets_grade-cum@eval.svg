@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="340" viewBox="0 0 880 340" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
+<rect width="880" height="340" rx="14" fill="#FFFFFF" stroke="#D8DEE6"/>
+<text x="440.0" y="28" text-anchor="middle" font-size="14" font-weight="700" fill="#1B1F24">tickets · grade-cum@eval</text>
+<text x="860" y="28" text-anchor="end" font-size="11" fill="#8A94A0"><tspan fill="#8A2BE2">●</tspan> raw   <tspan fill="#3557C4">●</tspan> calibrated</text>
+<line x1="60" y1="230" x2="230" y2="230" stroke="#5B6B7C"/><line x1="60" y1="230" x2="60" y2="60" stroke="#5B6B7C"/>
+<line x1="60" y1="230" x2="230" y2="60" stroke="#8A94A0" stroke-dasharray="4 4"/>
+<text x="60" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.0</text>
+<text x="54" y="233" font-size="9" fill="#8A94A0" text-anchor="end">0.0</text>
+<text x="145.0" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.5</text>
+<text x="54" y="148.0" font-size="9" fill="#8A94A0" text-anchor="end">0.5</text>
+<text x="230" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">1.0</text>
+<text x="54" y="63" font-size="9" fill="#8A94A0" text-anchor="end">1.0</text>
+<path d="M122.7 230.0 L136.0 138.5 L153.3 87.9 L170.4 79.6 L188.3 93.1 L205.8 84.9 L219.8 79.4" fill="none" stroke="#8A2BE2" stroke-width="2"/><circle cx="122.7" cy="230.0" r="3.5" fill="#8A2BE2"/><circle cx="136.0" cy="138.5" r="3.5" fill="#8A2BE2"/><circle cx="153.3" cy="87.9" r="3.5" fill="#8A2BE2"/><circle cx="170.4" cy="79.6" r="3.5" fill="#8A2BE2"/><circle cx="188.3" cy="93.1" r="3.5" fill="#8A2BE2"/><circle cx="205.8" cy="84.9" r="3.5" fill="#8A2BE2"/><circle cx="219.8" cy="79.4" r="3.5" fill="#8A2BE2"/>
+<path d="M122.1 213.0 L139.1 123.8 L152.3 75.9 L171.6 87.4 L187.2 82.4 L206.6 86.7 L216.8 72.4" fill="none" stroke="#3557C4" stroke-width="2"/><circle cx="122.1" cy="213.0" r="3.5" fill="#3557C4"/><circle cx="139.1" cy="123.8" r="3.5" fill="#3557C4"/><circle cx="152.3" cy="75.9" r="3.5" fill="#3557C4"/><circle cx="171.6" cy="87.4" r="3.5" fill="#3557C4"/><circle cx="187.2" cy="82.4" r="3.5" fill="#3557C4"/><circle cx="206.6" cy="86.7" r="3.5" fill="#3557C4"/><circle cx="216.8" cy="72.4" r="3.5" fill="#3557C4"/>
+<text x="145.0" y="260" text-anchor="middle" font-size="12" font-weight="700" fill="#1B1F24">category</text>
+<text x="145.0" y="276" text-anchor="middle" font-size="10" fill="#5B6B7C">acc 0.83 · ECE 0.13 → 0.14 · T 1.2</text>
+<text x="145.0" y="290" text-anchor="middle" font-size="10" fill="#3557C4">auto ≥ 0.93 covers 4% at 1.00</text>
+<line x1="340" y1="230" x2="510" y2="230" stroke="#5B6B7C"/><line x1="340" y1="230" x2="340" y2="60" stroke="#5B6B7C"/>
+<line x1="340" y1="230" x2="510" y2="60" stroke="#8A94A0" stroke-dasharray="4 4"/>
+<text x="340" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.0</text>
+<text x="334" y="233" font-size="9" fill="#8A94A0" text-anchor="end">0.0</text>
+<text x="425.0" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.5</text>
+<text x="334" y="148.0" font-size="9" fill="#8A94A0" text-anchor="end">0.5</text>
+<text x="510" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">1.0</text>
+<text x="334" y="63" font-size="9" fill="#8A94A0" text-anchor="end">1.0</text>
+<path d="M468.7 187.5 L487.0 212.2 L497.9 215.9" fill="none" stroke="#8A2BE2" stroke-width="2"/><circle cx="468.7" cy="187.5" r="3.5" fill="#8A2BE2"/><circle cx="487.0" cy="212.2" r="3.5" fill="#8A2BE2"/><circle cx="497.9" cy="215.9" r="3.5" fill="#8A2BE2"/>
+<path d="M389.7 215.5 L392.7 173.3" fill="none" stroke="#3557C4" stroke-width="2"/><circle cx="389.7" cy="215.5" r="3.5" fill="#3557C4"/><circle cx="392.7" cy="173.3" r="3.5" fill="#3557C4"/>
+<text x="425.0" y="260" text-anchor="middle" font-size="12" font-weight="700" fill="#1B1F24">priority</text>
+<text x="425.0" y="276" text-anchor="middle" font-size="10" fill="#5B6B7C">acc 0.09 · ECE 0.82 → 0.20 · T 20.0</text>
+<line x1="620" y1="230" x2="790" y2="230" stroke="#5B6B7C"/><line x1="620" y1="230" x2="620" y2="60" stroke="#5B6B7C"/>
+<line x1="620" y1="230" x2="790" y2="60" stroke="#8A94A0" stroke-dasharray="4 4"/>
+<text x="620" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.0</text>
+<text x="614" y="233" font-size="9" fill="#8A94A0" text-anchor="end">0.0</text>
+<text x="705.0" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.5</text>
+<text x="614" y="148.0" font-size="9" fill="#8A94A0" text-anchor="end">0.5</text>
+<text x="790" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">1.0</text>
+<text x="614" y="63" font-size="9" fill="#8A94A0" text-anchor="end">1.0</text>
+<path d="M737.5 60.0 L765.0 60.0 L785.6 60.0" fill="none" stroke="#8A2BE2" stroke-width="2"/><circle cx="737.5" cy="60.0" r="3.5" fill="#8A2BE2"/><circle cx="765.0" cy="60.0" r="3.5" fill="#8A2BE2"/><circle cx="785.6" cy="60.0" r="3.5" fill="#8A2BE2"/>
+<path d="M790.0 60.0" fill="none" stroke="#3557C4" stroke-width="2"/><circle cx="790.0" cy="60.0" r="3.5" fill="#3557C4"/>
+<text x="705.0" y="260" text-anchor="middle" font-size="12" font-weight="700" fill="#1B1F24">needs_human</text>
+<text x="705.0" y="276" text-anchor="middle" font-size="10" fill="#5B6B7C">acc 1.00 · ECE 0.03 → 0.00 · T 0.1</text>
+<text x="705.0" y="290" text-anchor="middle" font-size="10" fill="#3557C4">auto ≥ 1.00 covers 100% at 1.00</text>
+</svg>

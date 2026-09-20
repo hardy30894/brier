@@ -1,0 +1,244 @@
++ cd /workspace/brier
++ mkdir -p results/8b
++ M=Qwen/Qwen3-8B
++ python3 bench.py --model Qwen/Qwen3-8B --tasks tickets --n 50 --methods scored,json
++ tail -20
++ python3 -m brier calibrate --model Qwen/Qwen3-8B --task tickets,frustration,duplicates,banking,msmarco,mnli,imdb,emotion,snli,sst5,yelp --split eval --n 300 --tag 8b-untrained --out results/8b
+Loading checkpoint shards:   0%|          | 0/5 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:00<00:00, 199.45it/s]
+Repo card metadata block was not found. Setting CardData to empty.
+  collected 50/300 (4s)
+  collected 100/300 (8s)
+  collected 150/300 (11s)
+  collected 200/300 (15s)
+  collected 250/300 (19s)
+  collected 300/300 (22s)
+
+== tickets ==
+calibration report  model=8b-untrained@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+category           300  0.797    0.156    0.057     0.159     0.107    0.953    0.824   3.81
+priority           300  0.493    0.423    0.186     0.431     0.268    0.917    0.519   9.77
+needs_human        300  0.757    0.221    0.081     0.222     0.151    0.963    0.793   6.96
+
+decision policy (calibrated confidence cutoffs, held-out):
+  category         auto    target 0.95: act when confidence >= 0.772  -> precision 0.951, covers 68% of decisions
+  category         review  target 0.80: act when confidence >= 0.372  -> precision 0.802, covers 99% of decisions
+  category         human   everything below
+  priority         auto    target 0.95: unreachable on this data
+  priority         review  target 0.80: unreachable on this data
+  priority         human   everything below
+  needs_human      auto    target 0.95: act when confidence >= 0.858  -> precision 0.951, covers 48% of decisions
+  needs_human      review  target 0.80: act when confidence >= 0.594  -> precision 0.801, covers 84% of decisions
+  needs_human      human   everything below
+  collected 50/300 (1s)
+  collected 100/300 (3s)
+  collected 150/300 (4s)
+  collected 200/300 (5s)
+  collected 250/300 (7s)
+  collected 300/300 (8s)
+
+== frustration ==
+calibration report  model=8b-untrained@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+frustration        300  0.580    0.340    0.077     0.335     0.233    0.918    0.647   5.15
+
+decision policy (calibrated confidence cutoffs, held-out):
+  frustration      auto    target 0.95: act when confidence >= 0.800  -> precision 1.000, covers 3% of decisions
+  frustration      review  target 0.80: act when confidence >= 0.786  -> precision 0.824, covers 6% of decisions
+  frustration      human   everything below
+  collected 50/300 (1s)
+  collected 100/300 (3s)
+  collected 150/300 (4s)
+  collected 200/300 (5s)
+  collected 250/300 (7s)
+  collected 300/300 (8s)
+
+== duplicates ==
+calibration report  model=8b-untrained@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+same               300  0.867    0.127    0.078     0.125     0.087    0.984    0.896   4.60
+
+decision policy (calibrated confidence cutoffs, held-out):
+  same             auto    target 0.95: act when confidence >= 0.784  -> precision 0.952, covers 83% of decisions
+  same             review  target 0.80: act when confidence >= 0.500  -> precision 0.867, covers 100% of decisions
+  same             human   everything below
+  collected 50/300 (4s)
+  collected 100/300 (8s)
+  collected 150/300 (12s)
+  collected 200/300 (16s)
+  collected 250/300 (20s)
+  collected 300/300 (24s)
+
+== banking ==
+calibration report  model=8b-untrained@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+intent             300  0.953    0.043    0.018     0.042     0.026    0.996    0.964   5.15
+
+decision policy (calibrated confidence cutoffs, held-out):
+  intent           auto    target 0.95: act when confidence >= 0.305  -> precision 0.953, covers 100% of decisions
+  intent           review  target 0.80: act when confidence >= 0.305  -> precision 0.953, covers 100% of decisions
+  intent           human   everything below
+  collected 50/300 (2s)
+  collected 100/300 (3s)
+  collected 150/300 (4s)
+  collected 200/300 (6s)
+  collected 250/300 (7s)
+  collected 300/300 (8s)
+
+== msmarco ==
+calibration report  model=8b-untrained@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+answers            300  0.293    0.693    0.374     0.692     0.362    0.987    0.668  20.00
+
+decision policy (calibrated confidence cutoffs, held-out):
+  answers          auto    target 0.95: unreachable on this data
+  answers          review  target 0.80: unreachable on this data
+  answers          human   everything below
+  collected 50/300 (2s)
+  collected 100/300 (4s)
+  collected 150/300 (6s)
+  collected 200/300 (7s)
+  collected 250/300 (9s)
+  collected 300/300 (11s)
+
+== mnli ==
+calibration report  model=8b-untrained@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+relation           300  0.813    0.167    0.060     0.164     0.118    0.975    0.849   4.43
+entailed           300  0.910    0.076    0.044     0.084     0.082    0.963    0.881   3.53
+
+decision policy (calibrated confidence cutoffs, held-out):
+  relation         auto    target 0.95: act when confidence >= 0.812  -> precision 0.952, covers 69% of decisions
+  relation         review  target 0.80: act when confidence >= 0.443  -> precision 0.813, covers 100% of decisions
+  relation         human   everything below
+  entailed         auto    target 0.95: act when confidence >= 0.854  -> precision 0.951, covers 68% of decisions
+  entailed         review  target 0.80: act when confidence >= 0.500  -> precision 0.910, covers 100% of decisions
+  entailed         human   everything below
+  collected 50/300 (2s)
+  collected 100/300 (4s)
+  collected 150/300 (6s)
+  collected 200/300 (7s)
+  collected 250/300 (9s)
+  collected 300/300 (10s)
+
+== imdb ==
+calibration report  model=8b-untrained@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+positive           300  0.980    0.019    0.015     0.019     0.015    0.999    0.985   4.96
+
+decision policy (calibrated confidence cutoffs, held-out):
+  positive         auto    target 0.95: act when confidence >= 0.596  -> precision 0.980, covers 100% of decisions
+  positive         review  target 0.80: act when confidence >= 0.596  -> precision 0.980, covers 100% of decisions
+  positive         human   everything below
+  collected 50/300 (2s)
+  collected 100/300 (4s)
+  collected 150/300 (6s)
+  collected 200/300 (8s)
+  collected 250/300 (9s)
+  collected 300/300 (11s)
+
+== emotion ==
+calibration report  model=8b-untrained@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+emotion            300  0.563    0.403    0.039     0.400     0.218    0.962    0.561   9.41
+
+decision policy (calibrated confidence cutoffs, held-out):
+  emotion          auto    target 0.95: unreachable on this data
+  emotion          review  target 0.80: act when confidence >= 0.730  -> precision 0.807, covers 19% of decisions
+  emotion          human   everything below
+  collected 50/300 (2s)
+  collected 100/300 (4s)
+  collected 150/300 (6s)
+  collected 200/300 (7s)
+  collected 250/300 (9s)
+  collected 300/300 (11s)
+
+== snli ==
+calibration report  model=8b-untrained@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+relation           300  0.860    0.111    0.043     0.126     0.112    0.970    0.837   5.35
+entailed           300  0.960    0.034    0.016     0.035     0.031    0.985    0.957   2.52
+
+decision policy (calibrated confidence cutoffs, held-out):
+  relation         auto    target 0.95: act when confidence >= 0.887  -> precision 0.951, covers 54% of decisions
+  relation         review  target 0.80: act when confidence >= 0.494  -> precision 0.860, covers 100% of decisions
+  relation         human   everything below
+  entailed         auto    target 0.95: act when confidence >= 0.523  -> precision 0.960, covers 100% of decisions
+  entailed         review  target 0.80: act when confidence >= 0.523  -> precision 0.960, covers 100% of decisions
+  entailed         human   everything below
+  collected 50/300 (2s)
+  collected 100/300 (3s)
+  collected 150/300 (5s)
+  collected 200/300 (6s)
+  collected 250/300 (8s)
+  collected 300/300 (10s)
+
+== sst5 ==
+calibration report  model=8b-untrained@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+sentiment          300  0.477    0.466    0.058     0.465     0.253    0.936    0.501   9.41
+
+decision policy (calibrated confidence cutoffs, held-out):
+  sentiment        auto    target 0.95: unreachable on this data
+  sentiment        review  target 0.80: unreachable on this data
+  sentiment        human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (5s)
+  collected 150/300 (8s)
+  collected 200/300 (10s)
+  collected 250/300 (13s)
+  collected 300/300 (15s)
+
+== yelp ==
+calibration report  model=8b-untrained@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+stars              300  0.633    0.321    0.119     0.329     0.218    0.953    0.679   6.22
+
+decision policy (calibrated confidence cutoffs, held-out):
+  stars            auto    target 0.95: act when confidence >= 0.851  -> precision 0.960, covers 17% of decisions
+  stars            review  target 0.80: act when confidence >= 0.758  -> precision 0.800, covers 43% of decisions
+  stars            human   everything below
++ python3 train.py --model Qwen/Qwen3-8B --tasks tickets,gridworld,toolcall,passages,matching,ag_news,dbpedia,sst5,yelp,snli,qqp,civil,msmarco,massive,banking --examples 600 --steps 2000 --split train --uncertain 0.3 --batch 1 --accum 4 --seed 100 --out adapters/8b
+Loading checkpoint shards:   0%|          | 0/5 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:00<00:00, 202.10it/s]
+Repo card metadata block was not found. Setting CardData to empty.
+9000 training examples from tickets,gridworld,toolcall,passages,matching,ag_news,dbpedia,sst5,yelp,snli,qqp,civil,msmarco,massive,banking
+`use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`.
+/usr/local/lib/python3.11/dist-packages/torch/utils/checkpoint.py:1399: FutureWarning: `torch.cpu.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cpu', args...)` instead.
+  with device_autocast_ctx, torch.cpu.amp.autocast(**cpu_autocast_kwargs), recompute_context:  # type: ignore[attr-defined]
+step 50/2000 loss 1.3342 lr 9.75e-05 (74s)
+step 100/2000 loss 0.5805 lr 9.50e-05 (140s)
+step 150/2000 loss 0.5572 lr 9.25e-05 (207s)
+step 200/2000 loss 0.5329 lr 9.00e-05 (272s)
+step 250/2000 loss 0.3848 lr 8.75e-05 (340s)
+step 300/2000 loss 0.4290 lr 8.50e-05 (406s)
+step 350/2000 loss 0.4505 lr 8.25e-05 (474s)
+step 400/2000 loss 0.4455 lr 8.00e-05 (541s)
+step 450/2000 loss 0.4004 lr 7.75e-05 (605s)
+step 500/2000 loss 0.5242 lr 7.50e-05 (669s)
+step 550/2000 loss 0.4081 lr 7.25e-05 (738s)
+step 600/2000 loss 0.4572 lr 7.00e-05 (805s)
+step 650/2000 loss 0.4069 lr 6.75e-05 (868s)
+step 700/2000 loss 0.4244 lr 6.50e-05 (935s)
+step 750/2000 loss 0.3293 lr 6.25e-05 (1000s)
+step 800/2000 loss 0.3761 lr 6.00e-05 (1071s)
+step 850/2000 loss 0.3205 lr 5.75e-05 (1141s)
+step 900/2000 loss 0.3943 lr 5.50e-05 (1211s)
+step 950/2000 loss 0.4631 lr 5.25e-05 (1276s)
+step 1000/2000 loss 0.2915 lr 5.00e-05 (1341s)
+step 1050/2000 loss 0.4843 lr 4.75e-05 (1410s)
+step 1100/2000 loss 0.3945 lr 4.50e-05 (1477s)
+step 1150/2000 loss 0.3448 lr 4.25e-05 (1547s)
+step 1200/2000 loss 0.3759 lr 4.00e-05 (1616s)
+step 1250/2000 loss 0.2905 lr 3.75e-05 (1685s)
+step 1300/2000 loss 0.3844 lr 3.50e-05 (1755s)

@@ -1,2 +1,4 @@
 ssh ready: ssh -p 15935 root@47.47.180.28
 synced
+1
+LAUNCHED base base.sh

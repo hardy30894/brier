@@ -1,0 +1,59 @@
+{
+ "model": "classifier-Phi-4-mini-instruct",
+ "created": 1789861322.9422126,
+ "questions": {
+  "same": {
+   "id": "same",
+   "T": 0.05000000000000001,
+   "n": 300,
+   "accuracy": 1.0,
+   "ece_raw": 0.004533680109869773,
+   "ece_cal": 0.0,
+   "brier_raw": 0.0001834615910621884,
+   "brier_cal": 0.0,
+   "mean_conf_raw": 0.9954663198901305,
+   "mean_conf_cal": 1.0,
+   "reliability_raw": [
+    [
+     0.8,
+     0.9,
+     1,
+     0.8630416937666048,
+     1.0
+    ],
+    [
+     0.9,
+     1.0,
+     299,
+     0.9959092116162959,
+     1.0
+    ]
+   ],
+   "reliability_cal": [
+    [
+     0.9,
+     1.0,
+     300,
+     1.0,
+     1.0
+    ]
+   ],
+   "tiers": [
+    {
+     "name": "auto",
+     "target_precision": 0.95,
+     "min_confidence": 1.0,
+     "precision": 1.0,
+     "coverage": 1.0
+    },
+    {
+     "name": "review",
+     "target_precision": 0.8,
+     "min_confidence": 1.0,
+     "precision": 1.0,
+     "coverage": 1.0
+    }
+   ]
+  }
+ }
+}

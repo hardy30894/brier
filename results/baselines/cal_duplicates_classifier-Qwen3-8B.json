@@ -1,0 +1,59 @@
+{
+ "model": "classifier-Qwen3-8B",
+ "created": 1789860317.8480513,
+ "questions": {
+  "same": {
+   "id": "same",
+   "T": 0.05000000000000001,
+   "n": 300,
+   "accuracy": 1.0,
+   "ece_raw": 0.007305106973754309,
+   "ece_cal": 0.0,
+   "brier_raw": 0.00037738670636469895,
+   "brier_cal": 4.694051078108862e-30,
+   "mean_conf_raw": 0.9926948930262457,
+   "mean_conf_cal": 1.0,
+   "reliability_raw": [
+    [
+     0.8,
+     0.9,
+     2,
+     0.841798920789466,
+     1.0
+    ],
+    [
+     0.9,
+     1.0,
+     298,
+     0.9937076176721301,
+     1.0
+    ]
+   ],
+   "reliability_cal": [
+    [
+     0.9,
+     1.0,
+     300,
+     1.0,
+     1.0
+    ]
+   ],
+   "tiers": [
+    {
+     "name": "auto",
+     "target_precision": 0.95,
+     "min_confidence": 0.9999999999999625,
+     "precision": 1.0,
+     "coverage": 1.0
+    },
+    {
+     "name": "review",
+     "target_precision": 0.8,
+     "min_confidence": 0.9999999999999625,
+     "precision": 1.0,
+     "coverage": 1.0
+    }
+   ]
+  }
+ }
+}

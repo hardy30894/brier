@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="340" viewBox="0 0 320 340" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
+<rect width="320" height="340" rx="14" fill="#FFFFFF" stroke="#D8DEE6"/>
+<text x="160.0" y="28" text-anchor="middle" font-size="14" font-weight="700" fill="#1B1F24">yelp · grade-gb3@eval+ptrgrade</text>
+<text x="300" y="28" text-anchor="end" font-size="11" fill="#8A94A0"><tspan fill="#8A2BE2">●</tspan> raw   <tspan fill="#3557C4">●</tspan> calibrated</text>
+<line x1="60" y1="230" x2="230" y2="230" stroke="#5B6B7C"/><line x1="60" y1="230" x2="60" y2="60" stroke="#5B6B7C"/>
+<line x1="60" y1="230" x2="230" y2="60" stroke="#8A94A0" stroke-dasharray="4 4"/>
+<text x="60" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.0</text>
+<text x="54" y="233" font-size="9" fill="#8A94A0" text-anchor="end">0.0</text>
+<text x="145.0" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.5</text>
+<text x="54" y="148.0" font-size="9" fill="#8A94A0" text-anchor="end">0.5</text>
+<text x="230" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">1.0</text>
+<text x="54" y="63" font-size="9" fill="#8A94A0" text-anchor="end">1.0</text>
+<path d="M125.2 230.0 L138.7 187.5 L154.8 178.1 L170.7 161.1 L186.8 145.0 L204.8 152.7 L226.4 101.9" fill="none" stroke="#8A2BE2" stroke-width="2"/><circle cx="125.2" cy="230.0" r="3.5" fill="#8A2BE2"/><circle cx="138.7" cy="187.5" r="3.5" fill="#8A2BE2"/><circle cx="154.8" cy="178.1" r="3.5" fill="#8A2BE2"/><circle cx="170.7" cy="161.1" r="3.5" fill="#8A2BE2"/><circle cx="186.8" cy="145.0" r="3.5" fill="#8A2BE2"/><circle cx="204.8" cy="152.7" r="3.5" fill="#8A2BE2"/><circle cx="226.4" cy="101.9" r="3.5" fill="#8A2BE2"/>
+<path d="M105.7 208.8 L119.7 171.2 L135.4 160.5 L152.4 137.1 L169.6 134.1 L188.0 92.9 L202.6 79.6 L219.8 77.6" fill="none" stroke="#3557C4" stroke-width="2"/><circle cx="105.7" cy="208.8" r="3.5" fill="#3557C4"/><circle cx="119.7" cy="171.2" r="3.5" fill="#3557C4"/><circle cx="135.4" cy="160.5" r="3.5" fill="#3557C4"/><circle cx="152.4" cy="137.1" r="3.5" fill="#3557C4"/><circle cx="169.6" cy="134.1" r="3.5" fill="#3557C4"/><circle cx="188.0" cy="92.9" r="3.5" fill="#3557C4"/><circle cx="202.6" cy="79.6" r="3.5" fill="#3557C4"/><circle cx="219.8" cy="77.6" r="3.5" fill="#3557C4"/>
+<text x="145.0" y="260" text-anchor="middle" font-size="12" font-weight="700" fill="#1B1F24">stars</text>
+<text x="145.0" y="276" text-anchor="middle" font-size="10" fill="#5B6B7C">acc 0.58 · ECE 0.25 → 0.04 · T 4.0</text>
+<text x="145.0" y="290" text-anchor="middle" font-size="10" fill="#3557C4">auto ≥ 0.95 covers 3% at 1.00</text>
+</svg>

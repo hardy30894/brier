@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="360" viewBox="0 0 900 360" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
+<defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#5B6472"/></marker></defs>
+<rect width="900" height="360" fill="#FFFFFF"/>
+<text x="40" y="34" font-size="10" font-weight="700" letter-spacing="1.4" fill="#5B6472" text-anchor="start">A · OPPONENTS, QWEN3-0.6B, HELD-OUT ACCURACY</text>
+<text x="40" y="69" font-size="10.5" font-weight="700" fill="#0F172A" text-anchor="start">frustration (unseen)</text>
+<path d="M170 60 H232.0 a4 4 0 0 1 4 4 V61 a4 4 0 0 1 -4 4 H170 Z" fill="#B45309"/>
+<path d="M170 67 H240.06666666666666 a4 4 0 0 1 4 4 V68 a4 4 0 0 1 -4 4 H170 Z" fill="#8B93A1"/>
+<path d="M170 74 H252.77777777777777 a4 4 0 0 1 4 4 V75 a4 4 0 0 1 -4 4 H170 Z" fill="#C7D2FE"/>
+<path d="M170 81 H283.0888888888889 a4 4 0 0 1 4 4 V82 a4 4 0 0 1 -4 4 H170 Z" fill="#4F46E5"/>
+<text x="292.0888888888889" y="86" font-size="10" font-weight="400" fill="#0F172A" text-anchor="start">0.53 ± 0.07</text>
+<line x1="270.9333486168497" y1="92" x2="303.2444291609281" y2="92" stroke="#E4E7EC" stroke-width="1"/>
+<text x="40" y="113" font-size="10.5" font-weight="700" fill="#0F172A" text-anchor="start">duplicates (unseen)</text>
+<path d="M170 104 H359.6 a4 4 0 0 1 4 4 V105 a4 4 0 0 1 -4 4 H170 Z" fill="#B45309"/>
+<path d="M170 111 H383.8 a4 4 0 0 1 4 4 V112 a4 4 0 0 1 -4 4 H170 Z" fill="#8B93A1"/>
+<path d="M170 118 H351.5333333333333 a4 4 0 0 1 4 4 V119 a4 4 0 0 1 -4 4 H170 Z" fill="#C7D2FE"/>
+<path d="M170 125 H383.31111111111113 a4 4 0 0 1 4 4 V126 a4 4 0 0 1 -4 4 H170 Z" fill="#4F46E5"/>
+<text x="392.31111111111113" y="130" font-size="10" font-weight="400" fill="#0F172A" text-anchor="start">0.99 ± 0.02</text>
+<line x1="382.65381893964815" y1="136" x2="391.96840328257406" y2="136" stroke="#E4E7EC" stroke-width="1"/>
+<text x="40" y="157" font-size="10.5" font-weight="700" fill="#0F172A" text-anchor="start">MS MARCO</text>
+<path d="M170 148 H276.0 a4 4 0 0 1 4 4 V149 a4 4 0 0 1 -4 4 H170 Z" fill="#B45309"/>
+<path d="M170 155 H271.6 a4 4 0 0 1 4 4 V156 a4 4 0 0 1 -4 4 H170 Z" fill="#8B93A1"/>
+<path d="M170 162 H276.4888888888889 a4 4 0 0 1 4 4 V163 a4 4 0 0 1 -4 4 H170 Z" fill="#C7D2FE"/>
+<path d="M170 169 H296.5333333333333 a4 4 0 0 1 4 4 V170 a4 4 0 0 1 -4 4 H170 Z" fill="#4F46E5"/>
+<text x="305.5333333333333" y="174" font-size="10" font-weight="400" fill="#0F172A" text-anchor="start">0.59 ± 0.02</text>
+<line x1="295.4" y1="180" x2="305.6666666666667" y2="180" stroke="#E4E7EC" stroke-width="1"/>
+<text x="40" y="201" font-size="10.5" font-weight="700" fill="#0F172A" text-anchor="start">SNLI entailed</text>
+<path d="M170 192 H249.6 a4 4 0 0 1 4 4 V193 a4 4 0 0 1 -4 4 H170 Z" fill="#B45309"/>
+<path d="M170 199 H349.33333333333337 a4 4 0 0 1 4 4 V200 a4 4 0 0 1 -4 4 H170 Z" fill="#8B93A1"/>
+<path d="M170 206 H250.0888888888889 a4 4 0 0 1 4 4 V207 a4 4 0 0 1 -4 4 H170 Z" fill="#C7D2FE"/>
+<path d="M170 213 H371.8222222222222 a4 4 0 0 1 4 4 V214 a4 4 0 0 1 -4 4 H170 Z" fill="#4F46E5"/>
+<text x="380.8222222222222" y="218" font-size="10" font-weight="400" fill="#0F172A" text-anchor="start">0.94 ± 0.01</text>
+<line x1="373.581851882466" y1="224" x2="378.0625925619784" y2="224" stroke="#E4E7EC" stroke-width="1"/>
+<text x="40" y="245" font-size="10.5" font-weight="700" fill="#0F172A" text-anchor="start">emotion (unseen)</text>
+<path d="M170 236 H270.1333333333333 a4 4 0 0 1 4 4 V237 a4 4 0 0 1 -4 4 H170 Z" fill="#B45309"/>
+<path d="M170 243 H268.6666666666667 a4 4 0 0 1 4 4 V244 a4 4 0 0 1 -4 4 H170 Z" fill="#8B93A1"/>
+<path d="M170 250 H259.3777777777778 a4 4 0 0 1 4 4 V251 a4 4 0 0 1 -4 4 H170 Z" fill="#C7D2FE"/>
+<path d="M170 257 H281.8666666666667 a4 4 0 0 1 4 4 V258 a4 4 0 0 1 -4 4 H170 Z" fill="#4F46E5"/>
+<text x="290.8666666666667" y="262" font-size="10" font-weight="400" fill="#0F172A" text-anchor="start">0.53 ± 0.01</text>
+<line x1="284.59649607444953" y1="268" x2="287.1368372588839" y2="268" stroke="#E4E7EC" stroke-width="1"/>
+<text x="40" y="289" font-size="10.5" font-weight="700" fill="#0F172A" text-anchor="start">banking77</text>
+<path d="M170 280 H352.26666666666665 a4 4 0 0 1 4 4 V281 a4 4 0 0 1 -4 4 H170 Z" fill="#B45309"/>
+<path d="M170 287 H355.2 a4 4 0 0 1 4 4 V288 a4 4 0 0 1 -4 4 H170 Z" fill="#8B93A1"/>
+<path d="M170 294 H353.4888888888889 a4 4 0 0 1 4 4 V295 a4 4 0 0 1 -4 4 H170 Z" fill="#C7D2FE"/>
+<path d="M170 301 H381.3555555555555 a4 4 0 0 1 4 4 V302 a4 4 0 0 1 -4 4 H170 Z" fill="#4F46E5"/>
+<text x="390.3555555555555" y="306" font-size="10" font-weight="400" fill="#0F172A" text-anchor="start">0.98 ± 0.01</text>
+<line x1="384.23537038567747" y1="312" x2="386.47574072543364" y2="312" stroke="#E4E7EC" stroke-width="1"/>
+<line x1="170" y1="316" x2="390" y2="316" stroke="#E4E7EC" stroke-width="1"/>
+<rect x="40" y="328" width="10" height="10" rx="2" fill="#B45309"/>
+<text x="56" y="337" font-size="10" font-weight="400" fill="#5B6472" text-anchor="start">constrained decoding</text>
+<rect x="190" y="328" width="10" height="10" rx="2" fill="#8B93A1"/>
+<text x="206" y="337" font-size="10" font-weight="400" fill="#5B6472" text-anchor="start">classifier head, per task</text>
+<rect x="40" y="342" width="10" height="10" rx="2" fill="#C7D2FE"/>
+<text x="56" y="351" font-size="10" font-weight="400" fill="#5B6472" text-anchor="start">Brier untrained</text>
+<rect x="190" y="342" width="10" height="10" rx="2" fill="#4F46E5"/>
+<text x="206" y="351" font-size="10" font-weight="400" fill="#5B6472" text-anchor="start">Brier trained, 3 seeds</text>
+<text x="520" y="34" font-size="10" font-weight="700" letter-spacing="1.4" fill="#5B6472" text-anchor="start">B · ORDERED SCALES, QWEN3-0.6B, CLEAN CORPUS</text>
+<text x="520" y="69" font-size="10.5" font-weight="700" fill="#0F172A" text-anchor="start">ticket priority</text>
+<path d="M640 74 H806.1333333333333 a4 4 0 0 1 4 4 V77 a4 4 0 0 1 -4 4 H640 Z" fill="#B45309"/>
+<text x="814.1333333333333" y="81" font-size="9.5" font-weight="400" fill="#5B6472" text-anchor="start">0.77</text>
+<path d="M640 84 H750.4 a4 4 0 0 1 4 4 V87 a4 4 0 0 1 -4 4 H640 Z" fill="#C7D2FE"/>
+<text x="758.4" y="91" font-size="9.5" font-weight="400" fill="#5B6472" text-anchor="start">0.52</text>
+<path d="M640 94 H732.0666666666666 a4 4 0 0 1 4 4 V97 a4 4 0 0 1 -4 4 H640 Z" fill="#4F46E5"/>
+<text x="740.0666666666666" y="101" font-size="9.5" font-weight="400" fill="#0F172A" text-anchor="start">0.44</text>
+<text x="520" y="129" font-size="10.5" font-weight="700" fill="#0F172A" text-anchor="start">SST-5</text>
+<path d="M640 134 H742.3333333333334 a4 4 0 0 1 4 4 V137 a4 4 0 0 1 -4 4 H640 Z" fill="#B45309"/>
+<text x="750.3333333333334" y="141" font-size="9.5" font-weight="400" fill="#5B6472" text-anchor="start">0.48</text>
+<path d="M640 144 H709.3333333333334 a4 4 0 0 1 4 4 V147 a4 4 0 0 1 -4 4 H640 Z" fill="#C7D2FE"/>
+<text x="717.3333333333334" y="151" font-size="9.5" font-weight="400" fill="#5B6472" text-anchor="start">0.33</text>
+<path d="M640 154 H743.0666666666667 a4 4 0 0 1 4 4 V157 a4 4 0 0 1 -4 4 H640 Z" fill="#4F46E5"/>
+<text x="751.0666666666667" y="161" font-size="9.5" font-weight="400" fill="#0F172A" text-anchor="start">0.49</text>
+<text x="520" y="189" font-size="10.5" font-weight="700" fill="#0F172A" text-anchor="start">Yelp stars</text>
+<path d="M640 194 H759.9333333333334 a4 4 0 0 1 4 4 V197 a4 4 0 0 1 -4 4 H640 Z" fill="#B45309"/>
+<text x="767.9333333333334" y="201" font-size="9.5" font-weight="400" fill="#5B6472" text-anchor="start">0.56</text>
+<path d="M640 204 H741.6 a4 4 0 0 1 4 4 V207 a4 4 0 0 1 -4 4 H640 Z" fill="#C7D2FE"/>
+<text x="749.6" y="211" font-size="9.5" font-weight="400" fill="#5B6472" text-anchor="start">0.48</text>
+<path d="M640 214 H763.6 a4 4 0 0 1 4 4 V217 a4 4 0 0 1 -4 4 H640 Z" fill="#4F46E5"/>
+<text x="771.6" y="221" font-size="9.5" font-weight="400" fill="#0F172A" text-anchor="start">0.58</text>
+<text x="520" y="249" font-size="10.5" font-weight="700" fill="#0F172A" text-anchor="start">frustration (unseen)</text>
+<path d="M640 254 H768.7333333333333 a4 4 0 0 1 4 4 V257 a4 4 0 0 1 -4 4 H640 Z" fill="#B45309"/>
+<text x="776.7333333333333" y="261" font-size="9.5" font-weight="400" fill="#5B6472" text-anchor="start">0.60</text>
+<path d="M640 264 H745.2666666666667 a4 4 0 0 1 4 4 V267 a4 4 0 0 1 -4 4 H640 Z" fill="#C7D2FE"/>
+<text x="753.2666666666667" y="271" font-size="9.5" font-weight="400" fill="#5B6472" text-anchor="start">0.50</text>
+<path d="M640 274 H765.0666666666666 a4 4 0 0 1 4 4 V277 a4 4 0 0 1 -4 4 H640 Z" fill="#4F46E5"/>
+<text x="773.0666666666666" y="281" font-size="9.5" font-weight="400" fill="#0F172A" text-anchor="start">0.59</text>
+<rect x="520" y="304" width="10" height="10" rx="2" fill="#B45309"/>
+<text x="536" y="313" font-size="10" font-weight="400" fill="#5B6472" text-anchor="start">row scorer</text>
+<rect x="640" y="304" width="10" height="10" rx="2" fill="#C7D2FE"/>
+<text x="656" y="313" font-size="10" font-weight="400" fill="#5B6472" text-anchor="start">pointer head</text>
+<rect x="520" y="318" width="10" height="10" rx="2" fill="#4F46E5"/>
+<text x="536" y="327" font-size="10" font-weight="400" fill="#5B6472" text-anchor="start">pointer head, 3× Grade data</text>
+</svg>

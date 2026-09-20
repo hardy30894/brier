@@ -167,9 +167,36 @@ Parity with the row scorer on Pick and Claim questions across the real datasets.
 questions trail a head trained from labels alone; more data and the ordinal term with
 distillation are the fixes, measured in the tables.
 
+## Round six, the claims under scrutiny
+
+*2026-09-20. Done; tables, intervals and the data audit in TRAINING.md.*
+
+**Question.** Do the claims survive the comparisons a reviewer would demand: real
+opponents, seeds and intervals, a larger backbone, and the pointer head on ordered
+scales.
+
+**Delivered.** `baselines.py` (constrained decoding and a per-task classifier head),
+per-example records from `calibrate` and `stats.py` for bootstrap intervals and seed
+spreads, Qwen3-8B on the same recipe, six pointer-head variants for Grade including a
+cumulative-link ordinal form and a joint objective, and corrected loaders for the four
+public datasets whose draws were label-skewed. Twenty-six pods over one evening,
+launched and torn down by `launch.sh`, `watch.py` and `pod.py`.
+
+**Found.** Four datasets' earlier numbers were the majority rate or a single class, and
+are withdrawn; everything is re-measured on balanced draws. Constrained decoding is the
+untrained scorer at twice the latency. The classifier is the real opponent and the
+adapter beats it on 16 of 17 rows at 0.6B and 15 of 17 at 8B. Seed spread is under ±0.02
+on most rows and ±0.10 on ordered scales. The recipe holds at 8B (unseen frustration
+0.58 → 0.90). Data, not head form, closes the pointer head's Grade gap on real datasets
+and the unseen scale; ticket priority stays behind. A pointer-only adapter was found to wreck the row scorer it shares weights with, which
+made the shipped hybrid dispatch score below the untrained model on Grade; a joint
+objective restores the row path (priority 0.21 → 0.70) without costing the pointer path,
+and is now the default.
+
 ## Next
 
-- Close the pointer head's Grade gap so ordered scales leave the row scorer entirely.
+- Three seeds for the 8B and Phi recipes, and a second unseen ordered scale.
+- Pointer-head parity on templated ordered scales (ticket priority) and on unseen three-way Picks (MNLI relation).
 - Conformal prediction sets: a distribution-free coverage guarantee per question, from the same held-out data.
 - Distilled labels on real tickets and tool-call logs, with disagreements kept.
 - Multi-step credit assignment: discounting or a value estimate for longer episodes.

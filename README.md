@@ -55,42 +55,77 @@ card.
 4. **A pointer head** that scores every option of every question from one row of hidden
    states, with no vocabulary projection, plus a serving path (CUDA-graph capture,
    request batching) measured end to end over HTTP.
-5. **Eight tasks, twelve public datasets, and every number reproducible** from `results/`
-   with the scripts that produced it.
+5. **Two real baselines, three seeds, an 8B backbone, and every number reproducible**
+   from `results/` with the scripts that produced it: constrained decoding and a per-task
+   classifier head, bootstrap intervals and seed spreads, and the same recipe from 0.6B
+   to 8B.
 
 ## Results
 
 All numbers are held-out. Templated tasks split their templates into disjoint train and
 evaluation halves; "never trained on" means the task or dataset was absent from training
-entirely. Protocol, full tables and per-round lessons are in [TRAINING.md](docs/TRAINING.md).
+entirely. Where a number carries ±, it is the spread across three training seeds; every
+single-run number sits inside a bootstrap interval of about ±0.04 on 300 examples. The
+four public datasets whose draws were found to be label-skewed were re-drawn balanced
+before any number below was taken. Protocol, full tables, intervals and per-round lessons
+are in [TRAINING.md](docs/TRAINING.md).
 
 ### One pass against generation
 
 | | generating JSON | one pass | |
 |---|---|---|---|
 | Latency, three questions, Qwen3-4B, RTX 4090 | 1268 ms | **111 ms** | 11× |
+| Latency, three questions, Qwen3-8B, H100 | 694 ms | **67 ms** | 10×, and 5 points more accurate |
 | Type errors, every model, every task | 0 (with retries) | **0** | by construction |
 | Confidence | self-reported, made up | a measured probability | see below |
+
+### Against the real opponents
+
+Constrained decoding masks the vocabulary so the model can only spell an allowed answer;
+the classifier is logistic regression on the frozen backbone's hidden state, fit on 600
+labelled examples of each task, including the tasks our adapter never saw. Accuracy on
+300 held-out examples, Qwen3-0.6B; the Brier column is the mixed-corpus adapter, mean of
+three seeds.
+
+| task | constrained decoding | classifier, per task | Brier untrained | Brier trained |
+|---|---|---|---|---|
+| Ticket category | 0.23 | 0.52 | 0.23 | **0.83** ± 0.02 |
+| Frustration (never trained on) | 0.30 | 0.34 | 0.38 | **0.53** ± 0.07 |
+| MS MARCO relevance, balanced | 0.50 | 0.48 | 0.51 | **0.59** ± 0.02 |
+| SNLI entailment | 0.38 | 0.83 | 0.38 | **0.94** ± 0.01 |
+| MNLI entailment (never trained on) | 0.45 | 0.76 | 0.44 | **0.89** ± 0.01 |
+| Banking77 | 0.85 | 0.86 | 0.85 | **0.98** ± 0.01 |
+| DBpedia | 0.78 | 0.88 | 0.78 | **0.98** ± 0.01 |
+
+<p align="center"><img src="docs/fig-round6.svg" width="900" alt="two panels: held-out accuracy of constrained decoding, a per-task classifier, the untrained scorer and the trained adapter on six tasks; and the pointer head against the row scorer on four ordered scales, before and after tripling its Grade data"></p>
+
+Constrained decoding is the untrained scorer, slower: on every backbone it lands within a
+point of scoring the untrained model, at twice the latency, because for short answers the
+greedy first token and the best whole answer coincide. The classifier is the opponent
+that matters, and the adapter beats it on 16 of 17 rows on the 0.6B and on 15 of 17 on
+the 8B, with lower calibration error on most, while the classifier can only ever answer
+the label set it was fit on.
 
 ### Calibration and training
 
 | task · backbone | untrained | trained | |
 |---|---|---|---|
-| Frustration (never trained on), Qwen3-4B | 0.44 acc · 0.54 ECE | **0.83 acc · 0.20 ECE** | raw, no correction |
+| Frustration (never trained on), Qwen3-8B | 0.58 acc · 0.34 ECE | **0.90 acc · 0.11 ECE** | raw, no correction |
+| Frustration (never trained on), Qwen3-4B | 0.44 acc · 0.54 ECE | **0.83 acc · 0.20 ECE** | raw |
 | Duplicates (never trained on), Qwen3-4B | 0.73 acc · 0.26 ECE | **0.997 acc · 0.04 ECE** | raw |
-| Banking77 (real, never trained on), Qwen3-0.6B | 0.85 acc · 0.10 ECE | **0.90 acc · 0.02 ECE** | raw |
-| MS MARCO relevance, Qwen3-0.6B, mixed corpus | 0.12 acc · 0.83 ECE | **0.88 acc · 0.07 ECE** | real, raw |
-| MNLI (never trained on), Qwen3-0.6B, mixed corpus | 0.38 acc | **0.77 acc** | real, held-out dataset |
-| Civil Comments toxicity, Phi-4-mini, mixed corpus | 0.49 acc · 0.33 ECE | **0.94 acc · 0.02 ECE** | real, raw |
-| Ticket category, Phi-4-mini | 0.71 acc | **0.96 acc** | held-out templates |
+| MNLI relation (never trained on), Qwen3-0.6B | 0.35 acc · 0.59 ECE | **0.78 ± 0.02 acc · 0.10 ECE** | real, three seeds |
+| SNLI relation, Qwen3-0.6B | 0.35 acc · 0.57 ECE | **0.85 ± 0.01 acc · 0.10 ECE** | real, three seeds |
+| Banking77, Qwen3-0.6B | 0.85 acc · 0.09 ECE | **0.98 ± 0.01 acc · 0.02 ECE** | real, three seeds |
+| Civil Comments toxicity, balanced, Qwen3-8B | 0.70 acc · 0.27 ECE | **0.77 acc · 0.05 ECE** | real, raw |
+| Ticket category, Phi-4-mini | 0.71 acc | **0.87 acc** | held-out templates |
 | Gridworld from outcomes only, Qwen3-0.6B | 0.35 acc | **0.81 acc** | no labels; 0.84 supervised |
 
 Three findings shape the recipe. Clean labels alone teach overconfidence, and the fix is
 training data with irreducible uncertainty and soft labels equal to the generator's own
 posterior. A shortcut learned from cue-triggered claims transfers as a bias, and the fix is
-a contrastive claim where the cue is present and the answer is no. A 0.6B backbone with a
-25-minute adapter beats an untrained 4B on every non-templated task at a quarter of the
-latency.
+a contrastive claim where the cue is present and the answer is no. The recipe holds from
+0.6B to 8B unchanged, and the trained 0.6B is within five points of the trained 8B on ten
+of seventeen rows at a thirteenth of the parameters.
 
 ### Serving
 
@@ -102,8 +137,10 @@ latency.
 | 32 concurrent clients, Qwen3-0.6B | 94 req/s | **171 req/s** | batched, `--batch 8` |
 | 32 clients, one Grade per request (rides the row scorer) | 14 req/s | **70 req/s** | row scorer batched across requests |
 
-The pointer head matches the row scorer on Pick and Claim questions across the real
-datasets and trails on Grade, so `ask()` routes each kind to its better path.
+The pointer head matches the row scorer on Pick and Claim questions across seeds and
+datasets. On ordered scales the head reaches the row scorer on the real datasets when Grade
+questions are a third of its training data, and `ask()` still routes Grade through the
+row scorer, which the adapter now trains jointly, so one adapter serves both paths.
 
 ## Method
 

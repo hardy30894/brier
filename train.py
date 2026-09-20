@@ -120,6 +120,8 @@ def main():
     ap.add_argument("--ordinal", default="quadratic", choices=("quadratic", "cumulative"), help="pointer head's Grade term")
     ap.add_argument("--grade-numbers", action="store_true", help="pointer prompt writes Grade levels with their rank")
     ap.add_argument("--grade-boost", type=int, default=1, help="repeat examples that carry a Grade question this many times")
+    ap.add_argument("--joint", dest="joint", action="store_true", default=True, help="with --pointer: also train the row-scorer objective, so the adapter serves both paths (default)")
+    ap.add_argument("--pointer-only", dest="joint", action="store_false", help="train the pointer head alone; the row scorer under this adapter is not usable")
     a = ap.parse_args()
 
     torch.manual_seed(a.seed)
@@ -176,7 +178,13 @@ def main():
         for _ in range(a.accum):
             exs = [data[(i + j) % len(data)] for j in range(a.batch)]
             i += a.batch
-            loss = (pointer_loss(scorer, pointer, exs, teacher) if pointer is not None else batch_loss(scorer, exs)) / a.accum
+            if pointer is not None:
+                loss = pointer_loss(scorer, pointer, exs, teacher)
+                if a.joint:
+                    loss = loss + batch_loss(scorer, exs)   # keeps the row scorer, which shares these weights, trained too
+            else:
+                loss = batch_loss(scorer, exs)
+            loss = loss / a.accum
             loss.backward()
             running += loss.item()
         torch.nn.utils.clip_grad_norm_(scorer.model.parameters(), 1.0)
@@ -185,7 +193,7 @@ def main():
         if (step + 1) % 50 == 0:
             log(f"step {step + 1}/{a.steps} loss {running / 50:.4f} lr {sched.get_last_lr()[0]:.2e} ({time.perf_counter() - t0:.0f}s)")
             running = 0.0
-    name = f"{a.model.split('/')[-1]}-brier-r{a.rank}-s{a.steps}" + (f"-u{a.uncertain:g}" if a.uncertain else "") + (f"-{a.split}" if a.split != "all" else "") + ("-head" if a.head else "") + ("-pointer" if a.pointer else "") + ("-distill" if a.distill else "") + ("-cum" if a.ordinal == "cumulative" else "") + ("-num" if a.grade_numbers else "") + (f"-gb{a.grade_boost}" if a.grade_boost > 1 else "")
+    name = f"{a.model.split('/')[-1]}-brier-r{a.rank}-s{a.steps}" + (f"-u{a.uncertain:g}" if a.uncertain else "") + (f"-{a.split}" if a.split != "all" else "") + ("-head" if a.head else "") + ("-pointer" if a.pointer else "") + ("-distill" if a.distill else "") + ("-cum" if a.ordinal == "cumulative" else "") + ("-num" if a.grade_numbers else "") + (f"-gb{a.grade_boost}" if a.grade_boost > 1 else "") + ("-joint" if a.joint and a.pointer else "")
     path = os.path.join(a.out, name)
     if rank == 0:
         peft_model.save_pretrained(path)

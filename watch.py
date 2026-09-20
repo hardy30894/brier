@@ -14,7 +14,7 @@ for n in names:
         print(f"{n:>10}  (no pod)")
         continue
     left = (p["deadline"] - time.time()) / 60
-    cmd = "cd /workspace/brier 2>/dev/null && (pgrep -f '^bash jobs' >/dev/null && echo RUN || echo idle); ls results/*/DONE_* 2>/dev/null | xargs -n1 basename 2>/dev/null | tr '\\n' ' '; echo; tail -c 300 job.log 2>/dev/null | tr '\\n' ' ' | tail -c 160"
+    cmd = "cd /workspace/brier 2>/dev/null && (pgrep -f '^bash jobs' >/dev/null && echo RUN || echo idle); ls results/*/DONE_* results/v2/*/DONE_* 2>/dev/null | xargs -n1 basename 2>/dev/null | tr '\\n' ' '; echo; tail -c 300 job.log 2>/dev/null | tr '\\n' ' ' | tail -c 160"
     try:
         r = subprocess.run([sys.executable, str(ROOT / "pod.py"), "--name", n, "exec", cmd], capture_output=True, text=True, timeout=40)
         lines = [l for l in r.stdout.strip().splitlines() if l.strip()]

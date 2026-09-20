@@ -1,0 +1,256 @@
++ cd /workspace/brier
++ mkdir -p results/seeds
++ python3 train.py --model Qwen/Qwen3-0.6B --tasks tickets,gridworld,toolcall,passages,matching,ag_news,dbpedia,sst5,yelp,snli,qqp,civil,msmarco,massive,banking --examples 600 --steps 2000 --split train --uncertain 0.3 --batch 2 --accum 2 --seed 3 --out adapters/seedrow3
+Repo card metadata block was not found. Setting CardData to empty.
+9000 training examples from tickets,gridworld,toolcall,passages,matching,ag_news,dbpedia,sst5,yelp,snli,qqp,civil,msmarco,massive,banking
+`use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`.
+/usr/local/lib/python3.11/dist-packages/torch/utils/checkpoint.py:1399: FutureWarning: `torch.cpu.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cpu', args...)` instead.
+  with device_autocast_ctx, torch.cpu.amp.autocast(**cpu_autocast_kwargs), recompute_context:  # type: ignore[attr-defined]
+step 50/2000 loss 1.0298 lr 9.75e-05 (53s)
+step 100/2000 loss 0.9467 lr 9.50e-05 (93s)
+step 150/2000 loss 0.6874 lr 9.25e-05 (130s)
+step 200/2000 loss 0.7453 lr 9.00e-05 (167s)
+step 250/2000 loss 0.6615 lr 8.75e-05 (204s)
+step 300/2000 loss 0.5803 lr 8.50e-05 (240s)
+step 350/2000 loss 0.6116 lr 8.25e-05 (277s)
+step 400/2000 loss 0.6631 lr 8.00e-05 (314s)
+step 450/2000 loss 0.4410 lr 7.75e-05 (351s)
+step 500/2000 loss 0.7065 lr 7.50e-05 (387s)
+step 550/2000 loss 0.5550 lr 7.25e-05 (424s)
+step 600/2000 loss 0.6166 lr 7.00e-05 (461s)
+step 650/2000 loss 0.4554 lr 6.75e-05 (499s)
+step 700/2000 loss 0.3933 lr 6.50e-05 (536s)
+step 750/2000 loss 0.5513 lr 6.25e-05 (573s)
+step 800/2000 loss 0.4583 lr 6.00e-05 (610s)
+step 850/2000 loss 0.6069 lr 5.75e-05 (646s)
+step 900/2000 loss 0.5340 lr 5.50e-05 (682s)
+step 950/2000 loss 0.4371 lr 5.25e-05 (718s)
+step 1000/2000 loss 0.3645 lr 5.00e-05 (754s)
+step 1050/2000 loss 0.6062 lr 4.75e-05 (791s)
+step 1100/2000 loss 0.5305 lr 4.50e-05 (827s)
+step 1150/2000 loss 0.5606 lr 4.25e-05 (865s)
+step 1200/2000 loss 0.5471 lr 4.00e-05 (902s)
+step 1250/2000 loss 0.2938 lr 3.75e-05 (939s)
+step 1300/2000 loss 0.3745 lr 3.50e-05 (975s)
+step 1350/2000 loss 0.5847 lr 3.25e-05 (1012s)
+step 1400/2000 loss 0.4291 lr 3.00e-05 (1049s)
+step 1450/2000 loss 0.4438 lr 2.75e-05 (1087s)
+step 1500/2000 loss 0.3532 lr 2.50e-05 (1123s)
+step 1550/2000 loss 0.3898 lr 2.25e-05 (1161s)
+step 1600/2000 loss 0.4396 lr 2.00e-05 (1197s)
+step 1650/2000 loss 0.4087 lr 1.75e-05 (1234s)
+step 1700/2000 loss 0.3432 lr 1.50e-05 (1271s)
+step 1750/2000 loss 0.5321 lr 1.25e-05 (1309s)
+step 1800/2000 loss 0.4304 lr 1.00e-05 (1346s)
+step 1850/2000 loss 0.4761 lr 7.50e-06 (1383s)
+step 1900/2000 loss 0.4389 lr 5.00e-06 (1421s)
+step 1950/2000 loss 0.3332 lr 5.00e-06 (1458s)
+step 2000/2000 loss 0.2886 lr 5.00e-06 (1494s)
+trainable params: 10,092,544 || all params: 606,142,464 || trainable%: 1.6650
+saved adapters/seedrow3/Qwen3-0.6B-brier-r16-s2000-u0.3-train  (1 GPU, 1495s)
++ python3 -m brier calibrate --model Qwen/Qwen3-0.6B --adapter adapters/seedrow3/Qwen3-0.6B-brier-r16-s2000-u0.3-train --task tickets,frustration,duplicates,banking,msmarco,mnli,imdb,emotion,snli,sst5,yelp --split eval --n 300 --tag row-seed3 --out results/seeds
+Repo card metadata block was not found. Setting CardData to empty.
+  collected 50/300 (4s)
+  collected 100/300 (7s)
+  collected 150/300 (10s)
+  collected 200/300 (14s)
+  collected 250/300 (17s)
+  collected 300/300 (20s)
+
+== tickets ==
+calibration report  model=row-seed3@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+category           300  0.837    0.093    0.155     0.120     0.120    0.921    0.778   1.93
+priority           300  0.907    0.181    0.049     0.113     0.076    0.725    0.885   0.46
+needs_human        300  0.987    0.011    0.009     0.011     0.011    0.994    0.991   1.18
+
+decision policy (calibrated confidence cutoffs, held-out):
+  category         auto    target 0.95: act when confidence >= 0.947  -> precision 1.000, covers 2% of decisions
+  category         review  target 0.80: act when confidence >= 0.332  -> precision 0.837, covers 100% of decisions
+  category         human   everything below
+  priority         auto    target 0.95: act when confidence >= 0.761  -> precision 0.951, covers 82% of decisions
+  priority         review  target 0.80: act when confidence >= 0.424  -> precision 0.907, covers 100% of decisions
+  priority         human   everything below
+  needs_human      auto    target 0.95: act when confidence >= 0.576  -> precision 0.987, covers 100% of decisions
+  needs_human      review  target 0.80: act when confidence >= 0.576  -> precision 0.987, covers 100% of decisions
+  needs_human      human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (6s)
+  collected 150/300 (9s)
+  collected 200/300 (12s)
+  collected 250/300 (15s)
+  collected 300/300 (19s)
+
+== frustration ==
+calibration report  model=row-seed3@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+frustration        300  0.553    0.321    0.205     0.318     0.227    0.793    0.583   2.42
+
+decision policy (calibrated confidence cutoffs, held-out):
+  frustration      auto    target 0.95: act when confidence >= 0.755  -> precision 0.958, covers 24% of decisions
+  frustration      review  target 0.80: act when confidence >= 0.699  -> precision 0.805, covers 29% of decisions
+  frustration      human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (6s)
+  collected 150/300 (9s)
+  collected 200/300 (12s)
+  collected 250/300 (15s)
+  collected 300/300 (18s)
+
+== duplicates ==
+calibration report  model=row-seed3@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+same               300  0.877    0.038    0.030     0.083     0.083    0.901    0.892   1.10
+
+decision policy (calibrated confidence cutoffs, held-out):
+  same             auto    target 0.95: act when confidence >= 0.797  -> precision 0.953, covers 78% of decisions
+  same             review  target 0.80: act when confidence >= 0.500  -> precision 0.877, covers 100% of decisions
+  same             human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (7s)
+  collected 150/300 (10s)
+  collected 200/300 (13s)
+  collected 250/300 (17s)
+  collected 300/300 (20s)
+
+== banking ==
+calibration report  model=row-seed3@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+intent             300  0.967    0.020    0.015     0.021     0.020    0.981    0.970   1.38
+
+decision policy (calibrated confidence cutoffs, held-out):
+  intent           auto    target 0.95: act when confidence >= 0.316  -> precision 0.967, covers 100% of decisions
+  intent           review  target 0.80: act when confidence >= 0.316  -> precision 0.967, covers 100% of decisions
+  intent           human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (6s)
+  collected 150/300 (9s)
+  collected 200/300 (12s)
+  collected 250/300 (15s)
+  collected 300/300 (18s)
+
+== msmarco ==
+calibration report  model=row-seed3@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+answers            300  0.880    0.085    0.021     0.112     0.105    0.964    0.879   1.66
+
+decision policy (calibrated confidence cutoffs, held-out):
+  answers          auto    target 0.95: unreachable on this data
+  answers          review  target 0.80: act when confidence >= 0.755  -> precision 0.880, covers 100% of decisions
+  answers          human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (6s)
+  collected 150/300 (10s)
+  collected 200/300 (13s)
+  collected 250/300 (16s)
+  collected 300/300 (19s)
+
+== mnli ==
+calibration report  model=row-seed3@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+relation           300  0.787    0.092    0.029     0.153     0.144    0.872    0.790   1.60
+entailed           300  0.903    0.057    0.028     0.081     0.082    0.920    0.889   1.33
+
+decision policy (calibrated confidence cutoffs, held-out):
+  relation         auto    target 0.95: act when confidence >= 0.930  -> precision 0.955, covers 22% of decisions
+  relation         review  target 0.80: act when confidence >= 0.426  -> precision 0.800, covers 98% of decisions
+  relation         human   everything below
+  entailed         auto    target 0.95: act when confidence >= 0.819  -> precision 0.953, covers 78% of decisions
+  entailed         review  target 0.80: act when confidence >= 0.500  -> precision 0.903, covers 100% of decisions
+  entailed         human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (6s)
+  collected 150/300 (9s)
+  collected 200/300 (13s)
+  collected 250/300 (16s)
+  collected 300/300 (19s)
+
+== imdb ==
+calibration report  model=row-seed3@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+positive           300  0.997    0.019    0.005     0.005     0.004    0.978    0.996   0.43
+
+decision policy (calibrated confidence cutoffs, held-out):
+  positive         auto    target 0.95: act when confidence >= 0.565  -> precision 0.997, covers 100% of decisions
+  positive         review  target 0.80: act when confidence >= 0.565  -> precision 0.997, covers 100% of decisions
+  positive         human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (7s)
+  collected 150/300 (10s)
+  collected 200/300 (13s)
+  collected 250/300 (16s)
+  collected 300/300 (19s)
+
+== emotion ==
+calibration report  model=row-seed3@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+emotion            300  0.537    0.212    0.063     0.258     0.211    0.749    0.530   2.17
+
+decision policy (calibrated confidence cutoffs, held-out):
+  emotion          auto    target 0.95: unreachable on this data
+  emotion          review  target 0.80: act when confidence >= 0.593  -> precision 0.802, covers 37% of decisions
+  emotion          human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (7s)
+  collected 150/300 (10s)
+  collected 200/300 (13s)
+  collected 250/300 (16s)
+  collected 300/300 (19s)
+
+== snli ==
+calibration report  model=row-seed3@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+relation           300  0.857    0.096    0.028     0.114     0.103    0.952    0.866   1.79
+entailed           300  0.937    0.040    0.028     0.056     0.053    0.976    0.939   1.54
+
+decision policy (calibrated confidence cutoffs, held-out):
+  relation         auto    target 0.95: act when confidence >= 0.910  -> precision 0.950, covers 47% of decisions
+  relation         review  target 0.80: act when confidence >= 0.437  -> precision 0.857, covers 100% of decisions
+  relation         human   everything below
+  entailed         auto    target 0.95: act when confidence >= 0.773  -> precision 0.951, covers 95% of decisions
+  entailed         review  target 0.80: act when confidence >= 0.577  -> precision 0.937, covers 100% of decisions
+  entailed         human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (6s)
+  collected 150/300 (9s)
+  collected 200/300 (13s)
+  collected 250/300 (16s)
+  collected 300/300 (19s)
+
+== sst5 ==
+calibration report  model=row-seed3@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+sentiment          300  0.510    0.163    0.031     0.278     0.244    0.673    0.510   1.86
+
+decision policy (calibrated confidence cutoffs, held-out):
+  sentiment        auto    target 0.95: unreachable on this data
+  sentiment        review  target 0.80: act when confidence >= 0.680  -> precision 0.875, covers 3% of decisions
+  sentiment        human   everything below
+  collected 50/300 (3s)
+  collected 100/300 (6s)
+  collected 150/300 (9s)
+  collected 200/300 (13s)
+  collected 250/300 (16s)
+  collected 300/300 (19s)
+
+== yelp ==
+calibration report  model=row-seed3@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+stars              300  0.590    0.181    0.062     0.254     0.221    0.763    0.621   1.86
+
+decision policy (calibrated confidence cutoffs, held-out):
+  stars            auto    target 0.95: act when confidence >= 0.914  -> precision 0.950, covers 7% of decisions
+  stars            review  target 0.80: act when confidence >= 0.701  -> precision 0.802, covers 29% of decisions
+  stars            human   everything below
++ touch results/seeds/DONE_seedrow3
