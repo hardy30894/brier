@@ -1,0 +1,33 @@
++ cd /workspace/brier
++ mkdir -p results/v2/typed
++ python3 -m brier calibrate --model Qwen/Qwen3-0.6B --task typed --split eval --n 400 --tag zeroshot-qwen0.6b --out results/v2/typed
+Generating train split:   0%|          | 0/300 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 300/300 [00:00<00:00, 16286.03 examples/s]
+Generating test split:   0%|          | 0/100 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 100/100 [00:00<00:00, 9066.41 examples/s]
+Generating train split:   0%|          | 0/300 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 300/300 [00:00<00:00, 23544.55 examples/s]
+Generating test split:   0%|          | 0/100 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 100/100 [00:00<00:00, 10160.13 examples/s]
+Generating train split:   0%|          | 0/300 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 300/300 [00:00<00:00, 24921.59 examples/s]
+Generating test split:   0%|          | 0/100 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 100/100 [00:00<00:00, 11060.93 examples/s]
+Generating train split:   0%|          | 0/300 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 300/300 [00:00<00:00, 24563.53 examples/s]
+Generating test split:   0%|          | 0/100 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 100/100 [00:00<00:00, 10853.98 examples/s]
+  collected 50/400 (8s)
+  collected 100/400 (16s)
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/brier/brier/__main__.py", line 120, in <module>
+    {"calibrate": cmd_calibrate, "fetch": cmd_fetch}[a.cmd](a)
+  File "/workspace/brier/brier/__main__.py", line 73, in cmd_calibrate
+    records[k] += v
+    ~~~~~~~^^^
+KeyError: 'category'
++ python3 train.py --model Qwen/Qwen3-0.6B --tasks typed --examples 1200 --steps 1200 --accum 4 --batch 1 --split train --seed 1 --out adapters/t06-1
+1200 training examples from typed
+`use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`.
+/usr/local/lib/python3.11/dist-packages/torch/utils/checkpoint.py:1399: FutureWarning: `torch.cpu.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cpu', args...)` instead.
+  with device_autocast_ctx, torch.cpu.amp.autocast(**cpu_autocast_kwargs), recompute_context:  # type: ignore[attr-defined]
+step 50/1200 loss 1.6455 lr 9.58e-05 (282s)
+step 100/1200 loss 1.0222 lr 9.17e-05 (566s)
+step 150/1200 loss 1.0044 lr 8.75e-05 (859s)
+step 200/1200 loss 0.9885 lr 8.33e-05 (1140s)
+step 250/1200 loss 0.9203 lr 7.92e-05 (1422s)
+step 300/1200 loss 0.9022 lr 7.50e-05 (1708s)

@@ -24,7 +24,8 @@ def metrics(path):
             p = np.array(softmax(scores, 1.0))
             g = np.array(t) if t else None
             j = int(p.argmax())
-            gl = gold[i][qid]["label"] if gold and gold[i] and qid in gold[i] else None   # the benchmark's own hard label
+            oq = d.get("question_id", {}).get(qid, qid)
+            gl = gold[i][oq]["label"] if gold and gold[i] and oq in gold[i] else None   # the benchmark's own hard label
             if gl is not None:
                 gl = {"true": "yes", "false": "no"}.get(str(gl).lower(), str(gl))
                 c = 1.0 if labels[qid][j] == gl else 0.0

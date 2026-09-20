@@ -1,0 +1,32 @@
++ cd /workspace/brier
++ mkdir -p results/v2/typed
++ python3 -m brier calibrate --model Qwen/Qwen3-8B --task typed --split eval --n 400 --tag zeroshot-qwen8b --out results/v2/typed
+Fetching 5 files:   0%|          | 0/5 [00:00<?, ?it/s]Fetching 5 files:  20%|██        | 1/5 [00:07<00:30,  7.54s/it]Fetching 5 files:  40%|████      | 2/5 [00:11<00:17,  5.88s/it]Fetching 5 files:  60%|██████    | 3/5 [00:12<00:08,  4.22s/it]Fetching 5 files: 100%|██████████| 5/5 [00:13<00:00,  2.67s/it]Fetching 5 files: 100%|██████████| 5/5 [00:13<00:00,  2.67s/it]
+Loading checkpoint shards:   0%|          | 0/5 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:00<00:00, 136.81it/s]
+Generating train split:   0%|          | 0/300 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 300/300 [00:00<00:00, 14641.85 examples/s]
+Generating test split:   0%|          | 0/100 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 100/100 [00:00<00:00, 8027.99 examples/s]
+Generating train split:   0%|          | 0/300 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 300/300 [00:00<00:00, 19460.12 examples/s]
+Generating test split:   0%|          | 0/100 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 100/100 [00:00<00:00, 8046.32 examples/s]
+Generating train split:   0%|          | 0/300 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 300/300 [00:00<00:00, 19149.16 examples/s]
+Generating test split:   0%|          | 0/100 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 100/100 [00:00<00:00, 7993.41 examples/s]
+Generating train split:   0%|          | 0/300 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 300/300 [00:00<00:00, 18609.10 examples/s]
+Generating test split:   0%|          | 0/100 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 100/100 [00:00<00:00, 7299.39 examples/s]
+  collected 50/400 (18s)
+  collected 100/400 (36s)
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/brier/brier/__main__.py", line 120, in <module>
+    {"calibrate": cmd_calibrate, "fetch": cmd_fetch}[a.cmd](a)
+  File "/workspace/brier/brier/__main__.py", line 73, in cmd_calibrate
+    records[k] += v
+    ~~~~~~~^^^
+KeyError: 'category'
++ python3 train.py --model Qwen/Qwen3-8B --tasks typed --examples 1200 --steps 1200 --accum 4 --batch 1 --split train --seed 1 --out adapters/t8b
+Loading checkpoint shards:   0%|          | 0/5 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:00<00:00, 163.17it/s]
+1200 training examples from typed
+`use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`.
+/usr/local/lib/python3.11/dist-packages/torch/utils/checkpoint.py:1399: FutureWarning: `torch.cpu.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cpu', args...)` instead.
+  with device_autocast_ctx, torch.cpu.amp.autocast(**cpu_autocast_kwargs), recompute_context:  # type: ignore[attr-defined]
+step 50/1200 loss 1.6507 lr 9.58e-05 (758s)
+step 100/1200 loss 0.9008 lr 9.17e-05 (1293s)

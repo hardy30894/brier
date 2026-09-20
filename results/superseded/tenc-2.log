@@ -1,0 +1,142 @@
++ cd /workspace/brier
++ mkdir -p results/v2/typed
++ python3 train.py --model answerdotai/ModernBERT-large --tasks typed --examples 1200 --steps 1200 --warmup 120 --accum 4 --batch 1 --split train --seed 2 --pointer --full --lr 3e-5 --head-lr 1e-4 --out adapters/tenc-2
+trainable parameters: 394,781,696
+Generating train split:   0%|          | 0/300 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 300/300 [00:00<00:00, 10555.16 examples/s]
+Generating test split:   0%|          | 0/100 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 100/100 [00:00<00:00, 8112.15 examples/s]
+Generating train split:   0%|          | 0/300 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 300/300 [00:00<00:00, 15108.62 examples/s]
+Generating test split:   0%|          | 0/100 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 100/100 [00:00<00:00, 6080.73 examples/s]
+Generating train split:   0%|          | 0/300 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 300/300 [00:00<00:00, 7157.07 examples/s]
+Generating test split:   0%|          | 0/100 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 100/100 [00:00<00:00, 4902.41 examples/s]
+Generating train split:   0%|          | 0/300 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 300/300 [00:00<00:00, 31322.59 examples/s]
+Generating test split:   0%|          | 0/100 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 100/100 [00:00<00:00, 11037.06 examples/s]
+1200 training examples from typed
+/usr/local/lib/python3.11/dist-packages/torch/utils/checkpoint.py:1399: FutureWarning: `torch.cpu.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cpu', args...)` instead.
+  with device_autocast_ctx, torch.cpu.amp.autocast(**cpu_autocast_kwargs), recompute_context:  # type: ignore[attr-defined]
+step 50/1200 loss 1.1887 lr 1.22e-05 (25s)
+step 100/1200 loss 1.1205 lr 2.31e-05 (49s)
+step 150/1200 loss 1.1273 lr 2.63e-05 (73s)
+step 200/1200 loss 1.0896 lr 2.50e-05 (97s)
+step 250/1200 loss 1.0751 lr 2.37e-05 (121s)
+step 300/1200 loss 1.1133 lr 2.25e-05 (145s)
+step 350/1200 loss 1.0542 lr 2.12e-05 (169s)
+step 400/1200 loss 1.0256 lr 2.00e-05 (193s)
+step 450/1200 loss 1.0346 lr 1.88e-05 (217s)
+step 500/1200 loss 1.0316 lr 1.75e-05 (240s)
+step 550/1200 loss 1.0155 lr 1.63e-05 (265s)
+step 600/1200 loss 1.0225 lr 1.50e-05 (289s)
+step 650/1200 loss 0.9907 lr 1.38e-05 (314s)
+step 700/1200 loss 0.9708 lr 1.25e-05 (338s)
+step 750/1200 loss 0.9684 lr 1.13e-05 (363s)
+step 800/1200 loss 0.9581 lr 1.00e-05 (387s)
+step 850/1200 loss 0.9363 lr 8.75e-06 (411s)
+step 900/1200 loss 0.9263 lr 7.50e-06 (436s)
+step 950/1200 loss 0.8975 lr 6.25e-06 (461s)
+step 1000/1200 loss 0.8960 lr 5.00e-06 (485s)
+step 1050/1200 loss 0.8684 lr 3.75e-06 (510s)
+step 1100/1200 loss 0.8613 lr 2.50e-06 (534s)
+step 1150/1200 loss 0.8498 lr 1.50e-06 (558s)
+step 1200/1200 loss 0.8486 lr 1.50e-06 (582s)
+saved adapters/tenc-2/ModernBERT-large-brier-r16-s1200-train-pointer-full-w120  (1 GPU, 583s)
+++ ls -d adapters/tenc-2/ModernBERT-large-brier-r16-s1200-train-pointer-full-w120/
+++ head -1
++ A=adapters/tenc-2/ModernBERT-large-brier-r16-s1200-train-pointer-full-w120/
++ python3 -m brier calibrate --model answerdotai/ModernBERT-large --adapter adapters/tenc-2/ModernBERT-large-brier-r16-s1200-train-pointer-full-w120/ --task typed --split eval --n 400 --tag ft-encoder-seed2 --out results/v2/typed
+/workspace/brier/brier/__main__.py:25: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  base.load_state_dict(torch.load(os.path.join(adapter, "backbone.pt"), map_location="cpu"))
+/workspace/brier/brier/__main__.py:38: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  sc.pointer.load_state_dict(torch.load(ptr_path, map_location=sc.device), strict=False)
+  collected 50/400 (2s)
+  collected 100/400 (5s)
+  collected 150/400 (7s)
+  collected 200/400 (10s)
+  collected 250/400 (12s)
+  collected 300/400 (14s)
+  collected 350/400 (16s)
+  collected 400/400 (19s)
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/brier/brier/__main__.py", line 126, in <module>
+    {"calibrate": cmd_calibrate, "fetch": cmd_fetch}[a.cmd](a)
+  File "/workspace/brier/brier/__main__.py", line 88, in cmd_calibrate
+    "targets": {q.id: [target(q, e["labels"][q.id]) for e in exs if q.id in e["labels"]] for q in questions},
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/brier/brier/__main__.py", line 88, in <dictcomp>
+    "targets": {q.id: [target(q, e["labels"][q.id]) for e in exs if q.id in e["labels"]] for q in questions},
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/brier/brier/__main__.py", line 88, in <listcomp>
+    "targets": {q.id: [target(q, e["labels"][q.id]) for e in exs if q.id in e["labels"]] for q in questions},
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/brier/brier/calibrate.py", line 104, in target
+    t[labels.index(str(k))] = float(v)
+      ^^^^^^^^^^^^^^^^^^^^
+ValueError: tuple.index(x): x not in tuple
+
+== typed ==
+calibration report  model=ft-encoder-seed2@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+action             200  0.690    0.167    0.090     0.232     0.211    0.523    0.652   0.60
+needs_review       100  0.830    0.126    0.025     0.134     0.117    0.707    0.847   0.37
+outcome            100  0.660    0.139    0.123     0.199     0.190    0.562    0.714   0.56
+risk               100  0.690    0.170    0.080     0.220     0.194    0.547    0.750   0.40
+urgency            400  0.705    0.174    0.035     0.222     0.194    0.531    0.707   0.44
+category           100  0.950    0.087    0.022     0.049     0.039    0.863    0.948   0.52
+churn_risk         100  0.810    0.214    0.065     0.180     0.136    0.596    0.799   0.44
+needs_human        100  0.730    0.090    0.031     0.179     0.174    0.666    0.745   0.60
+discrepancy_severity   100  0.830    0.206    0.102     0.174     0.146    0.624    0.756   0.52
+disposition        200  0.755    0.189    0.080     0.196     0.161    0.574    0.742   0.54
+duplicate          100  0.890    0.087    0.072     0.083     0.084    0.895    0.905   0.95
+matches_order      100  0.920    0.098    0.041     0.061     0.057    0.857    0.924   0.60
+credential_compromise   100  0.760    0.099    0.053     0.180     0.174    0.661    0.745   0.58
+severity           100  0.740    0.251    0.068     0.251     0.188    0.489    0.731   0.40
+true_positive      100  0.800    0.128    0.029     0.151     0.130    0.672    0.821   0.40
+
+decision policy (calibrated confidence cutoffs, held-out):
+  action           auto    target 0.95: act when confidence >= 0.858  -> precision 1.000, covers 5% of decisions
+  action           review  target 0.80: act when confidence >= 0.836  -> precision 0.800, covers 8% of decisions
+  action           human   everything below
+  needs_review     auto    target 0.95: act when confidence >= 0.842  -> precision 0.961, covers 51% of decisions
+  needs_review     review  target 0.80: act when confidence >= 0.519  -> precision 0.830, covers 100% of decisions
+  needs_review     human   everything below
+  outcome          auto    target 0.95: act when confidence >= 0.857  -> precision 0.952, covers 21% of decisions
+  outcome          review  target 0.80: act when confidence >= 0.638  -> precision 0.810, covers 63% of decisions
+  outcome          human   everything below
+  risk             auto    target 0.95: act when confidence >= 0.889  -> precision 1.000, covers 14% of decisions
+  risk             review  target 0.80: act when confidence >= 0.731  -> precision 0.808, covers 52% of decisions
+  risk             human   everything below
+  urgency          auto    target 0.95: act when confidence >= 0.896  -> precision 0.953, covers 16% of decisions
+  urgency          review  target 0.80: act when confidence >= 0.667  -> precision 0.800, covers 59% of decisions
+  urgency          human   everything below
+  category         auto    target 0.95: act when confidence >= 0.508  -> precision 0.950, covers 100% of decisions
+  category         review  target 0.80: act when confidence >= 0.508  -> precision 0.950, covers 100% of decisions
+  category         human   everything below
+  churn_risk       auto    target 0.95: act when confidence >= 0.958  -> precision 1.000, covers 15% of decisions
+  churn_risk       review  target 0.80: act when confidence >= 0.486  -> precision 0.810, covers 100% of decisions
+  churn_risk       human   everything below
+  needs_human      auto    target 0.95: act when confidence >= 0.895  -> precision 1.000, covers 13% of decisions
+  needs_human      review  target 0.80: act when confidence >= 0.615  -> precision 0.808, covers 78% of decisions
+  needs_human      human   everything below
+  discrepancy_severity auto    target 0.95: act when confidence >= 0.860  -> precision 0.974, covers 38% of decisions
+  discrepancy_severity review  target 0.80: act when confidence >= 0.382  -> precision 0.830, covers 100% of decisions
+  discrepancy_severity human   everything below
+  disposition      auto    target 0.95: act when confidence >= 0.962  -> precision 0.952, covers 10% of decisions
+  disposition      review  target 0.80: act when confidence >= 0.490  -> precision 0.803, covers 92% of decisions
+  disposition      human   everything below
+  duplicate        auto    target 0.95: act when confidence >= 0.874  -> precision 0.957, covers 70% of decisions
+  duplicate        review  target 0.80: act when confidence >= 0.661  -> precision 0.890, covers 100% of decisions
+  duplicate        human   everything below
+  matches_order    auto    target 0.95: act when confidence >= 0.651  -> precision 0.957, covers 94% of decisions
+  matches_order    review  target 0.80: act when confidence >= 0.549  -> precision 0.920, covers 100% of decisions
+  matches_order    human   everything below
+  credential_compromise auto    target 0.95: act when confidence >= 0.945  -> precision 1.000, covers 6% of decisions
+  credential_compromise review  target 0.80: act when confidence >= 0.603  -> precision 0.800, covers 85% of decisions
+  credential_compromise human   everything below
+  severity         auto    target 0.95: act when confidence >= 0.901  -> precision 1.000, covers 7% of decisions
+  severity         review  target 0.80: act when confidence >= 0.681  -> precision 0.806, covers 67% of decisions
+  severity         human   everything below
+  true_positive    auto    target 0.95: act when confidence >= 0.900  -> precision 0.956, covers 45% of decisions
+  true_positive    review  target 0.80: act when confidence >= 0.507  -> precision 0.800, covers 100% of decisions
+  true_positive    human   everything below
++ touch results/v2/typed/DONE_tenc-2

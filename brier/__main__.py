@@ -66,18 +66,29 @@ def cmd_calibrate(a):
             records = collect(scorer, questions, [(e["state"], e["labels"]) for e in exs])
         else:
             # question sets vary by example (several workflows in one task): pool by question id
-            records, index, seen = {}, {}, {}
+            # and answer set, so the same id with different options is calibrated separately
+            records, index, targets, seen, key_of = {}, {}, {}, {}, {}
             t0 = time.perf_counter()
             for i, e in enumerate(exs):
                 r = collect(scorer, e["questions"], [(e["state"], e["labels"])], log_every=0)
                 for q in e["questions"]:
-                    seen.setdefault(q.id, q)
-                for k, v in r.items():
-                    records.setdefault(k, []).extend(v)
-                    index.setdefault(k, []).extend([i] * len(v))
+                    sig = (q.id, tuple(q.labels))
+                    if sig not in key_of:
+                        n_same = sum(1 for (qid, _) in key_of if qid == q.id)
+                        key_of[sig] = q.id if n_same == 0 else f"{q.id}#{n_same + 1}"
+                        seen[key_of[sig]] = q
+                    key = key_of[sig]
+                    if q.id in r:
+                        records.setdefault(key, []).extend(r[q.id])
+                        index.setdefault(key, []).extend([i] * len(r[q.id]))
+                        targets.setdefault(key, []).extend([target(q, e["labels"][q.id])] * len(r[q.id]))
                 if (i + 1) % 50 == 0:
                     print(f"  collected {i + 1}/{len(exs)} ({time.perf_counter() - t0:.0f}s)", file=sys.stderr)
-            questions = list(seen.values())
+            questions = [seen[k] for k in records]
+            for k, q in seen.items():   # calibrate() looks questions up by q.id; give pooled keys their own id
+                if k != q.id:
+                    seen[k] = type(q)(**{**q.__dict__, "id": k})
+            questions = [seen[k] for k in records]
         cal = calibrate(questions, records, model=tag)
         print(f"\n== {task} ==")
         print(report(cal))
@@ -85,8 +96,9 @@ def cmd_calibrate(a):
         with open(f"{a.out}/rec_{task}_{tag}.json", "w") as f:
             json.dump({"task": task, "tag": tag, "seed": a.seed, "labels": {q.id: list(q.labels) for q in questions},
                        "records": {k: [[s, sorted(acc)] for s, acc in v] for k, v in records.items()},
-                       "targets": {q.id: [target(q, e["labels"][q.id]) for e in exs if q.id in e["labels"]] for q in questions},
+                       "targets": (targets if not fixed else {q.id: [target(q, e["labels"][q.id]) for e in exs if q.id in e["labels"]] for q in questions}),
                        "index": (index if not fixed else {q.id: [i for i, e in enumerate(exs) if q.id in e["labels"]] for q in questions}),
+                       "question_id": {q.id: q.id.split("#")[0] for q in questions},
                        "gold": [e.get("gold") for e in exs], "workflow": [e.get("workflow") for e in exs]}, f)
         with open(f"{a.out}/rel_{task}_{tag}.svg", "w") as f:
             f.write(reliability_svg(cal, f"{task} · {tag}"))

@@ -1,0 +1,103 @@
++ cd /workspace/brier
++ mkdir -p results/v2/typed
++ python3 -m brier calibrate --model microsoft/Phi-4-mini-instruct --task typed --split eval --n 400 --tag zeroshot-phi4mini --out results/v2/typed
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00, 84.84it/s]
+  collected 50/400 (27s)
+  collected 100/400 (53s)
+  collected 150/400 (97s)
+  collected 200/400 (142s)
+  collected 250/400 (175s)
+  collected 300/400 (208s)
+  collected 350/400 (241s)
+  collected 400/400 (273s)
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/brier/brier/__main__.py", line 126, in <module>
+    {"calibrate": cmd_calibrate, "fetch": cmd_fetch}[a.cmd](a)
+  File "/workspace/brier/brier/__main__.py", line 88, in cmd_calibrate
+    "targets": {q.id: [target(q, e["labels"][q.id]) for e in exs if q.id in e["labels"]] for q in questions},
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/brier/brier/__main__.py", line 88, in <dictcomp>
+    "targets": {q.id: [target(q, e["labels"][q.id]) for e in exs if q.id in e["labels"]] for q in questions},
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/brier/brier/__main__.py", line 88, in <listcomp>
+    "targets": {q.id: [target(q, e["labels"][q.id]) for e in exs if q.id in e["labels"]] for q in questions},
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/brier/brier/calibrate.py", line 104, in target
+    t[labels.index(str(k))] = float(v)
+      ^^^^^^^^^^^^^^^^^^^^
+ValueError: tuple.index(x): x not in tuple
+
+== typed ==
+calibration report  model=zeroshot-phi4mini@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+action             200  0.525    0.179    0.093     0.279     0.237    0.704    0.490   2.42
+needs_review       100  0.820    0.124    0.056     0.153     0.146    0.906    0.804   1.93
+outcome            100  0.500    0.230    0.070     0.313     0.239    0.730    0.452   4.43
+risk               100  0.510    0.366    0.161     0.376     0.259    0.841    0.542   3.40
+urgency            400  0.545    0.117    0.064     0.253     0.244    0.649    0.604   1.23
+category           100  0.850    0.137    0.083     0.133     0.131    0.928    0.829   2.25
+churn_risk         100  0.600    0.192    0.116     0.222     0.198    0.792    0.695   1.49
+needs_human        100  0.720    0.190    0.103     0.210     0.179    0.895    0.755   2.17
+discrepancy_severity   100  0.490    0.181    0.159     0.214     0.255    0.659    0.345   5.77
+disposition        200  0.480    0.210    0.097     0.247     0.230    0.664    0.460   3.04
+duplicate          100  0.890    0.100    0.051     0.107     0.095    0.990    0.900   2.17
+matches_order      100  0.680    0.246    0.161     0.252     0.196    0.924    0.735   3.40
+credential_compromise   100  0.690    0.184    0.062     0.237     0.212    0.854    0.664   3.81
+severity           100  0.570    0.096    0.095     0.226     0.227    0.631    0.591   1.18
+true_positive      100  0.760    0.173    0.118     0.182     0.176    0.832    0.749   1.73
+
+decision policy (calibrated confidence cutoffs, held-out):
+  action           auto    target 0.95: act when confidence >= 0.646  -> precision 1.000, covers 6% of decisions
+  action           review  target 0.80: act when confidence >= 0.583  -> precision 0.821, covers 14% of decisions
+  action           human   everything below
+  needs_review     auto    target 0.95: act when confidence >= 0.907  -> precision 1.000, covers 13% of decisions
+  needs_review     review  target 0.80: act when confidence >= 0.500  -> precision 0.820, covers 100% of decisions
+  needs_review     human   everything below
+  outcome          auto    target 0.95: act when confidence >= 0.548  -> precision 1.000, covers 6% of decisions
+  outcome          review  target 0.80: act when confidence >= 0.544  -> precision 0.875, covers 8% of decisions
+  outcome          human   everything below
+  risk             auto    target 0.95: unreachable on this data
+  risk             review  target 0.80: unreachable on this data
+  risk             human   everything below
+  urgency          auto    target 0.95: act when confidence >= 0.937  -> precision 1.000, covers 4% of decisions
+  urgency          review  target 0.80: act when confidence >= 0.774  -> precision 0.800, covers 10% of decisions
+  urgency          human   everything below
+  category         auto    target 0.95: act when confidence >= 0.905  -> precision 0.962, covers 52% of decisions
+  category         review  target 0.80: act when confidence >= 0.309  -> precision 0.850, covers 100% of decisions
+  category         human   everything below
+  churn_risk       auto    target 0.95: act when confidence >= 0.847  -> precision 1.000, covers 9% of decisions
+  churn_risk       review  target 0.80: act when confidence >= 0.703  -> precision 0.808, covers 52% of decisions
+  churn_risk       human   everything below
+  needs_human      auto    target 0.95: act when confidence >= 0.839  -> precision 0.950, covers 20% of decisions
+  needs_human      review  target 0.80: act when confidence >= 0.692  -> precision 0.805, covers 77% of decisions
+  needs_human      human   everything below
+  discrepancy_severity auto    target 0.95: unreachable on this data
+  discrepancy_severity review  target 0.80: act when confidence >= 0.371  -> precision 0.808, covers 26% of decisions
+  discrepancy_severity human   everything below
+  disposition      auto    target 0.95: act when confidence >= 0.561  -> precision 0.958, covers 12% of decisions
+  disposition      review  target 0.80: act when confidence >= 0.519  -> precision 0.804, covers 23% of decisions
+  disposition      human   everything below
+  duplicate        auto    target 0.95: act when confidence >= 0.892  -> precision 0.957, covers 70% of decisions
+  duplicate        review  target 0.80: act when confidence >= 0.834  -> precision 0.890, covers 100% of decisions
+  duplicate        human   everything below
+  matches_order    auto    target 0.95: act when confidence >= 0.799  -> precision 0.966, covers 29% of decisions
+  matches_order    review  target 0.80: act when confidence >= 0.756  -> precision 0.804, covers 56% of decisions
+  matches_order    human   everything below
+  credential_compromise auto    target 0.95: unreachable on this data
+  credential_compromise review  target 0.80: act when confidence >= 0.846  -> precision 0.800, covers 5% of decisions
+  credential_compromise human   everything below
+  severity         auto    target 0.95: act when confidence >= 0.734  -> precision 1.000, covers 12% of decisions
+  severity         review  target 0.80: act when confidence >= 0.682  -> precision 0.800, covers 25% of decisions
+  severity         human   everything below
+  true_positive    auto    target 0.95: act when confidence >= 0.868  -> precision 0.958, covers 24% of decisions
+  true_positive    review  target 0.80: act when confidence >= 0.603  -> precision 0.802, covers 81% of decisions
+  true_positive    human   everything below
++ python3 train.py --model microsoft/Phi-4-mini-instruct --tasks typed --examples 1200 --steps 1200 --accum 4 --batch 1 --split train --seed 1 --out adapters/tphi
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00, 84.97it/s]
+1200 training examples from typed
+`use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`.
+/usr/local/lib/python3.11/dist-packages/torch/utils/checkpoint.py:1399: FutureWarning: `torch.cpu.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cpu', args...)` instead.
+  with device_autocast_ctx, torch.cpu.amp.autocast(**cpu_autocast_kwargs), recompute_context:  # type: ignore[attr-defined]
