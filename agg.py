@@ -14,9 +14,13 @@ def read(pattern):
         b = os.path.basename(f)
         if not b.startswith("cal_"):
             continue
-        task = b.split("_")[1]
-        tag = b.split("_", 2)[2][:-5].split("@")[0]
-        for q, v in json.load(open(f))["questions"].items():
+        d = json.load(open(f))
+        tag_full = d.get("model") or b.split("_", 2)[2][:-5]       # the tag the report was written with
+        task = b[4:-5]
+        if task.endswith("_" + tag_full):
+            task = task[: -len(tag_full) - 1]                      # dataset names may contain underscores
+        tag = tag_full.split("@")[0]
+        for q, v in d["questions"].items():
             out[(task, q.split("#")[0])][tag].append((v["accuracy"], v["ece_raw"], v["n"]))
     return out
 

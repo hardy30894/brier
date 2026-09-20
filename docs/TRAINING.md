@@ -1713,6 +1713,43 @@ ROUND9_TYPED
 
 ROUND9_LESSONS
 
+## Round ten: the transfer problem
+
+Every result so far agrees on one gap. A non-generative model matches a language model on
+question types it has trained on and falls behind on types it has never seen: round seven
+measured it on our own held-out tasks, round eight on a public benchmark where a
+fine-tuned encoder scores 0.77 and the same encoder zero-shot scores 0.36. Language
+pretraining buys transfer; masked-word pretraining does not. The roadmap's answer is
+variety: if the model has answered enough *kinds* of question, a new kind should not be
+new. This round builds that corpus and measures whether it works.
+
+### The corpus
+
+`tasks/hub.py` converts 63 public datasets into typed questions through one spec table
+and one generic loader: topic, sentiment, ordinal rating, entailment, paraphrase, intent,
+toxicity, spam, fact checking, answerability, yes/no comprehension, commonsense multiple
+choice over per-row candidates, acceptability, emotion, sarcasm, stance and code. Eight
+are held out entirely, across all three question kinds, and never drawn by the mixed
+loader: TREC question types, adversarial NLI, CommonsenseQA, financial-news sentiment as
+an ordered scale, PAWS paraphrase, BoolQ, SMS spam and tweet irony. `corpus_audit.py`
+draws every spec on both splits and writes [CORPUS.md](CORPUS.md) with the label
+histograms.
+
+The audit earned its place immediately. Three label-ordered sources were drawing a
+single class through a streaming shuffle, the same failure round six found in four other
+datasets, and one source with a single usable split was reshuffling between the training
+and evaluation draws, so the two halves were not disjoint. Both were fixed before any
+training ran. The rule from round six now has a script behind it: no dataset enters the
+corpus without its histogram on both splits.
+
+ROUND10_TRANSFER
+
+ROUND10_PROSE
+
+## What was learned in round ten
+
+ROUND10_LESSONS
+
 ## Next
 
 - **Outcome rewards.** Gridworld is an environment, not just a dataset. The same

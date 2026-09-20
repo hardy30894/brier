@@ -236,6 +236,9 @@ def cmd_pull(a):
     remote = subprocess.Popen(ssh + [f"cd {REMOTE} && tar -czf - $(ls -d {dirs} 2>/dev/null)"], stdout=subprocess.PIPE)
     subprocess.run(["tar", "-C", str(ROOT), "-xzf", "-"], stdin=remote.stdout, check=True)
     remote.wait()
+    if remote.returncode:
+        sys.exit(f"pull failed: the remote tar exited {remote.returncode}; nothing was replaced")
+    remote.wait()
     (ROOT / f".pulled-{state()['id']}").write_text(str(time.time()))
     print(f"pulled {dirs}")
 
