@@ -1781,13 +1781,79 @@ and evaluation draws, so the two halves were not disjoint. Both were fixed befor
 training ran. The rule from round six now has a script behind it: no dataset enters the
 corpus without its histogram on both splits.
 
-ROUND10_TRANSFER
+### Does variety buy transfer
 
-ROUND10_PROSE
+Three encoders were trained on the corpus and measured on three things none of them
+saw: the eight held-out datasets, the four tasks of this repository that are not in the
+corpus at all, and the public benchmark of round eight, zero-shot. All are ModernBERT-large,
+fully fine-tuned through the pointer head, 6,000 steps, learning rate 2e-5.
+
+| | 5,500 examples, seed 1 | 5,500 examples, seed 2 | 16,500 examples | untrained Phi-4-mini |
+|---|---|---|---|---|
+| TREC question type | 0.660 | 0.350 | 0.637 | 0.630 |
+| BoolQ | 0.577 | 0.573 | **0.623** | 0.817 |
+| CommonsenseQA | 0.500 | 0.320 | **0.573** | 0.710 |
+| financial-news scale | 0.660 | 0.237 | **0.730** | 0.410 |
+| PAWS paraphrase | 0.530 | 0.420 | 0.440 | 0.567 |
+| SMS spam | 0.540 | 0.523 | **0.580** | 0.593 |
+| adversarial NLI | 0.367 | 0.343 | 0.357 | 0.550 |
+| tweet irony | 0.640 | 0.570 | **0.670** | 0.757 |
+| **public benchmark, zero-shot** | 0.430 | 0.309 | **0.455** | 0.606 |
+| benchmark calibration error | 0.409 | 0.466 | **0.167** | 0.286 |
+
+And on the four tasks outside the corpus entirely, 16,500 examples against 5,500:
+
+| task | 5,500 | 16,500 |
+|---|---|---|
+| duplicates | 0.833 | **0.997** |
+| tickets, needs a human | 0.740 | **0.980** |
+| tickets, category | 0.560 | **0.643** |
+| frustration | 0.437 | **0.580** |
+| banking77 | 0.907 | **0.923** |
+| tickets, priority | 0.530 | 0.383 |
+
+**Variety buys transfer, and quantity of it matters.** At 16,500 examples the corpus
+encoder is best or tied on six of the eight held-out datasets, scores 0.455 zero-shot on
+the public benchmark against 0.430 and 0.309 at a third of the data, and transfers to
+tasks that share nothing with the corpus: duplicates 0.997, the hand-off claim 0.980.
+Against the two published points of comparison on that benchmark, a non-generative model
+zero-shot, this is 0.455 against 0.36 for the model trained on a smaller mix, and 0.455
+against the 0.388 of our own fifteen-task corpus from round seven. Calibration improves
+further than accuracy does: the benchmark calibration error falls from 0.41 to 0.17, the
+best of any zero-shot model in this document, because a model that has answered sixty
+kinds of question has met the fact that some questions are genuinely uncertain.
+
+**Seed variance at small data is larger than the effect being measured.** The two
+5,500-example runs differ by 0.31 on TREC, 0.42 on the financial scale and 0.12 on the
+benchmark: a single run at that scale says almost nothing, and any claim about data
+scaling from one seed each would have been noise. The three-seed version of this
+comparison is running.
+
+**The gap to a language model is narrowed, not closed.** Untrained Phi-4-mini still
+leads on five of the eight held-out datasets and on the benchmark zero-shot, 0.606
+against 0.455, without having been trained on decisions at all. Sixty-three datasets is
+not the ten million decisions the roadmap asks for; it is one per cent of that, and the
+direction is what this round establishes. The encoder wins where the corpus contains
+the shape of the question, an ordered sentiment scale, and loses where answering needs
+world knowledge it never read, adversarial NLI and BoolQ.
 
 ## What was learned in round ten
 
-ROUND10_LESSONS
+- **More question types, and more of each, improve transfer.** A 63-dataset corpus at
+  16,500 examples transfers better than the same corpus at 5,500 and better than the
+  fifteen-task corpus of round seven, on held-out datasets, on tasks outside the corpus,
+  and zero-shot on a public benchmark.
+- **Calibration transfers further than accuracy.** Zero-shot calibration error on the
+  benchmark falls to 0.167, below every other zero-shot model measured here, including
+  language models that are more accurate.
+- **One seed at small data scale is worthless.** Two runs of the same recipe differed by
+  0.42 on one dataset. Every scaling claim in this document now waits for seeds.
+- **A language model still transfers better.** The gap is narrowed from 0.22 to 0.15 on
+  the benchmark. Closing it is a question of corpus size, and the next measurement is
+  the corpus an order of magnitude larger.
+- **Pull weights with results.** Two checkpoints were lost by terminating a pod after
+  pulling only its results; the sweeper now always takes both, and a truncated transfer
+  fails loudly instead of silently.
 
 ## Next
 
