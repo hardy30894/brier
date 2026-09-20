@@ -15,7 +15,7 @@ from stats import per_example, bootstrap  # noqa: E402
 R = os.path.join(os.path.dirname(__file__), "..", "results")
 
 
-DIRS = ("v2/seeds", "v2/8b", "v2/baselines", "v2/grade", "seeds", "8b", "grade", "baselines", "")
+DIRS = ("v2/seeds", "v2/8b", "v2/baselines", "v2/grade", "v2/encoder", "v2/outcome", "seeds", "8b", "grade", "baselines", "")
 
 
 def find(kind, task, tag, dirname=None):
@@ -157,6 +157,44 @@ def eight_b_table():
             print(f"| {t} · {q} | {f(u6)} | {f(t6)} | {g(u8)} | {g(t8)} |")
 
 
+def encoder_table():
+    print("\n### Encoder backbones · pointer head only, every question through the head (accuracy · raw ECE)\n")
+    cols = [("ModernBERT-large, full fine-tune, 3 seeds", "enc-large-full-seed"), ("ModernBERT-base, full", "enc-base-full-seed"),
+            ("ModernBERT-large, LoRA", "enc-large-lora-seed"), ("ModernBERT-large, frozen, head only", "enc-large-frozen-seed"),
+            ("Qwen3-0.6B, LoRA, row scorer, 3 seeds", "row-seed"), ("Qwen3-0.6B, pointer head (joint), row dispatch", "grade-joint-gb3@eval")]
+    print("| task · question | " + " | ".join(c[0] for c in cols) + " |")
+    print("|---|" + "---|" * len(cols))
+    for t in TASKS:
+        qs = set()
+        for p in glob.glob(os.path.join(R, "v2", "encoder", f"cal_{t}_*.json")) + glob.glob(os.path.join(R, "v2", "seeds", f"cal_{t}_row-seed1@eval.json")):
+            qs |= set(json.load(open(p))["questions"])
+        for q in sorted(qs):
+            cells = []
+            for _, pref in cols:
+                if pref.endswith("@eval"):
+                    c = cal("v2/grade", t, pref)
+                    cells.append(f"{c[q][0]:.3f} · {c[q][1]:.3f}" if q in c else "–")
+                else:
+                    s_ = seeds("", t, pref, q, ("v2/encoder", "v2/seeds"))
+                    cells.append(("–" if not s_ else f"{s_[0]:.3f} ± {s_[1]:.3f} · {s_[2]:.3f}" if s_[4] > 1 else f"{s_[0]:.3f} · {s_[2]:.3f}"))
+            print(f"| {t} · {q} | " + " | ".join(cells) + " |")
+
+
+def outcome_table():
+    print("\n### Outcome-reward against supervised training · Qwen3-0.6B, single task, three seeds (accuracy · raw ECE)\n")
+    print("| task · question | untrained | outcome reward, no labels | supervised, labels |")
+    print("|---|---|---|---|")
+    for t in ("tickets", "toolcall"):
+        qs = set()
+        for p in glob.glob(os.path.join(R, "v2", "outcome", f"cal_{t}_*.json")):
+            qs |= set(json.load(open(p))["questions"])
+        for q in sorted(qs):
+            u = cal("v2/outcome", t, f"untrained-{t}@eval")
+            o, sp = seeds("", t, f"outcome-{t}-seed", q, ("v2/outcome",)), seeds("", t, f"supervised-{t}-seed", q, ("v2/outcome",))
+            f = lambda s_: "–" if not s_ else f"{s_[0]:.3f} ± {s_[1]:.3f} · {s_[2]:.3f} ± {s_[3]:.3f}"
+            print(f"| {t} · {q} | " + (f"{u[q][0]:.3f} · {u[q][1]:.3f}" if q in u else "–") + f" | {f(o)} | {f(sp)} |")
+
+
 if __name__ == "__main__":
     which = sys.argv[1] if len(sys.argv) > 1 else "all"
     if which in ("all", "baselines"):
@@ -169,3 +207,7 @@ if __name__ == "__main__":
         grade_table()
     if which in ("all", "8b"):
         eight_b_table()
+    if which in ("all", "encoder"):
+        encoder_table()
+    if which in ("all", "outcome"):
+        outcome_table()

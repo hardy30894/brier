@@ -139,7 +139,8 @@ def main():
     tok = AutoTokenizer.from_pretrained(a.model)
     if encoder:
         from transformers import AutoModel
-        base = AutoModel.from_pretrained(a.model, dtype=torch.bfloat16 if not a.full else torch.float32)
+        # ModernBERT compiles parts of itself by default, which breaks backward under checkpointing on this torch
+        base = AutoModel.from_pretrained(a.model, dtype=torch.bfloat16 if not a.full else torch.float32, **({"reference_compile": False} if "modernbert" in a.model.lower() else {}))
     else:
         base = AutoModelForCausalLM.from_pretrained(a.model, dtype=torch.bfloat16)
     try:

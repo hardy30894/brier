@@ -136,8 +136,9 @@ def ask(scorer: Scorer, state: Any, questions: list[Question], temperatures: dic
     Questions are independent either way."""
     if getattr(scorer, "pointer", None) is not None:
         from .pointer import ask_pointer
-        fast = [q for q in questions if not isinstance(q, Grade)] if scorer.pointer_grade is False else questions
-        slow = [q for q in questions if isinstance(q, Grade)] if scorer.pointer_grade is False else []
+        all_pointer = scorer.pointer_grade or getattr(scorer, "encoder", False)   # an encoder has no row scorer
+        fast = questions if all_pointer else [q for q in questions if not isinstance(q, Grade)]
+        slow = [] if all_pointer else [q for q in questions if isinstance(q, Grade)]
         t0 = time.perf_counter()
         out = {}
         if fast:

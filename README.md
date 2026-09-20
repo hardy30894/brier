@@ -9,7 +9,7 @@
 
 **Calibrated typed decisions from any open language model, in one forward pass.**
 
-[Architecture](docs/ARCHITECTURE.md) · [Primer](docs/PRIMER.md) · [API](docs/QUESTIONS.md) · [Calibration](docs/CALIBRATION.md) · [Training](docs/TRAINING.md) · [Milestones](docs/MILESTONES.md) · [Demo](docs/demo.html)
+[Architecture](docs/ARCHITECTURE.md) · [Primer](docs/PRIMER.md) · [API](docs/QUESTIONS.md) · [Calibration](docs/CALIBRATION.md) · [Training](docs/TRAINING.md) · [Milestones](docs/MILESTONES.md) · [Roadmap](docs/ROADMAP.md) · [Demo](docs/demo.html)
 
 [![license](https://img.shields.io/badge/license-Apache%202.0-1B1F24?style=flat-square)](LICENSE) [![status](https://img.shields.io/badge/status-research%20preview-4F46E5?style=flat-square)](docs/TRAINING.md) [![adapters](https://img.shields.io/badge/adapters-v1-1B1F24?style=flat-square)](https://github.com/hardy30894/brier/releases/tag/adapters-v1)
 
@@ -279,6 +279,7 @@ every pod it creates. [TRAINING.md](docs/TRAINING.md) has each round's recipe.
 | [CALIBRATION.md](docs/CALIBRATION.md) | the kit and how its numbers are computed |
 | [TRAINING.md](docs/TRAINING.md) | recipes, protocol, every result table, and what each round taught |
 | [MILESTONES.md](docs/MILESTONES.md) | each milestone's question, what it delivered, and what is next |
+| [ROADMAP.md](docs/ROADMAP.md) | the stages from here to a released non-generative decision model, with data, compute and cost |
 
 ## Citation
 

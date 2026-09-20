@@ -51,7 +51,7 @@ def load_scorer(model_id, adapter=None):
 def cmd_calibrate(a):
     from tasks import examples
     scorer = load_scorer(a.model, a.adapter)
-    scorer.pointer_grade = a.pointer_grade
+    scorer.pointer_grade = a.pointer_grade or scorer.pointer_grade
     tag = a.tag or (a.adapter.rstrip("/").split("/")[-1] if a.adapter else a.model.split("/")[-1])
     if a.split != "all":
         tag += f"@{a.split}"

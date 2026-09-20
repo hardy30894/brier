@@ -1149,6 +1149,48 @@ old behaviour and is kept only for ablation. Without the tripled Grade data the 
   other path that reads the same residual stream. Any dispatch between paths must be
   backed by training both.
 
+## Round seven: the non-generative model, and learning from outcomes
+
+Round six settled the method's claims against opponents, seeds and scale, on decoder
+language models used as scorers. Two questions remained about what the model *is*, and
+this round measures both.
+
+### An encoder backbone
+
+An encoder-only transformer (ModernBERT, masked-language pretraining, bidirectional
+attention, no vocabulary generation path) replaces the decoder. Only the pointer head
+survives the swap, since the row scorer needs a vocabulary projection, so every question,
+Grade included, goes through the head. The prompt and the corpus are unchanged; the
+encoder reads `[CLS] … [SEP]` instead of a chat template. Bidirectional attention would
+read the padding, so batched rows carry an attention mask on this path. ModernBERT-large
+(395M parameters) is fine-tuned in full, three seeds; ModernBERT-base (149M) in full, a
+LoRA adapter on the large model, and a frozen large backbone with only the head trained
+are the ablations.
+
+ROUND7_ENCODER
+
+### Learning from outcomes on text
+
+Ticket routing and tool selection become environments (`tasks/outcomes.py`): the model
+states a distribution per question, one answer is sampled, and the environment returns a
+consequence in [0, 1] and nothing else. A wrong team bounces the ticket (0). An
+under-prioritised ticket breaches its SLA, half a point per level missed; over-prioritising
+wastes a fast lane at a fifth of a point per level. A missed request for a person is the
+worst outcome (0) and an unneeded hand-off costs agent time (0.7). A tool call succeeds or
+fails. Where the generator built a genuinely ambiguous state, the environment's hidden
+truth is drawn once from the soft posterior, so outcomes carry the same irreducible
+uncertainty the world would. Training is the policy-gradient term against a per-question
+running baseline plus the Brier score of the stated probability against the outcome
+(`rl.py --task`), 600 steps of 8 fresh states, against supervised training on 4,800 example
+visits of the same task with labels, three seeds each, evaluated with the kit on the
+held-out split.
+
+ROUND7_OUTCOME
+
+## What was learned in round seven
+
+ROUND7_LESSONS
+
 ## Next
 
 - **Outcome rewards.** Gridworld is an environment, not just a dataset. The same

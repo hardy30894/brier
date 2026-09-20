@@ -25,10 +25,11 @@ def load_causal_lm(model_id, device):
     from transformers import AutoModel
     dtype = torch.float32 if device == "cpu" else (torch.float16 if device == "mps" else torch.bfloat16)
     cls = AutoModel if is_encoder(model_id) else AutoModelForCausalLM
+    extra = {"reference_compile": False} if "modernbert" in model_id.lower() else {}
     try:
-        return cls.from_pretrained(model_id, dtype=dtype)
+        return cls.from_pretrained(model_id, dtype=dtype, **extra)
     except TypeError:
-        return cls.from_pretrained(model_id, torch_dtype=dtype)
+        return cls.from_pretrained(model_id, torch_dtype=dtype, **extra)
 
 
 def pick_device():
