@@ -1692,7 +1692,18 @@ separates the training templates. Round seven's mixed-corpus encoder had 22,500 
 across fifteen tasks to prevent exactly that. The honest next run, and the realistic
 production setting, is consequences on top of a supervised general model: the release
 encoder trained on the mixed corpus, then outcome training on each environment. That
-run is queued behind the release training and is not in this table.
+run was done next, and its result is the section below.
+
+**Consequences on top of a general model, first attempt.** The mixed-corpus encoder (the
+release checkpoint, fifteen tasks, 22,500 examples) was given 600 steps of bandit
+feedback on each environment. Nothing moved: ticket category 0.820 before and 0.815
+after, the hand-off claim 0.913 and 0.917, tool selection 0.993 and 1.000, and the
+ordered priority scale fell from 0.327 to 0.238. The reason is a flaw in the setup
+rather than a finding about the method: both environments are built on tasks that were
+already in that model's training corpus, so it arrived knowing them and there was
+nothing for the reward to add. The experiment that answers the question needs a general
+model that has never seen the task, which is what the corpus of round ten provides, and
+it is run there.
 
 ### The public benchmark as a bandit
 
