@@ -142,15 +142,17 @@ distribution, no score for any answer the model did not try.
 | model | what it was trained on | accuracy |
 |---|---|---|
 | general encoder, before | a corpus of other tasks | 0.388 |
-| **same encoder, 600 steps of consequences** | **outcomes only, no labels** | **0.720** |
-| encoder from scratch, consequences only | outcomes only | 0.517 ± 0.058 |
+| **same encoder, 600 steps of consequences, 3 seeds** | **outcomes only, no labels** | **0.698 ± 0.028** |
+| encoder from scratch, consequences only, 3 seeds | outcomes only | 0.517 ± 0.058 |
+| Qwen3-0.6B from base, consequences only, 2 seeds | outcomes only | 0.673 ± 0.038 |
 | encoder, supervised | the benchmark's 1,200 labelled cases | 0.766 ± 0.003 |
 | closed product, as published | undisclosed | 0.727 |
 
-A non-generative model taught only by what happened closes seven eighths of the distance
-to full supervision, and its probabilities match the real spread of disagreement better
-than the supervised model's do. Labels teach a model to read questions; consequences
-teach it what the right answer is where you deploy it.
+A non-generative model taught only by what happened closes four fifths of the distance to
+full supervision in 4,800 decisions, and its probabilities track the spread of real
+disagreement better than the supervised model's do (soft accuracy 0.561 against 0.503),
+though they are worse calibrated against the teacher's exact numbers. Labels teach a model
+to read questions; consequences teach it what the right answer is where you deploy it.
 
 ### A public head-to-head
 

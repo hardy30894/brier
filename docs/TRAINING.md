@@ -1716,27 +1716,37 @@ decisions:
 | model | trained on | accuracy | soft acc | Brier | ECE (15 bins) |
 |---|---|---|---|---|---|
 | general encoder, mixed corpus, no benchmark data | — | 0.388 | 0.374 | 0.302 | 0.189 |
-| **same encoder, 600 steps of consequences, no labels** | outcomes only | **0.720** | 0.573 | 0.115 | 0.207 |
+| **same encoder, 600 steps of consequences, 3 seeds** | outcomes only | **0.698 ± 0.028** | 0.561 | 0.320 | 0.223 |
 | encoder from scratch, consequences only, 3 seeds | outcomes only | 0.517 ± 0.058 | 0.443 | 0.404 | 0.268 |
+| Qwen3-0.6B from base, consequences only, 2 seeds | outcomes only | 0.673 ± 0.038 | 0.548 | 0.338 | 0.245 |
 | encoder, supervised on the benchmark's training split, 3 seeds | 1,200 labelled cases | 0.766 ± 0.003 | 0.503 | 0.062 | 0.144 |
 | closed product, as published | undisclosed | 0.727 | 0.580 | 0.148 | 0.144 |
 | teacher self-agreement | — | 0.735 | | | |
 
-**A non-generative model taught only by consequences reaches 0.720 on a public benchmark
-it had never seen.** It started at 0.388, was never shown a label or a gold
-distribution, and closed seven eighths of the distance to full supervision in 600 steps
-of 8 states. Its soft accuracy, 0.573, is the highest in the table, above the supervised
-encoder's 0.503 and level with the closed product's 0.580: trained on outcomes rather
-than on a teacher's distribution, it does not inherit that teacher's sharpness and its
-probabilities sit closer to the spread of real disagreement. Its Brier score against the
-gold distribution, 0.115, is worse than the supervised 0.062, which is the price of
-never seeing that distribution.
+**A non-generative model taught only by consequences reaches 0.698 ± 0.028 on a public
+benchmark it had never seen.** It started at 0.388, was never shown a label or a gold
+distribution, and closed four fifths of the distance to full supervision in 600 steps of
+8 states, which is 4,800 decisions. The same training from a fresh encoder reaches
+0.517, and the general model's own zero-shot score is 0.388, so neither the prior nor
+the reward is sufficient alone: the corpus supplies the ability to read an unfamiliar
+question and the consequences supply what the right answer is in this deployment. The
+language-model backbone learns the same way without a corpus behind it, 0.673 ± 0.038
+from its base weights, because its pretraining already provides the prior.
 
-The same training from a fresh encoder reaches 0.517 across three seeds, and the
-general model's own zero-shot score is 0.388, so neither the prior nor the reward is
-sufficient alone: the corpus supplies the ability to read an unfamiliar question, and
-the consequences supply what the right answer is in this deployment. That is the two-phase
-recipe stated at the start of this round, measured end to end on someone else's test.
+Two properties of these models differ from the supervised ones in the same direction.
+Their soft accuracy, how closely the stated probabilities match the spread of the
+teacher's own disagreement, is higher: 0.561 against the supervised encoder's 0.503,
+approaching the closed product's 0.580. Their Brier score against that gold
+distribution is worse, 0.320 against 0.062, and their calibration error is higher, 0.223
+against 0.144. Both follow from the same fact. A model trained on a teacher's
+distribution learns to reproduce it, sharpness and all; a model trained on outcomes
+learns only which answer paid off, so its probabilities spread wider than the teacher's
+and score worse against the teacher's exact numbers while agreeing better with the
+underlying uncertainty. Calibration is the open problem for this training signal, and
+the Brier term in the reward is not enough on its own.
+
+That is the two-phase recipe stated at the start of this round, measured end to end on
+someone else's test.
 
 ## What was learned in round nine
 
