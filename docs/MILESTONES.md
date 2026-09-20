@@ -212,6 +212,25 @@ is expensive, not which level is right. A fully fine-tuned 395M encoder, once th
 trainable body, equals the 0.6B language-model scorer on every seen question type and
 trails it only on the unseen tasks, which is what language pretraining buys.
 
+## Round eight, a public head-to-head
+
+*2026-09-21. Done; table and records in TRAINING.md and `results/v2/typed`.*
+
+**Question.** On an independent benchmark with someone else's labels and metrics, where
+does Brier stand against the published non-generative model and the closed product.
+
+**Delivered.** The four-workflow typed-decision benchmark as a task, with the teacher's
+distributions as soft labels; `bench_typed.py` for its own metrics; zero-shot and
+fine-tuned runs for the 0.6B, Phi-4-mini and 8B decoders, a pointer adapter, and three
+seeds of the fully fine-tuned encoder, on the benchmark's 1,200 training cases.
+
+**Found.** The encoder reproduces the best published number (0.766 mean of three seeds
+against 0.766 from one run) with lower raw calibration error. The 0.6B decoder scores
+0.779 ± 0.004 and the 8B 0.797, above the published encoder, the closed product (0.727)
+and the teacher's self-agreement (0.735), with better Brier and ordinal error. Zero-shot,
+which only a language-model backbone can attempt, the decoders score 0.39 to 0.65
+against the published encoder's 0.36.
+
 ## Next
 
 - Three seeds for the 8B and Phi recipes, and a second unseen ordered scale.

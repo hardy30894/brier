@@ -133,6 +133,22 @@ only on what happened after each decision, a bounced ticket, a missed hand-off, 
 tool call, the model lands within three points of label training on unordered choices and
 claims, and fourteen behind on an ordered scale whose reward does not resolve the level.
 
+### A public head-to-head
+
+An independent typed-decision benchmark, four workflows, 2,000 test decisions, labels
+from a teacher model. Fine-tuned on its 1,200 training cases; other rows as their
+authors published them.
+
+| model | accuracy | Brier vs teacher | ordinal error |
+|---|---|---|---|
+| Brier, Qwen3-8B, row scorer | **0.797** | **0.042** | **0.19** |
+| Brier, Qwen3-0.6B, pointer head, one row per case | **0.791** | 0.044 | 0.21 |
+| Brier, Qwen3-0.6B, row scorer, 3 seeds | **0.779 ± 0.004** | 0.045 | 0.20 |
+| Brier, ModernBERT-large encoder, 3 seeds | 0.766 ± 0.003 | 0.062 | 0.25 |
+| published open encoder, one run | 0.766 | 0.061 | 0.24 |
+| teacher self-agreement | 0.735 | | |
+| closed product, as published | 0.727 | 0.148 | 0.39 |
+
 ### A non-generative backbone
 
 | task | Qwen3-0.6B, language model as scorer | ModernBERT-large, encoder only, 395M |
