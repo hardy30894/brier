@@ -231,9 +231,32 @@ and the teacher's self-agreement (0.735), with better Brier and ordinal error. Z
 which only a language-model backbone can attempt, the decoders score 0.39 to 0.65
 against the published encoder's 0.36.
 
+## Round ten, the transfer problem and learning from consequences
+
+*2026-09-21. Done; tables in TRAINING.md, corpus in CORPUS.md.*
+
+**Question.** Can a non-generative model be made to answer question types it has never
+seen, and can it learn a new deployment from consequences instead of labels.
+
+**Delivered.** A 63-dataset decision corpus from one spec table, eight datasets held out
+entirely, with an audit that writes its own label histograms. Outcome-reward training
+through the pointer head, so consequence-only learning runs on encoders as well as
+language models, and the public benchmark of round eight as a bandit environment.
+
+**Found.** Two results. A non-generative model taught only by consequences, never shown
+a label or a distribution, reaches 0.698 ± 0.028 on that benchmark from a starting point
+of 0.388, against 0.766 with full supervision; from a fresh encoder the same training
+reaches only 0.517, so the corpus supplies the reading and the outcomes supply the
+answer. And variety buys transfer: the corpus encoder at 16,500 examples is best or tied
+on six of eight held-out datasets, scores 0.455 zero-shot on the benchmark against 0.388
+for the previous corpus, and has the lowest zero-shot calibration error of any model
+measured here. An untrained 4B language model still transfers better, 0.606, so the gap
+is narrowed rather than closed.
+
 ## Next
 
-- Three seeds for the 8B and Phi recipes, and a second unseen ordered scale.
+- The corpus an order of magnitude larger, which is what the transfer gap now rests on.
+- Calibration for consequence-trained models: the reward's Brier term is not enough on its own.
 - Pointer-head parity on templated ordered scales (ticket priority) and on unseen three-way Picks (MNLI relation).
 - Conformal prediction sets: a distribution-free coverage guarantee per question, from the same held-out data.
 - Distilled labels on real tickets and tool-call logs, with disagreements kept.
