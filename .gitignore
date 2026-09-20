@@ -8,3 +8,4 @@ adapters/
 results/cascade_*
 .pulled-*
 .pod.lock
+launch_*.log

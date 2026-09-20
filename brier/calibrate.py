@@ -85,7 +85,8 @@ def acceptable(q: Question, label: Any) -> set[int]:
             label = "yes" if label else "no"
     if isinstance(label, dict):
         top = max(label.values())
-        return {labels.index(str(k)) for k, v in label.items() if v == top}
+        name = lambda k: ("yes" if k else "no") if isinstance(k, bool) else str(k)
+        return {labels.index(name(k)) for k, v in label.items() if v == top}
     if isinstance(label, (tuple, list, set)):
         return {labels.index(str(l)) for l in label}
     return {labels.index(str(label))}

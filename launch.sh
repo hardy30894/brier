@@ -1,6 +1,6 @@
 #!/bin/bash
 # launch.sh <pod name> <gpu type> <ttl minutes> <job script under jobs/> : bring a pod up, sync, start the job detached
-set -e
+set -eo pipefail
 cd "$(dirname "$0")"
 N=$1; G=$2; T=$3; J=$4
 python3 pod.py --name "$N" up --ttl "$T" --gpu "$G" 2>&1 | tail -1

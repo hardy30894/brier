@@ -640,7 +640,78 @@ for fn in (fig_distribution, fig_entropy, fig_softmax_curve, fig_scoring_rules, 
 print("primer figures written")
 
 figure()
+
+def fig_round6():
+    """Round six: the opponents (A) and the Grade gap (B), from results/ via results_table6."""
+    import sys
+    sys.path.insert(0, str(HERE))
+    import results_table6 as R6
+    TINT = "#C7D2FE"
+    o = _svg(900, 360)
+    ax, ay = 40, 60
+    _caps(o, ax, 34, "A · Opponents, Qwen3-0.6B, held-out accuracy")
+    tasks = (("frustration", "frustration", "frustration (unseen)"), ("duplicates", "same", "duplicates (unseen)"), ("msmarco", "answers", "MS MARCO"),
+             ("snli", "entailed", "SNLI entailed"), ("emotion", "emotion", "emotion (unseen)"), ("banking", "intent", "banking77"))
+    scale = 220
+    for i, (t, q, label) in enumerate(tasks):
+        y = ay + i * 44
+        _t(o, ax, y + 9, label, 10.5, INK, "700")
+        c = R6.cal("", t, "constrained-Qwen3-0.6B").get(q)
+        k = R6.cal("", t, "classifier-Qwen3-0.6B").get(q)
+        u = R6.seeds("", t, "untrained-eval", q)
+        r = R6.seeds("", t, "row-seed", q)
+        rows = ((c and c[0], BASE), (k and k[0], FAINT), (u and u[0], TINT), (r and r[0], ACCENT))
+        for j, (v, col) in enumerate(rows):
+            if v is None:
+                continue
+            yy = y + j * 7
+            _bar(o, ax + 130, yy, v * scale, 5, col)
+        if r:
+            xr = ax + 130 + r[0] * scale
+            _t(o, xr + 5, y + 26, f"{r[0]:.2f} ± {r[1]:.2f}", 10, INK)
+            _hair(o, ax + 130 + (r[0] - r[1]) * scale, y + 32, ax + 130 + (r[0] + r[1]) * scale, y + 32)
+    _hair(o, ax + 130, ay + 6 * 44 - 8, ax + 130 + scale, ay + 6 * 44 - 8)
+    for j, (name, col) in enumerate((("constrained decoding", BASE), ("classifier head, per task", FAINT), ("Brier untrained", TINT), ("Brier trained, 3 seeds", ACCENT))):
+        x = ax + (j % 2) * 150
+        y = ay + 6 * 44 + 4 + (j // 2) * 14
+        o.append(f'<rect x="{x}" y="{y}" width="10" height="10" rx="2" fill="{col}"/>')
+        _t(o, x + 16, y + 9, name, 10, MUTED)
+
+    bx = 520
+    _caps(o, bx, 34, "B · Ordered scales: the pointer head closes the gap")
+    cases = (("tickets", "priority", "ticket priority"), ("sst5", "sentiment", "SST-5"), ("yelp", "stars", "Yelp stars"), ("frustration", "frustration", "frustration (unseen)"))
+    variants = (("row scorer", "row-seed1@eval", BASE), ("pointer, before", "ptr-seed1@eval+ptrgrade", TINT), ("pointer, best variant", None, ACCENT))
+    best = None
+    cand = ("grade-cum@eval+ptrgrade", "grade-num@eval+ptrgrade", "grade-cum-num@eval+ptrgrade", "grade-cum-num-gb3@eval+ptrgrade")
+    score = {}
+    for tag in cand:
+        vals = [R6.cal("grade", t, tag).get(q, (None,))[0] for t, q, _ in cases]
+        if all(v is not None for v in vals):
+            score[tag] = sum(vals)
+    if score:
+        best = max(score, key=score.get)
+    for i, (t, q, label) in enumerate(cases):
+        y = ay + i * 60
+        _t(o, bx, y + 9, label, 10.5, INK, "700")
+        for j, (name, tag, col) in enumerate(variants):
+            tg = tag or best
+            v = R6.cal("", t, tg).get(q) if tg else None
+            if not v:
+                continue
+            yy = y + 14 + j * 10
+            _bar(o, bx + 120, yy, v[0] * scale, 7, col)
+            _t(o, bx + 124 + v[0] * scale, yy + 7, f"{v[0]:.2f}", 9.5, INK if j == 2 else MUTED)
+    for j, (name, _, col) in enumerate(variants):
+        x = bx + j * 120
+        y = ay + 4 * 60 + 4
+        o.append(f'<rect x="{x}" y="{y}" width="10" height="10" rx="2" fill="{col}"/>')
+        _t(o, x + 16, y + 9, name, 10, MUTED)
+    if best:
+        _t(o, bx, ay + 4 * 60 + 30, "best variant: " + best.split("@")[0].replace("grade-", "").replace("-", " + ").replace("cum", "cumulative link").replace("num", "numbered levels").replace("gb3", "3× Grade data"), 10, MUTED)
+    _write(o, "round6")
+
 fig_results()
+fig_round6()
 print("assets written")
 
 

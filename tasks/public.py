@@ -8,9 +8,15 @@ from brier.questions import Pick, Grade, Claim
 MAX_CHARS = 1500
 
 
-def _stream(name, cfg, split, n, seed, filt=None):
+def _stream(name, cfg, split, n, seed, filt=None, ordered=False):
+    """The first n rows that pass the filter from a seeded shuffle. A streaming shuffle only mixes
+    within a buffer, so a source stored in label order (imdb, dbpedia) would yield one class;
+    those are loaded whole and shuffled globally (ordered=True)."""
     from datasets import load_dataset
-    ds = load_dataset(name, cfg, split=split, streaming=True).shuffle(seed=seed, buffer_size=5000)
+    if ordered:
+        ds = load_dataset(name, cfg, split=split).shuffle(seed=seed)
+    else:
+        ds = load_dataset(name, cfg, split=split, streaming=True).shuffle(seed=seed, buffer_size=5000)
     out = []
     for row in ds:
         if filt is None or filt(row):
@@ -18,6 +24,21 @@ def _stream(name, cfg, split, n, seed, filt=None):
             if len(out) >= n:
                 break
     return out
+
+
+def _balance(rows, n, key):
+    """Equal numbers per class, in stream order, so accuracy on a naturally imbalanced source
+    (toxicity, passage relevance) is not the majority rate."""
+    per = n // 2
+    kept, count = [], {}
+    for r in rows:
+        k = key(r)
+        if count.get(k, 0) < per:
+            kept.append(r)
+            count[k] = count.get(k, 0) + 1
+        if len(kept) >= 2 * per:
+            break
+    return kept
 
 
 def _cut(t):
@@ -39,7 +60,7 @@ def ag_news(n, seed=0, split="all", uncertain=0.0):
 DB = ("Company", "EducationalInstitution", "Artist", "Athlete", "OfficeHolder", "MeanOfTransportation", "Building", "NaturalPlace", "Village", "Animal", "Plant", "Album", "Film", "WrittenWork")
 def dbpedia(n, seed=0, split="all", uncertain=0.0):
     q = [Pick("kind", "what kind of thing this encyclopedia article describes", DB)]
-    rows = _stream("fancyzhx/dbpedia_14", None, _splits(split, "train", "test"), n, seed)
+    rows = _stream("fancyzhx/dbpedia_14", None, _splits(split, "train", "test"), n, seed, ordered=True)
     return [{"state": {"title": r["title"], "article": _cut(r["content"])}, "questions": q, "labels": {"kind": DB[r["label"]]}} for r in rows]
 
 
@@ -78,7 +99,8 @@ def civil(n, seed=0, split="all", uncertain=0.0):
     """Toxicity is the fraction of annotators who flagged the comment: a soft label for training,
     a 0.5 cut for evaluation."""
     q = [Claim("toxic", "this comment is toxic")]
-    rows = _stream("google/civil_comments", None, _splits(split, "train", "validation"), n, seed, filt=lambda r: len(r["text"]) > 20)
+    rows = _balance(_stream("google/civil_comments", None, _splits(split, "train", "validation"), 30 * n, seed, filt=lambda r: len(r["text"]) > 20),
+                    n, lambda r: float(r["toxicity"]) >= 0.5)
     out = []
     for r in rows:
         t = float(r["toxicity"])
@@ -89,12 +111,14 @@ def civil(n, seed=0, split="all", uncertain=0.0):
 
 def msmarco(n, seed=0, split="all", uncertain=0.0):
     q = [Claim("answers", "the passage contains the answer to the query")]
-    rows = _stream("microsoft/ms_marco", "v1.1", _splits(split, "train", "validation"), n, seed, filt=lambda r: any(r["passages"]["is_selected"]))
+    rows = _stream("microsoft/ms_marco", "v1.1", _splits(split, "train", "validation"), n, seed,
+                   filt=lambda r: any(r["passages"]["is_selected"]) and not all(r["passages"]["is_selected"]))
     rng = random.Random(seed)
     out = []
-    for r in rows:
+    for j, r in enumerate(rows):
         ps, sel = r["passages"]["passage_text"], r["passages"]["is_selected"]
-        i = rng.randrange(len(ps))
+        want = j % 2 == 0   # alternate: a passage that answers, then one that does not, so the classes are balanced
+        i = rng.choice([k for k, v in enumerate(sel) if bool(v) == want])
         out.append({"state": {"query": r["query"], "passage": _cut(ps[i])}, "questions": q, "labels": {"answers": bool(sel[i])}})
     return out
 
@@ -108,7 +132,7 @@ def emotion(n, seed=0, split="all", uncertain=0.0):
 
 def imdb(n, seed=0, split="all", uncertain=0.0):
     q = [Claim("positive", "this review recommends the film")]
-    rows = _stream("stanfordnlp/imdb", None, _splits(split, "train", "test"), n, seed)
+    rows = _stream("stanfordnlp/imdb", None, _splits(split, "train", "test"), n, seed, ordered=True)
     return [{"state": _cut(r["text"]), "questions": q, "labels": {"positive": r["label"] == 1}} for r in rows]
 
 
