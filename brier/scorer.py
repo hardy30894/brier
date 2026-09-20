@@ -108,8 +108,24 @@ class Scorer:
         lp = torch.log_softmax(logits[rows, cols].float(), dim=-1).gather(1, tgt[:, None]).squeeze(1)
         return torch.stack([s.sum() for s in torch.split(lp, [b - a for a, b in spans])])
 
+    def _lm_head(self):
+        if getattr(self, "_lm_head_mod", None) is None:
+            self._lm_head_mod = next((m for n, m in self.model.named_modules() if n.endswith("lm_head")), None)
+        return self._lm_head_mod
+
     def scores_from_rows(self, input_ids, attn, spans):
-        """LM-head scores per candidate, corrected by the typed head when one is attached."""
+        """LM-head scores per candidate, corrected by the typed head when one is attached. The
+        vocabulary projection is applied only at the candidate positions, not the whole row:
+        the same numbers, a fraction of the memory."""
+        head = self._lm_head()
+        if self.head is None and head is not None:
+            from .pointer import decoder
+            h = decoder(self.model)(input_ids=input_ids, attention_mask=attn).last_hidden_state
+            rows = torch.cat([torch.full((b - a,), i, device=self.device) for i, (a, b) in enumerate(spans)])
+            cols = torch.cat([torch.arange(a - 1, b - 1, device=self.device) for a, b in spans])
+            tgt = torch.cat([input_ids[i, a:b] for i, (a, b) in enumerate(spans)])
+            lp = torch.log_softmax(head(h[rows, cols]).float(), dim=-1).gather(1, tgt[:, None]).squeeze(1)
+            return torch.stack([x.sum() for x in torch.split(lp, [b - a for a, b in spans])])
         if self.head is None:
             logits = self.model(input_ids=input_ids, attention_mask=attn).logits
             return self.candidate_logprobs(logits, input_ids, spans)

@@ -1273,6 +1273,27 @@ costs need either a reward that resolves the level or labels for the scale.
   seeds stalled until the head's learning rate matched the body's scale; with adapters
   the mismatch was hidden. Report seeds, or this looks like a capacity limit.
 
+## Round eight: a public head-to-head
+
+An independent typed-decision benchmark appeared on the Hub this week: four workflows
+(agent-trace observability, customer service, invoice processing, security incidents),
+300 training and 100 test cases each, five typed questions per case, with soft labels
+from a teacher model whose self-agreement is 0.735. Two other systems have published
+numbers on it: an open encoder-based model fine-tuned on its training split, at 0.766
+accuracy, and a closed API product, at 0.727. The benchmark's questions are Pick, Grade
+and Claim under other names, so it loads as a task (`tasks/typed.py`) with the teacher's
+distributions as soft labels, and `bench_typed.py` computes the benchmark's own metrics
+from our records: accuracy against its hard label, soft accuracy, multi-class Brier
+against the gold distribution, 15-bin ECE, and score MAE on ordinal questions.
+
+Two readings matter. Zero-shot, which only a backbone that has read instructions can
+attempt (the published encoder scores 0.36 zero-shot against a 0.32 random baseline), and
+fine-tuned on the same 1,200 training cases for the same four epochs everyone else used.
+
+ROUND8_TABLE
+
+ROUND8_PROSE
+
 ## Next
 
 - **Outcome rewards.** Gridworld is an environment, not just a dataset. The same

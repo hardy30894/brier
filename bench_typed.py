@@ -15,11 +15,12 @@ from brier.scorer import softmax
 def metrics(path):
     d = json.load(open(path))
     acc, soft, brier, conf, ok, mae, per_wf = [], [], [], [], [], [], {}
-    labels, recs, tgts, wfs, gold = d["labels"], d["records"], d.get("targets", {}), d.get("workflow", []), d.get("gold", [])
+    labels, recs, tgts, wfs, gold, index = d["labels"], d["records"], d.get("targets", {}), d.get("workflow", []), d.get("gold", []), d.get("index", {})
     n_ex = len(wfs) if wfs else None
     for qid, rows in recs.items():
         tg = tgts.get(qid) or [None] * len(rows)
-        for i, ((scores, accs), t) in enumerate(zip(rows, tg)):
+        idx = index.get(qid) or list(range(len(rows)))
+        for (scores, accs), t, i in zip(rows, tg, idx):
             p = np.array(softmax(scores, 1.0))
             g = np.array(t) if t else None
             j = int(p.argmax())
@@ -35,8 +36,8 @@ def metrics(path):
                 if all(l.isdigit() for l in labels[qid]):
                     lv = np.arange(len(p))
                     mae.append(abs(float((p * lv).sum()) - float((g * lv).sum())))
-            if wfs and n_ex:
-                per_wf.setdefault(wfs[i % n_ex], []).append(c)
+            if wfs:
+                per_wf.setdefault(wfs[i], []).append(c)
     conf, ok = np.array(conf), np.array(ok)
     bins = np.linspace(0, 1, 16)
     ece = 0.0

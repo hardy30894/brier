@@ -65,14 +65,19 @@ def cmd_calibrate(a):
         if fixed:
             records = collect(scorer, questions, [(e["state"], e["labels"]) for e in exs])
         else:
-            records = {q.id: [] for q in questions}
+            # question sets vary by example (several workflows in one task): pool by question id
+            records, index, seen = {}, {}, {}
             t0 = time.perf_counter()
             for i, e in enumerate(exs):
                 r = collect(scorer, e["questions"], [(e["state"], e["labels"])], log_every=0)
+                for q in e["questions"]:
+                    seen.setdefault(q.id, q)
                 for k, v in r.items():
-                    records[k] += v
+                    records.setdefault(k, []).extend(v)
+                    index.setdefault(k, []).extend([i] * len(v))
                 if (i + 1) % 50 == 0:
                     print(f"  collected {i + 1}/{len(exs)} ({time.perf_counter() - t0:.0f}s)", file=sys.stderr)
+            questions = list(seen.values())
         cal = calibrate(questions, records, model=tag)
         print(f"\n== {task} ==")
         print(report(cal))
@@ -81,6 +86,7 @@ def cmd_calibrate(a):
             json.dump({"task": task, "tag": tag, "seed": a.seed, "labels": {q.id: list(q.labels) for q in questions},
                        "records": {k: [[s, sorted(acc)] for s, acc in v] for k, v in records.items()},
                        "targets": {q.id: [target(q, e["labels"][q.id]) for e in exs if q.id in e["labels"]] for q in questions},
+                       "index": (index if not fixed else {q.id: [i for i, e in enumerate(exs) if q.id in e["labels"]] for q in questions}),
                        "gold": [e.get("gold") for e in exs], "workflow": [e.get("workflow") for e in exs]}, f)
         with open(f"{a.out}/rel_{task}_{tag}.svg", "w") as f:
             f.write(reliability_svg(cal, f"{task} · {tag}"))
