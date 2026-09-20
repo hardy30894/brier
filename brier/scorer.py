@@ -9,13 +9,26 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from .schema import Schema, Decision, FieldDecision
 
 
+ENCODER_TYPES = {"modernbert", "bert", "roberta", "deberta-v2", "deberta", "xlm-roberta", "electra", "distilbert"}
+
+
+def is_encoder(model_id) -> bool:
+    """An encoder-only backbone (masked-language pretraining, bidirectional, no generation path):
+    usable through the pointer head only."""
+    from transformers import AutoConfig
+    return AutoConfig.from_pretrained(model_id).model_type in ENCODER_TYPES
+
+
 def load_causal_lm(model_id, device):
-    """bfloat16 on GPU (float16 on Apple silicon, float32 on CPU); tolerant of older transformers."""
+    """bfloat16 on GPU (float16 on Apple silicon, float32 on CPU); tolerant of older transformers.
+    Encoder backbones load as the bare encoder."""
+    from transformers import AutoModel
     dtype = torch.float32 if device == "cpu" else (torch.float16 if device == "mps" else torch.bfloat16)
+    cls = AutoModel if is_encoder(model_id) else AutoModelForCausalLM
     try:
-        return AutoModelForCausalLM.from_pretrained(model_id, dtype=dtype)
+        return cls.from_pretrained(model_id, dtype=dtype)
     except TypeError:
-        return AutoModelForCausalLM.from_pretrained(model_id, torch_dtype=dtype)
+        return cls.from_pretrained(model_id, torch_dtype=dtype)
 
 
 def pick_device():
@@ -45,6 +58,7 @@ class Scorer:
         self.tok = tok or AutoTokenizer.from_pretrained(model_id)
         if self.tok.pad_token_id is None:
             self.tok.pad_token = self.tok.eos_token
+        self.encoder = is_encoder(model_id)
         if model is None:
             model = load_causal_lm(model_id, self.device).to(self.device)
         self.model = model.eval()
@@ -63,6 +77,8 @@ class Scorer:
         return ids
 
     def chat_prefix(self, user: str) -> str:
+        if self.encoder:
+            return f"{self.tok.cls_token or ''}{user}{self.tok.sep_token or ''}"
         msgs = [{"role": "user", "content": user}]
         return self.tok.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True, enable_thinking=False)
 

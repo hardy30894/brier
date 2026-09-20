@@ -40,6 +40,8 @@ def main():
     ap.add_argument("--episode", type=int, default=1, help="steps per episode; >1 uses the delayed episode outcome (reached the exit) as the reward for every step")
     ap.add_argument("--seed", type=int, default=300)
     ap.add_argument("--out", default="adapters")
+    ap.add_argument("--task", default="gridworld", help="gridworld | tickets | toolcall: text tasks use the environments in tasks/outcomes.py")
+    ap.add_argument("--uncertain", type=float, default=0.3, help="text tasks: fraction of ambiguous states, whose outcomes are drawn from the soft posterior")
     a = ap.parse_args()
 
     torch.manual_seed(a.seed)
@@ -60,6 +62,10 @@ def main():
     baseline, t0 = 0.5, time.perf_counter()
     stats = {"reward": 0.0, "brier": 0.0, "conf": 0.0, "n": 0}
     model.train()
+    if a.task != "gridworld":
+        train_text(a, scorer, model, opt, stats, t0)
+        save(a, model)
+        return
     for it in range(a.steps):
         exs = gridworld.generate_q(a.batch, seed=a.seed * 100000 + it)
         opt.zero_grad(set_to_none=True)
@@ -99,11 +105,65 @@ def main():
             n = max(1, stats["n"])
             print(f"step {it + 1}/{a.steps} reward {stats['reward'] / n:.3f} brier {stats['brier'] / n:.3f} conf {stats['conf'] / n:.3f} ({time.perf_counter() - t0:.0f}s)", file=sys.stderr)
             stats = {k: 0.0 for k in stats}
-    name = f"{a.model.split('/')[-1]}-brier-rl-s{a.steps}" + (f"-ep{a.episode}" if a.episode > 1 else "") + ("-from-sup" if a.init else "")
+    save(a, model)
+
+
+def save(a, model):
+    name = f"{a.model.split('/')[-1]}-brier-rl-{a.task}-s{a.steps}" + (f"-ep{a.episode}" if a.episode > 1 else "") + ("-from-sup" if a.init else "")
     path = os.path.join(a.out, name)
     model.save_pretrained(path)
     json.dump(vars(a), open(os.path.join(path, "train_args.json"), "w"), indent=1)
     print(f"saved {path}")
+
+
+def train_text(a, scorer, model, opt, stats, t0):
+    """Bandit feedback on text decisions: one answer sampled per question, the environment
+    returns a reward for that answer only, and the loss is the policy-gradient term against a
+    per-question running baseline plus the Brier score of the stated probability."""
+    from tasks import examples
+    from tasks.outcomes import ENVS
+    env = ENVS[a.task]
+    rng = random.Random(a.seed)
+    baselines = {}
+    for it in range(a.steps):
+        exs = examples(a.task, a.batch, seed=a.seed * 100000 + it, split="train", uncertain=a.uncertain)
+        opt.zero_grad(set_to_none=True)
+        loss, count = 0.0, 0
+        for ex in exs:
+            qs = ex["questions"]
+            seqs, spans = scorer.build_rows(build_prompt(scorer, ex["state"], qs), groups_for(qs))
+            input_ids, attn = scorer.batch(seqs)
+            cand = scorer.scores_from_rows(input_ids, attn, spans)
+            answers, picks, k = {}, [], 0
+            for q in qs:
+                s_q = cand[k : k + len(q.labels)]
+                k += len(q.labels)
+                logp = torch.log_softmax(s_q, dim=0)
+                i = torch.multinomial(logp.exp().detach(), 1).item()
+                answers[q.id] = q.labels[i]
+                picks.append((q.id, logp[i]))
+            rewards = env(ex, answers, rng)
+            for qid, lp in picks:
+                if qid not in rewards:
+                    continue
+                y = rewards[qid]
+                b = baselines.get(qid, 0.5)
+                p = lp.exp()
+                loss = loss - (y - b) * lp + a.lam * (p - y) ** 2
+                baselines[qid] = 0.98 * b + 0.02 * y
+                stats["reward"] += y
+                stats["brier"] += ((p - y) ** 2).item()
+                stats["conf"] += p.item()
+                stats["n"] += 1
+                count += 1
+        (loss / max(count, 1)).backward()
+        torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+        opt.step()
+        if (it + 1) % 25 == 0:
+            n = max(1, stats["n"])
+            print(f"step {it + 1}/{a.steps} reward {stats['reward'] / n:.3f} brier {stats['brier'] / n:.3f} conf {stats['conf'] / n:.3f} ({time.perf_counter() - t0:.0f}s)", file=sys.stderr)
+            for key in stats:
+                stats[key] = 0.0
 
 
 if __name__ == "__main__":

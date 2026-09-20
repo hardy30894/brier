@@ -129,10 +129,11 @@ def encode(scorer, state, questions):
 
 
 def decoder(model):
-    """The transformer body without the vocabulary head, through PEFT and DDP wrappers."""
+    """The transformer body without the vocabulary head, through PEFT and DDP wrappers. For an
+    encoder backbone this is the encoder itself."""
     m = model
     for _ in range(6):
-        if hasattr(m, "embed_tokens"):
+        if hasattr(m, "embed_tokens") or (hasattr(m, "embeddings") and hasattr(m, "layers")) or (hasattr(m, "embeddings") and hasattr(m, "encoder")):
             return m
         m = getattr(m, "module", None) or getattr(m, "base_model", None) or getattr(m, "model", None) or m
         if m is None:
@@ -208,13 +209,18 @@ def hidden_states(scorer, rows, grad=False):
     the real positions are unchanged by it and no attention mask is needed. Replayed from a
     CUDA graph, with bucketed shapes, when the scorer says so."""
     n = max(len(r) for r in rows)
-    cap = getattr(scorer, "capture", False) and not grad and scorer.device == "cuda"
+    enc = getattr(scorer, "encoder", False)
+    cap = getattr(scorer, "capture", False) and not grad and scorer.device == "cuda" and not enc
     L = bucket(n, BUCKETS) if cap else n
     B = bucket(len(rows), BATCH_BUCKETS) if cap else len(rows)
     pad = scorer.tok.pad_token_id
     x = torch.tensor([r + [pad] * (L - len(r)) for r in rows] + [[pad] * L] * (B - len(rows)), device=scorer.device)
     if cap:
         return captured_body(scorer)(x)
+    if enc:
+        # bidirectional attention would read the padding, so it is masked out
+        m = torch.tensor([[1] * len(r) + [0] * (L - len(r)) for r in rows] + [[0] * L] * (B - len(rows)), device=scorer.device)
+        return decoder(scorer.model)(input_ids=x, attention_mask=m).last_hidden_state
     return decoder(scorer.model)(input_ids=x).last_hidden_state
 
 

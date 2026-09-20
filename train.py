@@ -1,6 +1,7 @@
 """Milestone 2: fine-tune the backbone with LoRA so that the per-question softmax over candidates is
 trained directly with cross-entropy, a proper scoring rule. Same scoring path as inference."""
 import argparse
+import contextlib
 import json
 import math
 import os
@@ -20,7 +21,8 @@ from brier.calibrate import acceptable, target
 from brier.questions import build_prompt, groups_for
 from tasks import examples
 
-CANDIDATE_TARGETS = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj", "qkv_proj", "gate_up_proj"]
+CANDIDATE_TARGETS = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj", "qkv_proj", "gate_up_proj",
+                     "Wqkv", "Wo", "Wi", "query", "key", "value", "dense", "query_proj", "key_proj", "value_proj"]
 
 
 def lora_targets(model):
@@ -122,20 +124,40 @@ def main():
     ap.add_argument("--grade-boost", type=int, default=1, help="repeat examples that carry a Grade question this many times")
     ap.add_argument("--joint", dest="joint", action="store_true", default=True, help="with --pointer: also train the row-scorer objective, so the adapter serves both paths (default)")
     ap.add_argument("--pointer-only", dest="joint", action="store_false", help="train the pointer head alone; the row scorer under this adapter is not usable")
+    ap.add_argument("--full", action="store_true", help="fine-tune every backbone weight instead of a LoRA adapter (encoder backbones)")
+    ap.add_argument("--freeze", action="store_true", help="freeze the backbone and train only the head(s)")
     a = ap.parse_args()
 
     torch.manual_seed(a.seed)
     random.seed(a.seed)
     if world > 1:
         log(f"distributed: {world} processes, each step sees {world} × {a.accum} × {a.batch} examples")
+    from brier.scorer import is_encoder
+    encoder = is_encoder(a.model)
+    if encoder:
+        a.pointer, a.joint = True, False   # no vocabulary head: the pointer head is the only path
     tok = AutoTokenizer.from_pretrained(a.model)
-    base = AutoModelForCausalLM.from_pretrained(a.model, dtype=torch.bfloat16)
-    base.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})
-    base.enable_input_require_grads()
-    cfg = LoraConfig(r=a.rank, lora_alpha=2 * a.rank, lora_dropout=0.05, target_modules=lora_targets(base), task_type="CAUSAL_LM")
-    model = get_peft_model(base, cfg)
-    if rank == 0:
+    if encoder:
+        from transformers import AutoModel
+        base = AutoModel.from_pretrained(a.model, dtype=torch.bfloat16 if not a.full else torch.float32)
+    else:
+        base = AutoModelForCausalLM.from_pretrained(a.model, dtype=torch.bfloat16)
+    try:
+        base.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})
+    except (ValueError, TypeError):
+        pass
+    if a.full or a.freeze:
+        model = base
+        for prm in model.parameters():
+            prm.requires_grad_(bool(a.full))
+    else:
+        base.enable_input_require_grads()
+        cfg = LoraConfig(r=a.rank, lora_alpha=2 * a.rank, lora_dropout=0.05, target_modules=lora_targets(base), task_type="FEATURE_EXTRACTION" if encoder else "CAUSAL_LM")
+        model = get_peft_model(base, cfg)
+    if rank == 0 and hasattr(model, "print_trainable_parameters"):
         model.print_trainable_parameters()
+    elif rank == 0:
+        log(f"trainable parameters: {sum(p.numel() for p in model.parameters() if p.requires_grad):,}")
     scorer = Scorer(a.model, model=model, tok=tok, device=device)
     scorer.model = scorer.model.to(scorer.device)
     peft_model = scorer.model
@@ -164,7 +186,7 @@ def main():
     if world > 1:
         data = data[rank::world]
 
-    groups = [{"params": [p for p in scorer.model.parameters() if p.requires_grad], "lr": a.lr}]
+    groups = [{"params": [p for p in scorer.model.parameters() if p.requires_grad], "lr": a.lr}] if not a.freeze else []
     if a.head:
         groups.append({"params": list(scorer.head.parameters()), "lr": a.head_lr})
     if pointer is not None:
@@ -178,25 +200,31 @@ def main():
         for _ in range(a.accum):
             exs = [data[(i + j) % len(data)] for j in range(a.batch)]
             i += a.batch
-            if pointer is not None:
+            ctx = torch.autocast("cuda", dtype=torch.bfloat16) if (a.full and scorer.device and str(scorer.device).startswith("cuda")) or (a.full and torch.cuda.is_available()) else contextlib.nullcontext()
+            with ctx:
+              if pointer is not None:
                 loss = pointer_loss(scorer, pointer, exs, teacher)
                 if a.joint:
                     loss = loss + batch_loss(scorer, exs)   # keeps the row scorer, which shares these weights, trained too
-            else:
+              else:
                 loss = batch_loss(scorer, exs)
             loss = loss / a.accum
             loss.backward()
             running += loss.item()
-        torch.nn.utils.clip_grad_norm_(scorer.model.parameters(), 1.0)
+        torch.nn.utils.clip_grad_norm_([p for p in scorer.model.parameters() if p.requires_grad] + (list(pointer.parameters()) if pointer is not None else []), 1.0)
         opt.step()
         sched.step()
         if (step + 1) % 50 == 0:
             log(f"step {step + 1}/{a.steps} loss {running / 50:.4f} lr {sched.get_last_lr()[0]:.2e} ({time.perf_counter() - t0:.0f}s)")
             running = 0.0
-    name = f"{a.model.split('/')[-1]}-brier-r{a.rank}-s{a.steps}" + (f"-u{a.uncertain:g}" if a.uncertain else "") + (f"-{a.split}" if a.split != "all" else "") + ("-head" if a.head else "") + ("-pointer" if a.pointer else "") + ("-distill" if a.distill else "") + ("-cum" if a.ordinal == "cumulative" else "") + ("-num" if a.grade_numbers else "") + (f"-gb{a.grade_boost}" if a.grade_boost > 1 else "") + ("-joint" if a.joint and a.pointer else "")
+    name = f"{a.model.split('/')[-1]}-brier-r{a.rank}-s{a.steps}" + (f"-u{a.uncertain:g}" if a.uncertain else "") + (f"-{a.split}" if a.split != "all" else "") + ("-head" if a.head else "") + ("-pointer" if a.pointer else "") + ("-distill" if a.distill else "") + ("-cum" if a.ordinal == "cumulative" else "") + ("-num" if a.grade_numbers else "") + (f"-gb{a.grade_boost}" if a.grade_boost > 1 else "") + ("-joint" if a.joint and a.pointer else "") + ("-full" if a.full else "") + ("-frozen" if a.freeze else "")
     path = os.path.join(a.out, name)
     if rank == 0:
-        peft_model.save_pretrained(path)
+        os.makedirs(path, exist_ok=True)
+        if a.full:
+            torch.save(peft_model.state_dict(), os.path.join(path, "backbone.pt"))
+        elif not a.freeze:
+            peft_model.save_pretrained(path)
         if a.head:
             torch.save(scorer.head.state_dict(), os.path.join(path, "head.pt"))
         if pointer is not None:

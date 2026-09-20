@@ -19,7 +19,13 @@ def load_scorer(model_id, adapter=None):
     from .scorer import load_causal_lm, pick_device
     tok = AutoTokenizer.from_pretrained(model_id)
     base = load_causal_lm(model_id, pick_device())
-    model = PeftModel.from_pretrained(base, adapter)
+    if os.path.exists(os.path.join(adapter, "adapter_config.json")):
+        model = PeftModel.from_pretrained(base, adapter)
+    elif os.path.exists(os.path.join(adapter, "backbone.pt")):
+        base.load_state_dict(torch.load(os.path.join(adapter, "backbone.pt"), map_location="cpu"))
+        model = base
+    else:
+        model = base
     sc = Scorer(model_id, model=model, tok=tok)
     sc.model = sc.model.to(sc.device)
     ptr_path = os.path.join(adapter, "pointer.pt")
@@ -31,6 +37,8 @@ def load_scorer(model_id, adapter=None):
         sc.pointer = PointerHead(base.config.hidden_size, ordinal=meta.get("ordinal", "quadratic")).to(sc.device)
         sc.pointer.load_state_dict(torch.load(ptr_path, map_location=sc.device), strict=False)
         sc.pointer.eval()
+        if sc.encoder:
+            sc.pointer_grade = True   # an encoder has no vocabulary head, so every question goes through the pointer
     head_path = os.path.join(adapter, "head.pt")
     if os.path.exists(head_path):
         from .head import TypedHead
