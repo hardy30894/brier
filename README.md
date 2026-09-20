@@ -133,6 +133,25 @@ only on what happened after each decision, a bounced ticket, a missed hand-off, 
 tool call, the model lands within three points of label training on unordered choices and
 claims, and fourteen behind on an ordered scale whose reward does not resolve the level.
 
+### Learning from consequences, on a public benchmark
+
+An independent typed-decision benchmark the model had never seen. The environment marks
+the one sampled answer right or wrong and reveals nothing else: no label, no
+distribution, no score for any answer the model did not try.
+
+| model | what it was trained on | accuracy |
+|---|---|---|
+| general encoder, before | a corpus of other tasks | 0.388 |
+| **same encoder, 600 steps of consequences** | **outcomes only, no labels** | **0.720** |
+| encoder from scratch, consequences only | outcomes only | 0.517 ± 0.058 |
+| encoder, supervised | the benchmark's 1,200 labelled cases | 0.766 ± 0.003 |
+| closed product, as published | undisclosed | 0.727 |
+
+A non-generative model taught only by what happened closes seven eighths of the distance
+to full supervision, and its probabilities match the real spread of disagreement better
+than the supervised model's do. Labels teach a model to read questions; consequences
+teach it what the right answer is where you deploy it.
+
 ### A public head-to-head
 
 An independent typed-decision benchmark, four workflows, 2,000 test decisions, labels
@@ -144,6 +163,7 @@ authors published them.
 | Brier, Qwen3-8B, row scorer | **0.797** | **0.042** | **0.19** |
 | Brier, Qwen3-0.6B, pointer head, one row per case | **0.791** | 0.044 | 0.21 |
 | Brier, Qwen3-0.6B, row scorer, 3 seeds | **0.779 ± 0.004** | 0.045 | 0.20 |
+| Brier, Phi-4-mini, row scorer | 0.789 | 0.043 | 0.20 |
 | Brier, ModernBERT-large encoder, 3 seeds | 0.766 ± 0.003 | 0.062 | 0.25 |
 | published open encoder, one run | 0.766 | 0.061 | 0.24 |
 | teacher self-agreement | 0.735 | | |

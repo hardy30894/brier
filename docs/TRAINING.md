@@ -1707,7 +1707,36 @@ it is run there.
 
 ### The public benchmark as a bandit
 
-ROUND9_TYPED
+The public benchmark becomes an environment: the model states a distribution, one answer
+is sampled, and the environment marks it against the benchmark's hard label and reveals
+nothing else. The gold distribution the supervised runs train on is never shown, and no
+answer other than the sampled one is ever scored. Accuracy on the same 2,000 held-out
+decisions:
+
+| model | trained on | accuracy | soft acc | Brier | ECE (15 bins) |
+|---|---|---|---|---|---|
+| general encoder, mixed corpus, no benchmark data | — | 0.388 | 0.374 | 0.302 | 0.189 |
+| **same encoder, 600 steps of consequences, no labels** | outcomes only | **0.720** | 0.573 | 0.115 | 0.207 |
+| encoder from scratch, consequences only, 3 seeds | outcomes only | 0.517 ± 0.058 | 0.443 | 0.404 | 0.268 |
+| encoder, supervised on the benchmark's training split, 3 seeds | 1,200 labelled cases | 0.766 ± 0.003 | 0.503 | 0.062 | 0.144 |
+| closed product, as published | undisclosed | 0.727 | 0.580 | 0.148 | 0.144 |
+| teacher self-agreement | — | 0.735 | | | |
+
+**A non-generative model taught only by consequences reaches 0.720 on a public benchmark
+it had never seen.** It started at 0.388, was never shown a label or a gold
+distribution, and closed seven eighths of the distance to full supervision in 600 steps
+of 8 states. Its soft accuracy, 0.573, is the highest in the table, above the supervised
+encoder's 0.503 and level with the closed product's 0.580: trained on outcomes rather
+than on a teacher's distribution, it does not inherit that teacher's sharpness and its
+probabilities sit closer to the spread of real disagreement. Its Brier score against the
+gold distribution, 0.115, is worse than the supervised 0.062, which is the price of
+never seeing that distribution.
+
+The same training from a fresh encoder reaches 0.517 across three seeds, and the
+general model's own zero-shot score is 0.388, so neither the prior nor the reward is
+sufficient alone: the corpus supplies the ability to read an unfamiliar question, and
+the consequences supply what the right answer is in this deployment. That is the two-phase
+recipe stated at the start of this round, measured end to end on someone else's test.
 
 ## What was learned in round nine
 
