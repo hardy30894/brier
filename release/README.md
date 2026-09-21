@@ -45,3 +45,18 @@ Release set for v0.1.0: `modernbert-large-decisions-mixed` (encoder, mixed corpu
 seed with the best held-out mean), `qwen3-0.6b-pointer-mixed` (joint pointer adapter),
 `qwen3-8b-decisions-mixed` (row adapter), `modernbert-large-decisions-typed` and
 `qwen3-0.6b-pointer-typed` (fine-tuned on the public benchmark's training split).
+
+## The release set
+
+Five models, each with a card built only from numbers in `results/`:
+
+| repository | what it is | headline |
+|---|---|---|
+| `modernbert-large-decisions-63` | a non-generative encoder trained on 63 public datasets | 0.454 zero-shot on a benchmark it never saw, the lowest zero-shot calibration error we measure |
+| `modernbert-large-outcomes` | the same encoder, then taught by consequences alone | 0.698 on that benchmark, never having seen a label |
+| `modernbert-large-decisions` | the earlier encoder, fifteen-task corpus | matches a language-model scorer on seen question types |
+| `qwen3-0.6b-pointer-decisions` | a language-model scorer with the pointer head | one row per request, flat latency in the number of questions |
+| `qwen3-8b-decisions` | the largest backbone measured | the best supervised numbers in the project |
+
+Publishing needs a write token for the organisation and the organisation name; nothing
+above has been uploaded.

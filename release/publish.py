@@ -28,6 +28,18 @@ DATA = {
     "typed": "the training split of a public four-workflow typed-decision benchmark (agent-trace "
              "observability, customer service, invoice processing, security incidents): 1,200 cases, five "
              "typed questions each, with the benchmark's teacher distributions as soft labels",
+    "typed-outcomes": "**outcomes, not labels.** The states of the same public benchmark's training split "
+                      "were used as an environment: the model stated a distribution, one answer was sampled "
+                      "from it, and the environment returned only whether that one answer was right. No label "
+                      "and no teacher distribution was ever shown, and no answer the model did not sample was "
+                      "ever scored. 600 steps of 8 states, so 4,800 decisions. The starting point was an "
+                      "encoder trained on a corpus of 63 other public datasets, which had never seen this "
+                      "benchmark",
+    "corpus": "a corpus of 63 public datasets converted into typed questions (topic, sentiment, ordinal "
+              "rating, entailment, paraphrase, intent, toxicity, spam, fact checking, answerability, yes/no "
+              "comprehension, commonsense multiple choice, acceptability, emotion, sarcasm, stance, code), "
+              "300 examples each; eight further datasets are held out entirely and never trained on. Every "
+              "draw is audited for label balance on both splits (`docs/CORPUS.md`)",
 }
 
 KIND = {
