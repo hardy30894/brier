@@ -1788,18 +1788,23 @@ saw: the eight held-out datasets, the four tasks of this repository that are not
 corpus at all, and the public benchmark of round eight, zero-shot. All are ModernBERT-large,
 fully fine-tuned through the pointer head, 6,000 steps, learning rate 2e-5.
 
-| | 5,500 examples, seed 1 | 5,500 examples, seed 2 | 16,500 examples | untrained Phi-4-mini |
-|---|---|---|---|---|
-| TREC question type | 0.660 | 0.350 | 0.637 | 0.630 |
-| BoolQ | 0.577 | 0.573 | **0.623** | 0.817 |
-| CommonsenseQA | 0.500 | 0.320 | **0.573** | 0.710 |
-| financial-news scale | 0.660 | 0.237 | **0.730** | 0.410 |
-| PAWS paraphrase | 0.530 | 0.420 | 0.440 | 0.567 |
-| SMS spam | 0.540 | 0.523 | **0.580** | 0.593 |
-| adversarial NLI | 0.367 | 0.343 | 0.357 | 0.550 |
-| tweet irony | 0.640 | 0.570 | **0.670** | 0.757 |
-| **public benchmark, zero-shot** | 0.430 | 0.309 | **0.455** | 0.606 |
-| benchmark calibration error | 0.409 | 0.466 | **0.167** | 0.286 |
+| | encoder, 5,500, seed 1 | encoder, 5,500, seed 2 | encoder, 16,500 | Qwen3-0.6B, 16,500 | untrained Phi-4-mini |
+|---|---|---|---|---|---|
+| TREC question type | 0.660 | 0.350 | 0.637 | 0.560 | 0.630 |
+| BoolQ | 0.577 | 0.573 | 0.623 | 0.697 | **0.817** |
+| CommonsenseQA | 0.500 | 0.320 | 0.573 | 0.513 | **0.710** |
+| financial-news scale | 0.660 | 0.237 | **0.730** | 0.693 | 0.410 |
+| PAWS paraphrase | 0.530 | 0.420 | 0.440 | 0.443 | **0.567** |
+| SMS spam | 0.540 | 0.523 | 0.580 | **0.803** | 0.593 |
+| adversarial NLI | 0.367 | 0.343 | 0.357 | 0.380 | **0.550** |
+| tweet irony | 0.640 | 0.570 | 0.670 | 0.713 | **0.757** |
+| **public benchmark, zero-shot** | 0.430 | 0.309 | 0.455 | **0.526** | 0.606 |
+| benchmark calibration error | 0.409 | 0.466 | 0.167 | **0.142** | 0.286 |
+
+The 0.6B language model was trained on the same corpus with the same pointer head, and
+its zero-shot score on the benchmark rises from 0.394 untrained to 0.526. The corpus
+helps both backbone families, it helps the one that could already read by less in
+relative terms and more in absolute, and the ordering between them does not change.
 
 And on the four tasks outside the corpus entirely, 16,500 examples against 5,500:
 
@@ -1812,7 +1817,11 @@ And on the four tasks outside the corpus entirely, 16,500 examples against 5,500
 | banking77 | 0.907 | **0.923** |
 | tickets, priority | 0.530 | 0.383 |
 
-**Variety buys transfer, and quantity of it matters.** At 16,500 examples the corpus
+**Variety buys transfer for both kinds of backbone.** The 0.6B language model gains as
+much as the encoder does: 0.394 to 0.526 zero-shot on the benchmark, with the lowest
+calibration error in the table, 0.142.
+
+**Quantity of variety matters.** At 16,500 examples the corpus
 encoder is best or tied on six of the eight held-out datasets, scores 0.455 zero-shot on
 the public benchmark against 0.430 and 0.309 at a third of the data, and transfers to
 tasks that share nothing with the corpus: duplicates 0.997, the hand-off claim 0.980.
