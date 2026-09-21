@@ -141,8 +141,8 @@ distribution, no score for any answer the model did not try.
 
 | model | what it was trained on | accuracy |
 |---|---|---|
-| general encoder, before | a corpus of other tasks | 0.388 |
-| **same encoder, 600 steps of consequences, 3 seeds** | **outcomes only, no labels** | **0.698 ± 0.028** |
+| general encoder, before | a corpus of 63 other datasets | 0.454 ± 0.028 |
+| **same encoder, 600 steps of consequences, 3 seeds** | **outcomes only, no labels** | **0.698 ± 0.010** |
 | encoder from scratch, consequences only, 3 seeds | outcomes only | 0.517 ± 0.058 |
 | Qwen3-0.6B from base, consequences only, 2 seeds | outcomes only | 0.673 ± 0.038 |
 | encoder, supervised | the benchmark's 1,200 labelled cases | 0.766 ± 0.003 |

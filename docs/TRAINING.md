@@ -1715,16 +1715,18 @@ decisions:
 
 | model | trained on | accuracy | soft acc | Brier | ECE (15 bins) |
 |---|---|---|---|---|---|
-| general encoder, mixed corpus, no benchmark data | — | 0.388 | 0.374 | 0.302 | 0.189 |
-| **same encoder, 600 steps of consequences, 3 seeds** | outcomes only | **0.698 ± 0.028** | 0.561 | 0.320 | 0.223 |
+| encoder, 15-task corpus, no benchmark data | — | 0.388 | 0.374 | 0.302 | 0.189 |
+| same encoder, 600 steps of consequences, 3 seeds | outcomes only | 0.698 ± 0.028 | 0.561 | 0.320 | 0.223 |
+| encoder, 63-dataset corpus, 3 seeds | — | 0.454 ± 0.028 | 0.388 | 0.312 | 0.180 |
+| **same encoder, 600 steps of consequences, 3 seeds** | outcomes only | **0.698 ± 0.010** | 0.562 | 0.335 | 0.235 |
 | encoder from scratch, consequences only, 3 seeds | outcomes only | 0.517 ± 0.058 | 0.443 | 0.404 | 0.268 |
 | Qwen3-0.6B from base, consequences only, 2 seeds | outcomes only | 0.673 ± 0.038 | 0.548 | 0.338 | 0.245 |
 | encoder, supervised on the benchmark's training split, 3 seeds | 1,200 labelled cases | 0.766 ± 0.003 | 0.503 | 0.062 | 0.144 |
 | closed product, as published | undisclosed | 0.727 | 0.580 | 0.148 | 0.144 |
 | teacher self-agreement | — | 0.735 | | | |
 
-**A non-generative model taught only by consequences reaches 0.698 ± 0.028 on a public
-benchmark it had never seen.** It started at 0.388, was never shown a label or a gold
+**A non-generative model taught only by consequences reaches 0.698 on a public benchmark
+it had never seen.** It started at 0.388, was never shown a label or a gold
 distribution, and closed four fifths of the distance to full supervision in 600 steps of
 8 states, which is 4,800 decisions. The same training from a fresh encoder reaches
 0.517, and the general model's own zero-shot score is 0.388, so neither the prior nor
@@ -1732,6 +1734,15 @@ the reward is sufficient alone: the corpus supplies the ability to read an unfam
 question and the consequences supply what the right answer is in this deployment. The
 language-model backbone learns the same way without a corpus behind it, 0.673 ± 0.038
 from its base weights, because its pretraining already provides the prior.
+
+**A better prior does not raise the ceiling; it removes the variance.** Starting the same
+600 steps from the 63-dataset encoder, which is 0.454 zero-shot rather than 0.388, gives
+the same mean, 0.698, with the spread across seeds falling from ±0.028 to ±0.010. Where
+the model starts changes how reliably it arrives, not where it arrives. What the prior
+has to be good enough for is reading the question; past that, the outcomes decide the
+answer, and 4,800 of them are enough to reach the same place every time. The ceiling
+belongs to the reward: 0.698 against 0.766 with labels is the cost of a signal that says
+only whether one sampled answer paid off.
 
 Two properties of these models differ from the supervised ones in the same direction.
 Their soft accuracy, how closely the stated probabilities match the spread of the
