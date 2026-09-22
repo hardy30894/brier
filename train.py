@@ -186,6 +186,8 @@ def main():
         model = base
         for prm in model.parameters():
             prm.requires_grad_(bool(a.full))
+        if a.full and world > 1:
+            base.enable_input_require_grads()
     else:
         base.enable_input_require_grads()
         cfg = LoraConfig(r=a.rank, lora_alpha=2 * a.rank, lora_dropout=0.05, target_modules=lora_targets(base), task_type="FEATURE_EXTRACTION" if encoder else "CAUSAL_LM")
@@ -247,6 +249,17 @@ def main():
             loss = loss / a.accum
             loss.backward()
             running += loss.item()
+        if world > 1:
+            # DistributedDataParallel synchronises the backbone it wraps, and nothing else. The
+            # heads live outside it, so their gradients are averaged by hand; without this every
+            # rank would quietly train a different head.
+            for head_mod in (pointer, scorer.head):
+                if head_mod is None:
+                    continue
+                for prm in head_mod.parameters():
+                    if prm.grad is not None:
+                        dist.all_reduce(prm.grad, op=dist.ReduceOp.SUM)
+                        prm.grad /= world
         torch.nn.utils.clip_grad_norm_([p for p in scorer.model.parameters() if p.requires_grad] + (list(pointer.parameters()) if pointer is not None else []), 1.0)
         opt.step()
         sched.step()
