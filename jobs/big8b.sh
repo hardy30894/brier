@@ -1,4 +1,4 @@
-set -x; cd /workspace/brier; mkdir -p results/8b
+set -exo pipefail; cd /workspace/brier; mkdir -p results/8b
 M=Qwen/Qwen3-8B
 python3 bench.py --model $M --tasks tickets --n 50 --methods scored,json 2>&1 | tail -20 > results/8b/bench_json_vs_scored.txt
 python3 -m brier calibrate --model $M --task tickets,frustration,duplicates,banking,msmarco,mnli,imdb,emotion,snli,sst5,yelp --split eval --n 300 --tag 8b-untrained --out results/8b
