@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parent
 STATE = ROOT / ".pod.json"
 IMAGE = "runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04"
 REMOTE = "/workspace/brier"
-MAX_TTL_MIN = 240
+MAX_TTL_MIN = 360   # the hard ceiling a watchdog will always enforce; training runs of several hours are deliberate
 
 
 def load_key():
