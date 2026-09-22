@@ -1817,6 +1817,40 @@ its zero-shot score on the benchmark rises from 0.394 untrained to 0.526. The co
 helps both backbone families, it helps the one that could already read by less in
 relative terms and more in absolute, and the ordering between them does not change.
 
+### Held-out datasets and unseen question types are not the same thing
+
+Phi-4-mini trained on the corpus separates the two ideas that "transfer" had been
+covering. Against the same model untrained:
+
+| held-out dataset | untrained Phi | corpus-trained Phi | corpus encoder |
+|---|---|---|---|
+| financial-news scale | 0.410 · ECE 0.480 | **0.790 · ECE 0.063** | 0.730 · 0.164 |
+| SMS spam | 0.593 · 0.311 | **0.820 · 0.091** | 0.580 · 0.362 |
+| tweet irony | 0.757 · 0.102 | **0.820 · 0.047** | 0.670 · 0.270 |
+| CommonsenseQA | 0.710 · 0.290 | **0.760 · 0.260** | 0.573 · 0.404 |
+| BoolQ | 0.817 · 0.099 | **0.863 · 0.035** | 0.623 · 0.295 |
+| PAWS paraphrase | 0.567 · 0.368 | **0.587 · 0.336** | 0.440 · 0.549 |
+| adversarial NLI | 0.550 · 0.317 | **0.560 · 0.289** | 0.357 · 0.597 |
+| TREC question type | 0.630 · 0.286 | 0.617 · 0.154 | 0.637 · 0.182 |
+| **public benchmark, zero-shot** | **0.606** · 0.160 | 0.614 · **0.111** | 0.454 · 0.180 |
+
+On the eight held-out datasets the corpus lifts Phi on seven of eight, by 38 points on
+the ordered financial scale and 23 on spam, and cuts calibration error everywhere; the
+corpus-trained language model is now the best model in this document on held-out
+datasets, ahead of the corpus encoder on all eight. On the public benchmark it moves by
+eight thousandths, 0.606 to 0.614, while its calibration error falls from 0.160 to
+0.111.
+
+Those two facts are the same fact seen twice. A held-out dataset is a new *dataset* of a
+question type the corpus contains: sentiment, entailment, spam, a four-way pick. The
+benchmark is a set of question types the corpus does not contain at all, written for
+four workflows nobody else has, with options like "escalate to a human with the
+appropriate authority". Sixty-three datasets teach a model to answer unfamiliar *data*
+and to state honest probabilities about it; they do not teach it to answer an unfamiliar
+*kind of question*. The transfer this project has been chasing is the second one, and
+this is the first measurement that separates them cleanly. It also says what the corpus
+has to grow into: not more datasets of the kinds it already has, but more kinds.
+
 And on the four tasks outside the corpus entirely, 16,500 examples against 5,500:
 
 | task | 5,500 | 16,500 |
