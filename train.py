@@ -257,9 +257,14 @@ def main():
                 if head_mod is None:
                     continue
                 for prm in head_mod.parameters():
-                    if prm.grad is not None:
-                        dist.all_reduce(prm.grad, op=dist.ReduceOp.SUM)
-                        prm.grad /= world
+                    # Every rank must make the same collective calls in the same order. Whether a
+                    # head parameter has a gradient depends on which questions that rank drew
+                    # (the ordinal terms only fire on Grade), so a rank-dependent skip here
+                    # deadlocks the group. Missing gradients are zeros, and are reduced anyway.
+                    if prm.grad is None:
+                        prm.grad = torch.zeros_like(prm)
+                    dist.all_reduce(prm.grad, op=dist.ReduceOp.SUM)
+                    prm.grad /= world
         torch.nn.utils.clip_grad_norm_([p for p in scorer.model.parameters() if p.requires_grad] + (list(pointer.parameters()) if pointer is not None else []), 1.0)
         opt.step()
         sched.step()
