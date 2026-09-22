@@ -59,31 +59,63 @@ def pointer_loss(scorer, head, exs, teacher=None):
     return loss / max(n, 1)
 
 
-def batch_loss(scorer, exs):
+def sampled_groups(groups, ex, cap, rng):
+    """Cap how many answers a question is scored against during training. A question with a
+    hundred and fifty intents would otherwise need a hundred and fifty copies of the prompt in
+    one backward pass. The kept set always contains every acceptable answer, the rest are drawn
+    at random, and the softmax is over exactly what was kept, which is the sampled-softmax
+    estimator used for large label sets. Inference is unaffected: it scores every answer."""
+    out, keep = [], []
+    for q, (header, cands) in zip(ex["questions"], groups):
+        if not cap or len(cands) <= cap or q.id not in ex["labels"]:
+            out.append((header, cands))
+            keep.append(None)
+            continue
+        gold = sorted(acceptable(q, ex["labels"][q.id]))
+        pool = [i for i in range(len(cands)) if i not in set(gold)]
+        extra = rng.sample(pool, min(max(0, cap - len(gold)), len(pool)))
+        idx = sorted(set(gold) | set(extra))
+        out.append((header, [cands[i] for i in idx]))
+        keep.append(idx)
+    return out, keep
+
+
+def batch_loss(scorer, exs, cap=0, rng=None):
     """One forward pass over the candidate rows of several examples; mean per-question NLL."""
     seqs, spans, layout = [], [], []
     for ex in exs:
         prompt = build_prompt(scorer, ex["state"], ex["questions"])
         groups = groups_for(ex["questions"])
+        kept = None
+        if cap:
+            groups, kept = sampled_groups(groups, ex, cap, rng or random)
         s, sp = scorer.build_rows(prompt, groups)
         seqs += s
         spans += sp
-        layout.append((ex, groups))
+        layout.append((ex, groups, kept))
     input_ids, attn = scorer.batch(seqs)
     cand = scorer.scores_from_rows(input_ids, attn, spans)
     loss, n, k = 0.0, 0, 0
-    for ex, groups in layout:
-        for q, (_, labels) in zip(ex["questions"], groups):
+    for ex, groups, kept in layout:
+        for qi, (q, (_, labels)) in enumerate(zip(ex["questions"], groups)):
             s = cand[k : k + len(labels)]
             k += len(labels)
             if q.id not in ex["labels"]:
                 continue
             logp = torch.log_softmax(s, dim=0)
+            idx = kept[qi] if kept else None
             t = target(q, ex["labels"][q.id])
             if t is not None:
+                if idx is not None:                      # renormalise the soft target over the kept answers
+                    t = [t[i] for i in idx]
+                    z = sum(t) or 1.0
+                    t = [x / z for x in t]
                 loss = loss - (torch.tensor(t, device=logp.device) * logp).sum()
             else:
                 acc = sorted(acceptable(q, ex["labels"][q.id]))
+                if idx is not None:
+                    pos = {v: j for j, v in enumerate(idx)}
+                    acc = sorted(pos[a] for a in acc if a in pos)
                 loss = loss - torch.logsumexp(logp[acc], dim=0)
             n += 1
     return loss / max(n, 1)
@@ -127,10 +159,12 @@ def main():
     ap.add_argument("--full", action="store_true", help="fine-tune every backbone weight instead of a LoRA adapter (encoder backbones)")
     ap.add_argument("--freeze", action="store_true", help="freeze the backbone and train only the head(s)")
     ap.add_argument("--warmup", type=int, default=50, help="linear warm-up steps")
+    ap.add_argument("--max-candidates", type=int, default=0, help="row scorer: cap answers scored per question during training (0 = all); the gold answers are always kept and the rest sampled")
     a = ap.parse_args()
 
     torch.manual_seed(a.seed)
     random.seed(a.seed)
+    rng = random.Random(a.seed + 1)
     if world > 1:
         log(f"distributed: {world} processes, each step sees {world} × {a.accum} × {a.batch} examples")
     from brier.scorer import is_encoder
@@ -207,9 +241,9 @@ def main():
               if pointer is not None:
                 loss = pointer_loss(scorer, pointer, exs, teacher)
                 if a.joint:
-                    loss = loss + batch_loss(scorer, exs)   # keeps the row scorer, which shares these weights, trained too
+                    loss = loss + batch_loss(scorer, exs, a.max_candidates, rng)   # keeps the row scorer, which shares these weights, trained too
               else:
-                loss = batch_loss(scorer, exs)
+                loss = batch_loss(scorer, exs, a.max_candidates, rng)
             loss = loss / a.accum
             loss.backward()
             running += loss.item()
@@ -219,7 +253,7 @@ def main():
         if (step + 1) % 50 == 0:
             log(f"step {step + 1}/{a.steps} loss {running / 50:.4f} lr {sched.get_last_lr()[0]:.2e} ({time.perf_counter() - t0:.0f}s)")
             running = 0.0
-    name = f"{a.model.split('/')[-1]}-brier-r{a.rank}-s{a.steps}" + (f"-u{a.uncertain:g}" if a.uncertain else "") + (f"-{a.split}" if a.split != "all" else "") + ("-head" if a.head else "") + ("-pointer" if a.pointer else "") + ("-distill" if a.distill else "") + ("-cum" if a.ordinal == "cumulative" else "") + ("-num" if a.grade_numbers else "") + (f"-gb{a.grade_boost}" if a.grade_boost > 1 else "") + ("-joint" if a.joint and a.pointer else "") + ("-full" if a.full else "") + ("-frozen" if a.freeze else "") + (f"-w{a.warmup}" if a.warmup != 50 else "")
+    name = f"{a.model.split('/')[-1]}-brier-r{a.rank}-s{a.steps}" + (f"-u{a.uncertain:g}" if a.uncertain else "") + (f"-{a.split}" if a.split != "all" else "") + ("-head" if a.head else "") + ("-pointer" if a.pointer else "") + ("-distill" if a.distill else "") + ("-cum" if a.ordinal == "cumulative" else "") + ("-num" if a.grade_numbers else "") + (f"-gb{a.grade_boost}" if a.grade_boost > 1 else "") + (f"-c{a.max_candidates}" if a.max_candidates else "") + ("-joint" if a.joint and a.pointer else "") + ("-full" if a.full else "") + ("-frozen" if a.freeze else "") + (f"-w{a.warmup}" if a.warmup != 50 else "")
     path = os.path.join(a.out, name)
     if rank == 0:
         os.makedirs(path, exist_ok=True)
