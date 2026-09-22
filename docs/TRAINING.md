@@ -1728,7 +1728,8 @@ decisions:
 **A non-generative model taught only by consequences reaches 0.698 on a public benchmark
 it had never seen.** It started at 0.388, was never shown a label or a gold
 distribution, and closed four fifths of the distance to full supervision in 600 steps of
-8 states, which is 4,800 decisions. The same training from a fresh encoder reaches
+8 states: 4,800 states, and since each carries five typed questions, 24,000 sampled
+answers, each of which was told only whether it was right. The same training from a fresh encoder reaches
 0.517, and the general model's own zero-shot score is 0.388, so neither the prior nor
 the reward is sufficient alone: the corpus supplies the ability to read an unfamiliar
 question and the consequences supply what the right answer is in this deployment. The
@@ -1740,7 +1741,7 @@ from its base weights, because its pretraining already provides the prior.
 the same mean, 0.698, with the spread across seeds falling from ±0.028 to ±0.010. Where
 the model starts changes how reliably it arrives, not where it arrives. What the prior
 has to be good enough for is reading the question; past that, the outcomes decide the
-answer, and 4,800 of them are enough to reach the same place every time. The ceiling
+answer, and 24,000 of them are enough to reach the same place every time. The ceiling
 belongs to the reward: 0.698 against 0.766 with labels is the cost of a signal that says
 only whether one sampled answer paid off.
 

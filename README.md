@@ -149,7 +149,7 @@ distribution, no score for any answer the model did not try.
 | closed product, as published | undisclosed | 0.727 |
 
 A non-generative model taught only by what happened closes four fifths of the distance to
-full supervision in 4,800 decisions, and its probabilities track the spread of real
+full supervision in 24,000 sampled answers over 4,800 states, and its probabilities track the spread of real
 disagreement better than the supervised model's do (soft accuracy 0.561 against 0.503),
 though they are worse calibrated against the teacher's exact numbers. Labels teach a model
 to read questions; consequences teach it what the right answer is where you deploy it.
