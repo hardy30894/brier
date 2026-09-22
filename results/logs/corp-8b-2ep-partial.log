@@ -1,0 +1,72 @@
++ cd /workspace/brier
++ mkdir -p results/v2/corpus results/v2/typed
++ python3 train.py --model Qwen/Qwen3-8B --tasks hub_mixed --examples 16500 --steps 8250 --accum 4 --batch 1 --split train --seed 1 --pointer --pointer-only --out adapters/corp-8b-2ep
+Fetching 5 files:   0%|          | 0/5 [00:00<?, ?it/s]Fetching 5 files:  20%|██        | 1/5 [00:06<00:27,  6.78s/it]Fetching 5 files:  40%|████      | 2/5 [00:09<00:14,  4.78s/it]Fetching 5 files:  60%|██████    | 3/5 [00:11<00:07,  3.95s/it]Fetching 5 files:  80%|████████  | 4/5 [00:12<00:03,  3.07s/it]Fetching 5 files: 100%|██████████| 5/5 [00:13<00:00,  2.76s/it]Fetching 5 files: 100%|██████████| 5/5 [00:13<00:00,  2.76s/it]
+Loading checkpoint shards:   0%|          | 0/5 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:00<00:00, 108.19it/s]
+Repo card metadata block was not found. Setting CardData to empty.
+trainable params: 43,646,976 || all params: 8,234,382,336 || trainable%: 0.5301
+Generating train split:   0%|          | 0/8530 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 8530/8530 [00:00<00:00, 474476.33 examples/s]
+Generating validation split:   0%|          | 0/1066 [00:00<?, ? examples/s]Generating validation split: 100%|██████████| 1066/1066 [00:00<00:00, 168018.04 examples/s]
+Generating test split:   0%|          | 0/1066 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 1066/1066 [00:00<00:00, 184148.60 examples/s]
+Generating train split:   0%|          | 0/200000 [00:00<?, ? examples/s]Generating train split:  23%|██▎       | 45185/200000 [00:00<00:00, 425654.36 examples/s]Generating train split:  64%|██████▍   | 128874/200000 [00:00<00:00, 138293.30 examples/s]Generating train split: 100%|██████████| 200000/200000 [00:01<00:00, 210154.68 examples/s]Generating train split: 100%|██████████| 200000/200000 [00:01<00:00, 198964.17 examples/s]
+Generating validation split:   0%|          | 0/5000 [00:00<?, ? examples/s]Generating validation split: 100%|██████████| 5000/5000 [00:00<00:00, 183616.02 examples/s]
+Generating test split:   0%|          | 0/5000 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 5000/5000 [00:00<00:00, 452713.93 examples/s]
+Repo card metadata block was not found. Setting CardData to empty.
+Repo card metadata block was not found. Setting CardData to empty.
+Repo card metadata block was not found. Setting CardData to empty.
+Generating train split: 0 examples [00:00, ? examples/s]Generating train split: 7000 examples [00:00, 57607.74 examples/s]Generating train split: 30000 examples [00:00, 191792.80 examples/s]
+Generating validation split: 0 examples [00:00, ? examples/s]Generating validation split: 14000 examples [00:00, 43622.60 examples/s]Generating validation split: 30000 examples [00:00, 87480.66 examples/s]
+Generating train split: 0 examples [00:00, ? examples/s]Generating train split: 4439 examples [00:00, 315466.47 examples/s]
+Generating validation split: 0 examples [00:00, ? examples/s]Generating validation split: 495 examples [00:00, 71341.51 examples/s]
+Generating test split: 0 examples [00:00, ? examples/s]Generating test split: 4906 examples [00:00, 363260.52 examples/s]
+Generating train split:   0%|          | 0/15250 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 15250/15250 [00:00<00:00, 729464.97 examples/s]
+Generating validation split:   0%|          | 0/3100 [00:00<?, ? examples/s]Generating validation split: 100%|██████████| 3100/3100 [00:00<00:00, 344560.70 examples/s]
+Generating test split:   0%|          | 0/5500 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 5500/5500 [00:00<00:00, 477069.01 examples/s]
+Generating train split:   0%|          | 0/13084 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 13084/13084 [00:00<00:00, 908971.97 examples/s]
+Generating test split:   0%|          | 0/1400 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 1400/1400 [00:00<00:00, 217096.48 examples/s]
+Repo card metadata block was not found. Setting CardData to empty.
+Repo card metadata block was not found. Setting CardData to empty.
+Repo card metadata block was not found. Setting CardData to empty.
+Generating train split: 0 examples [00:00, ? examples/s]Generating train split: 1000 examples [00:00, 8098.68 examples/s]Generating train split: 6000 examples [00:00, 23071.42 examples/s]Generating train split: 9832 examples [00:00, 27222.45 examples/s]Generating train split: 9832 examples [00:00, 24642.85 examples/s]
+Generating validation split: 0 examples [00:00, ? examples/s]Generating validation split: 1225 examples [00:00, 22212.42 examples/s]
+Generating test split: 0 examples [00:00, ? examples/s]Generating test split: 1235 examples [00:00, 19917.12 examples/s]
+Generating train split: 0 examples [00:00, ? examples/s]Generating train split: 16113 examples [00:00, 470174.07 examples/s]
+Generating validation split: 0 examples [00:00, ? examples/s]Generating validation split: 1838 examples [00:00, 220519.20 examples/s]
+Generating test split: 0 examples [00:00, ? examples/s]Generating test split: 3084 examples [00:00, 330875.16 examples/s]
+Generating train split: 0 examples [00:00, ? examples/s]Generating train split: 25262 examples [00:00, 335679.33 examples/s]
+Generating validation split: 0 examples [00:00, ? examples/s]Generating validation split: 2985 examples [00:00, 178025.47 examples/s]
+Generating test split: 0 examples [00:00, ? examples/s]Generating test split: 6963 examples [00:00, 218509.89 examples/s]
+Generating train split: 0 examples [00:00, ? examples/s]Generating train split: 33410 examples [00:00, 705590.56 examples/s]
+Generating validation split: 0 examples [00:00, ? examples/s]Generating validation split: 1954 examples [00:00, 219200.03 examples/s]
+Generating train split: 0 examples [00:00, ? examples/s]Generating train split: 6116 examples [00:00, 165905.85 examples/s]
+Generating validation split: 0 examples [00:00, ? examples/s]Generating validation split: 2040 examples [00:00, 129127.57 examples/s]
+Generating test split: 0 examples [00:00, ? examples/s]Generating test split: 2041 examples [00:00, 117372.65 examples/s]
+Repo card metadata block was not found. Setting CardData to empty.
+Failed to connect to remote data host. Retrying in 5sec [1/20]
+Repo card metadata block was not found. Setting CardData to empty.
+16450 training examples from hub_mixed
+`use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`.
+/usr/local/lib/python3.11/dist-packages/torch/utils/checkpoint.py:1399: FutureWarning: `torch.cpu.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cpu', args...)` instead.
+  with device_autocast_ctx, torch.cpu.amp.autocast(**cpu_autocast_kwargs), recompute_context:  # type: ignore[attr-defined]
+step 50/8250 loss 2.3553 lr 9.94e-05 (64s)
+step 100/8250 loss 1.1060 lr 9.88e-05 (127s)
+step 150/8250 loss 0.9660 lr 9.82e-05 (190s)
+step 200/8250 loss 0.8168 lr 9.76e-05 (253s)
+step 250/8250 loss 0.8784 lr 9.70e-05 (316s)
+step 300/8250 loss 0.8442 lr 9.64e-05 (379s)
+step 350/8250 loss 0.7746 lr 9.58e-05 (442s)
+step 400/8250 loss 0.9184 lr 9.52e-05 (505s)
+step 450/8250 loss 0.8346 lr 9.45e-05 (568s)
+step 500/8250 loss 0.8045 lr 9.39e-05 (633s)
+step 550/8250 loss 0.6472 lr 9.33e-05 (697s)
+step 600/8250 loss 0.6327 lr 9.27e-05 (761s)
+step 650/8250 loss 0.7308 lr 9.21e-05 (825s)
+step 700/8250 loss 0.7282 lr 9.15e-05 (888s)
+step 750/8250 loss 0.7519 lr 9.09e-05 (953s)
+step 800/8250 loss 0.7794 lr 9.03e-05 (1017s)
+step 850/8250 loss 0.6554 lr 8.97e-05 (1080s)
+step 900/8250 loss 0.7382 lr 8.91e-05 (1143s)
+step 950/8250 loss 0.6232 lr 8.85e-05 (1206s)
+step 1000/8250 loss 0.7524 lr 8.79e-05 (1269s)
+step 1050/8250 loss 0.6465 lr 8.73e-05 (1333s)
+step 1100/8250 loss 0.6126 lr 8.67e-05 (1396s)

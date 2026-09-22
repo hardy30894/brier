@@ -1334,6 +1334,15 @@ the transfer that language pretraining buys, quantified on a public benchmark, a
 reason the roadmap keeps both backbone families until the decision corpus closes the
 gap. 
 
+**The pointer head leads at every size, so the fastest path is also the best one.** On the
+8B, answering every question from one row scores 0.811 with a Brier score of 0.037,
+against 0.797 for the row scorer on the same backbone and the same training; routing
+Grade questions back to the row scorer gives 0.804, between the two. The pattern repeats
+what the 0.6B showed, 0.791 against 0.779, so it is now two backbones a full order of
+magnitude apart agreeing. The best model in this document answers a five-question case in
+one forward pass. That was the configuration chosen for its latency, and it turns out not
+to cost anything.
+
 **Fine-tuned, the language-model scorers lead the benchmark.** The 0.6B row scorer with
 a LoRA adapter, trained on the same 1,200 cases for the same four epochs, scores 0.782,
 0.775 and 0.780 across three seeds, a mean of 0.779 ± 0.004: above the published encoder
@@ -1838,8 +1847,11 @@ covering. Against the same model untrained:
 On the eight held-out datasets the corpus lifts Phi on seven of eight, by 38 points on
 the ordered financial scale and 23 on spam, and cuts calibration error everywhere; the
 corpus-trained language model is now the best model in this document on held-out
-datasets, ahead of the corpus encoder on all eight. On the public benchmark it moves by
-eight thousandths, 0.606 to 0.614, while its calibration error falls from 0.160 to
+datasets, ahead of the corpus encoder on all eight. On the public benchmark it does not improve at all. Trained on the pointer path alone
+and read through it, 0.614 against 0.606; trained on both paths and read the way the
+untrained model is read, 0.588. The two measurements bracket the honest answer: corpus
+training leaves a strong language model where it was on unfamiliar question kinds, and
+may cost it a little. Its calibration on that benchmark does improve, from 0.160 to
 0.111.
 
 Those two facts are the same fact seen twice. A held-out dataset is a new *dataset* of a

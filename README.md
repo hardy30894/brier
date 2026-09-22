@@ -162,7 +162,8 @@ authors published them.
 
 | model | accuracy | Brier vs teacher | ordinal error |
 |---|---|---|---|
-| Brier, Qwen3-8B, row scorer | **0.797** | **0.042** | **0.19** |
+| Brier, Qwen3-8B, pointer head, one row per case | **0.811** | **0.037** | **0.18** |
+| Brier, Qwen3-8B, row scorer | 0.797 | 0.042 | 0.19 |
 | Brier, Qwen3-0.6B, pointer head, one row per case | **0.791** | 0.044 | 0.21 |
 | Brier, Qwen3-0.6B, row scorer, 3 seeds | **0.779 ± 0.004** | 0.045 | 0.20 |
 | Brier, Phi-4-mini, row scorer | 0.789 | 0.043 | 0.20 |
