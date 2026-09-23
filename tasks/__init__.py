@@ -16,6 +16,7 @@ REGISTRY = {
     "matching": matching.generate,
     **PUBLIC,
     **TYPED,
+    **SCHEMA,
     **HUB,
 }
 
