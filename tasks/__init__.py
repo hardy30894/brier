@@ -2,6 +2,7 @@
 from . import tickets, gridworld, toolcall, passages, frustration, duplicates, banking, matching
 from .public import PUBLIC
 from .typed import TYPED
+from .schema import SCHEMA
 from .hub import HUB
 
 REGISTRY = {

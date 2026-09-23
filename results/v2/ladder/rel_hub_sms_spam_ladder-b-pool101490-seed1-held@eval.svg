@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="340" viewBox="0 0 320 340" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
+<rect width="320" height="340" rx="14" fill="#FFFFFF" stroke="#D8DEE6"/>
+<text x="160.0" y="28" text-anchor="middle" font-size="14" font-weight="700" fill="#1B1F24">hub_sms_spam · ladder-b-pool101490-seed1-held@eval</text>
+<text x="300" y="28" text-anchor="end" font-size="11" fill="#8A94A0"><tspan fill="#8A2BE2">●</tspan> raw   <tspan fill="#3557C4">●</tspan> calibrated</text>
+<line x1="60" y1="230" x2="230" y2="230" stroke="#5B6B7C"/><line x1="60" y1="230" x2="60" y2="60" stroke="#5B6B7C"/>
+<line x1="60" y1="230" x2="230" y2="60" stroke="#8A94A0" stroke-dasharray="4 4"/>
+<text x="60" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.0</text>
+<text x="54" y="233" font-size="9" fill="#8A94A0" text-anchor="end">0.0</text>
+<text x="145.0" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.5</text>
+<text x="54" y="148.0" font-size="9" fill="#8A94A0" text-anchor="end">0.5</text>
+<text x="230" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">1.0</text>
+<text x="54" y="63" font-size="9" fill="#8A94A0" text-anchor="end">1.0</text>
+<path d="M153.9 154.4 L170.4 119.6 L188.2 121.5 L204.9 96.6 L220.3 90.4" fill="none" stroke="#8A2BE2" stroke-width="2"/><circle cx="153.9" cy="154.4" r="3.5" fill="#8A2BE2"/><circle cx="170.4" cy="119.6" r="3.5" fill="#8A2BE2"/><circle cx="188.2" cy="121.5" r="3.5" fill="#8A2BE2"/><circle cx="204.9" cy="96.6" r="3.5" fill="#8A2BE2"/><circle cx="220.3" cy="90.4" r="3.5" fill="#8A2BE2"/>
+<path d="M154.5 140.5 L169.9 114.9 L186.9 93.1 L203.5 94.5 L214.5 81.2" fill="none" stroke="#3557C4" stroke-width="2"/><circle cx="154.5" cy="140.5" r="3.5" fill="#3557C4"/><circle cx="169.9" cy="114.9" r="3.5" fill="#3557C4"/><circle cx="186.9" cy="93.1" r="3.5" fill="#3557C4"/><circle cx="203.5" cy="94.5" r="3.5" fill="#3557C4"/><circle cx="214.5" cy="81.2" r="3.5" fill="#3557C4"/>
+<text x="145.0" y="260" text-anchor="middle" font-size="12" font-weight="700" fill="#1B1F24">spam</text>
+<text x="145.0" y="276" text-anchor="middle" font-size="10" fill="#5B6B7C">acc 0.71 · ECE 0.08 → 0.04 · T 1.7</text>
+</svg>

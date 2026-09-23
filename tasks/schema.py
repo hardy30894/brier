@@ -24,7 +24,27 @@ MAX_STATE_CHARS = 1200
 
 
 def _fmt(v):
-    return f"{v:g}" if isinstance(v, float) else str(v)
+    """Numbers as a person would write them: no scientific notation, thousands separated, and
+    decimals only where they carry information. A model comparing 1.46701e+06 with a threshold
+    is being tested on notation rather than on reading."""
+    if isinstance(v, bool):
+        return "yes" if v else "no"
+    if isinstance(v, float):
+        return f"{v:,.2f}".rstrip("0").rstrip(".") if abs(v) < 100 else f"{round(v):,}"
+    if isinstance(v, int):
+        return f"{v:,}"
+    return str(v)
+
+
+def _unit(a):
+    u = a.get("unit", "")
+    if not u:
+        return ""
+    return u if u.startswith(("%", "°")) else " " + u
+
+
+def _an(word):
+    return "an" if word[:1].lower() in "aeiou" else "a"
 
 
 def draw_record(rng, domain, n_attrs):
@@ -65,8 +85,7 @@ def _cond_number(rng, a):
     lo, hi = a["range"]
     t = round(rng.uniform(lo + (hi - lo) * 0.2, lo + (hi - lo) * 0.8), 2 if hi - lo < 10 else 0)
     over = rng.random() < 0.5
-    unit = a.get("unit", "")
-    text = f"the {a['label'].lower()} is {'above' if over else 'below'} {_fmt(t)}{unit}"
+    text = f"the {a['label'].lower()} is {'above' if over else 'below'} {_fmt(t)}{_unit(a)}"
     return text, (lambda rec, k=a["key"], t=t, over=over: (rec.get(k, 0) > t) if over else (rec.get(k, 0) < t))
 
 
@@ -96,11 +115,28 @@ def draw_conjunction(rng, attrs, k):
     return text, (lambda rec, fns=fns: all(f(rec) for f in fns))
 
 
+def option_names(rng, domain, attrs, n, vocab):
+    """Half the time the option labels are arbitrary phrases, which forces the model to read the
+    rule rather than guess from the word; the other half they are words from this domain, which
+    is what a real question looks like and lets the model learn to use a label that means
+    something. A model shown only one of the two learns only half the skill."""
+    if rng.random() < 0.5:
+        return vocab.label_words(rng, n)
+    pool = []
+    for a in attrs:
+        if a["kind"] == "categorical":
+            pool += [str(v) for v in a["values"]]
+    pool = [w for w in dict.fromkeys(pool) if len(w) < 40]
+    if len(pool) >= n:
+        return rng.sample(pool, n)
+    return vocab.label_words(rng, n)
+
+
 def make_pick(rng, domain, attrs, rec, vocab):
     """A Pick whose options are mutually exclusive conditions, tried in order, with a fallback.
     The option text carries its own rule, so the question is self-contained."""
     n = rng.randint(3, 6)
-    names = vocab.label_words(rng, n)
+    names = option_names(rng, domain, attrs, n, vocab)
     options, tests = {}, []
     for i in range(n - 1):
         text, fn = (draw_conjunction(rng, attrs, 2) if rng.random() < 0.3 else draw_condition(rng, attrs))
@@ -116,7 +152,7 @@ def make_pick(rng, domain, attrs, rec, vocab):
         label = names[-1]
     else:
         label = {nm: 1.0 / len(hit) for nm in hit}   # genuinely ambiguous: a distribution, not a guess
-    return q, label
+    return q, label, (lambda r, tests=tests, fb=names[-1]: [nm for nm, fn in tests if fn(r)] or [fb])
 
 
 def make_grade(rng, domain, attrs, rec, vocab):
@@ -128,22 +164,38 @@ def make_grade(rng, domain, attrs, rec, vocab):
     scale = list(rng.choice(vocab.SCALE_NAMES))
     k = len(scale)
     lo, hi = a["range"]
-    cuts = sorted(round(rng.uniform(lo, hi), 2 if hi - lo < 10 else 0) for _ in range(k - 1))
-    unit = a.get("unit", "")
+    # Evenly spaced bands, lightly jittered. Uniformly random cuts leave some levels far wider
+    # than others, and the narrow ones almost never occur.
+    span = (hi - lo) / k
+    cuts = [round(lo + span * (j + 1) + rng.uniform(-0.25, 0.25) * span, 2 if hi - lo < 10 else 0) for j in range(k - 1)]
+    cuts = sorted(cuts)
     levels, bounds = [], [lo] + cuts + [hi]
     for i, name in enumerate(scale):
-        levels.append(f"{name}: {a['label'].lower()} from {_fmt(bounds[i])} to {_fmt(bounds[i + 1])}{unit}")
+        levels.append(f"{name}: {a['label'].lower()} from {_fmt(bounds[i])} to {_fmt(bounds[i + 1])}{_unit(a)}")
     v = rec.get(a["key"], lo)
     idx = sum(1 for c in cuts if v > c)
     q = Grade(f"q_{rng.randrange(10**6)}", rng.choice(vocab.INSTRUCTION_FRAMES).format(what=rng.choice(vocab.NOUNS)), tuple(levels))
-    return q, levels[idx]
+    return q, levels[idx], (lambda r, key=a["key"], cuts=cuts, lv=levels: lv[sum(1 for c in cuts if r.get(key, 0) > c)])
 
 
 def make_claim(rng, domain, attrs, rec, vocab):
-    """A Claim whose statement is a condition over the record."""
+    """A Claim whose statement is a condition over the record.
+
+    A condition drawn at random is false far more often than true, which would hand the model a
+    free 64% by always answering no. The record is redrawn until it matches the target answer,
+    which is chosen by a coin, so yes and no are equally likely and the prior is worth nothing."""
     text, fn = (draw_conjunction(rng, attrs, 2) if rng.random() < 0.4 else draw_condition(rng, attrs))
+    want = rng.random() < 0.5
+    if fn(rec) is not want:
+        for _ in range(40):
+            _, cand = draw_record(rng, domain, len(attrs))
+            cand = {a["key"]: cand.get(a["key"], rec.get(a["key"])) for a in attrs}
+            if fn(cand) is want:
+                rec.clear()
+                rec.update(cand)
+                break
     q = Claim(f"q_{rng.randrange(10**6)}", rng.choice(vocab.CLAIM_FRAMES).format(what=text))
-    return q, ("yes" if fn(rec) else "no")
+    return q, ("yes" if fn(rec) else "no"), fn
 
 
 MIX = (("pick", 0.40), ("claim", 0.30), ("grade", 0.20), ("hard", 0.10))
@@ -188,11 +240,13 @@ def example_at(i, seed=0, split="all", mix=MIX, kinds=None):
     if not made:                                  # a Grade needs a numeric attribute; fall back
         attrs, rec = draw_record(rng, domain, rng.randint(lo, hi))
         made = make_claim(rng, domain, attrs, rec, vocab)
-    q, label = made
+    q, label, check = made
     state = render_record(domain, attrs, rec, style)
     if isinstance(state, str) and len(state) > MAX_STATE_CHARS:
         state = state[:MAX_STATE_CHARS] + " …"
-    return {"state": state, "questions": [q], "labels": {q.id: label}, "domain": domain["name"], "kind": kind, "index": i}
+    ex = {"state": state, "questions": [q], "labels": {q.id: label}, "domain": domain["name"], "kind": kind, "index": i}
+    ex["_verify"] = (check, dict(rec))   # the rule itself, for the audit; training never reads it
+    return ex
 
 
 def stream(seed=0, split="all", start=0, step=1, limit=None, **kw):

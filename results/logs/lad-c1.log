@@ -1,0 +1,1542 @@
++ cd /workspace/brier
++ mkdir -p results/v2/ladder
+++ nvidia-smi -L
+++ wc -l
++ G=2
++ STEPS=3000
++ ACCUM=4
++ '[' 4 -lt 1 ']'
++ NCCL_P2P_DISABLE=1
++ NCCL_IB_DISABLE=1
++ torchrun --nproc_per_node 2 train.py --model answerdotai/ModernBERT-large --tasks hub_mixed --examples 397935 --steps 3000 --warmup 300 --accum 4 --batch 4 --split train --seed 1 --pointer --full --lr 2e-5 --head-lr 1e-4 --out adapters/lad-c1
+W0922 23:21:38.300000 124605977206784 torch/distributed/run.py:779] 
+W0922 23:21:38.300000 124605977206784 torch/distributed/run.py:779] *****************************************
+W0922 23:21:38.300000 124605977206784 torch/distributed/run.py:779] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W0922 23:21:38.300000 124605977206784 torch/distributed/run.py:779] *****************************************
+Traceback (most recent call last):
+  File "/usr/local/bin/torchrun", line 8, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/usr/local/lib/python3.11/dist-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 348, in wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/dist-packages/torch/distributed/run.py", line 901, in main
+    run(args)
+  File "/usr/local/lib/python3.11/dist-packages/torch/distributed/run.py", line 892, in run
+    elastic_launch(
+  File "/usr/local/lib/python3.11/dist-packages/torch/distributed/launcher/api.py", line 133, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/dist-packages/torch/distributed/launcher/api.py", line 255, in launch_agent
+    result = agent.run()
+             ^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/dist-packages/torch/distributed/elastic/metrics/api.py", Repo card metadata block was not found. Setting CardData to empty.
+Repo card metadata block was not found. Setting CardData to empty.
+Repo card metadata block was not found. Setting CardData to empty.
+Repo card metadata block was not found. Setting CardData to empty.
+297250 training examples from hub_mixed
+/usr/local/lib/python3.11/dist-packages/torch/utils/checkpoint.py:1399: FutureWarning: `torch.cpu.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cpu', args...)` instead.
+  with device_autocast_ctx, torch.cpu.amp.autocast(**cpu_autocast_kwargs), recompute_context:  # type: ignore[attr-defined]
+/usr/local/lib/python3.11/dist-packages/torch/utils/checkpoint.py:1399: FutureWarning: `torch.cpu.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cpu', args...)` instead.
+  with device_autocast_ctx, torch.cpu.amp.autocast(**cpu_autocast_kwargs), recompute_context:  # type: ignore[attr-defined]
+step 50/3000 loss 1.2852 lr 3.34e-06 (49s)
+step 100/3000 loss 1.2463 lr 6.51e-06 (100s)
+step 150/3000 loss 1.2805 lr 9.56e-06 (150s)
+step 200/3000 loss 1.1642 lr 1.25e-05 (199s)
+step 250/3000 loss 1.0983 lr 1.53e-05 (250s)
+step 300/3000 loss 0.9975 lr 1.80e-05 (300s)
+step 350/3000 loss 0.9831 lr 1.77e-05 (350s)
+step 400/3000 loss 0.8870 lr 1.73e-05 (403s)
+step 450/3000 loss 0.9297 lr 1.70e-05 (457s)
+step 500/3000 loss 0.8896 lr 1.67e-05 (511s)
+step 550/3000 loss 0.8689 lr 1.63e-05 (564s)
+step 600/3000 loss 0.8601 lr 1.60e-05 (619s)
+step 650/3000 loss 0.8573 lr 1.57e-05 (673s)
+step 700/3000 loss 0.8176 lr 1.53e-05 (727s)
+step 750/3000 loss 0.7729 lr 1.50e-05 (781s)
+step 800/3000 loss 0.8437 lr 1.47e-05 (835s)
+step 850/3000 loss 0.8028 lr 1.43e-05 (890s)
+step 900/3000 loss 0.7670 lr 1.40e-05 (944s)
+step 950/3000 loss 0.7950 lr 1.37e-05 (998s)
+step 1000/3000 loss 0.7147 lr 1.33e-05 (1052s)
+step 1050/3000 loss 0.6692 lr 1.30e-05 (1107s)
+step 1100/3000 loss 0.7274 lr 1.27e-05 (1161s)
+step 1150/3000 loss 0.6826 lr 1.23e-05 (1215s)
+step 1200/3000 loss 0.6672 lr 1.20e-05 (1269s)
+step 1250/3000 loss 0.6221 lr 1.17e-05 (1323s)
+step 1300/3000 loss 0.6806 lr 1.13e-05 (1377s)
+step 1350/3000 loss 0.6638 lr 1.10e-05 (1431s)
+step 1400/3000 loss 0.6163 lr 1.07e-05 (1484s)
+step 1450/3000 loss 0.6674 lr 1.03e-05 (1537s)
+step 1500/3000 loss 0.7251 lr 1.00e-05 (1591s)
+step 1550/3000 loss 0.6424 lr 9.67e-06 (1642s)
+step 1600/3000 loss 0.6477 lr 9.33e-06 (1695s)
+step 1650/3000 loss 0.6385 lr 9.00e-06 (1749s)
+step 1700/3000 loss 0.6479 lr 8.67e-06 (1804s)
+step 1750/3000 loss 0.6130 lr 8.33e-06 (1858s)
+step 1800/3000 loss 0.6555 lr 8.00e-06 (1912s)
+step 1850/3000 loss 0.6357 lr 7.67e-06 (1966s)
+step 1900/3000 loss 0.6233 lr 7.33e-06 (2020s)
+step 1950/3000 loss 0.6195 lr 7.00e-06 (2072s)
+step 2000/3000 loss 0.6067 lr 6.67e-06 (2121s)
+step 2050/3000 loss 0.5677 lr 6.33e-06 (2170s)
+step 2100/3000 loss 0.5759 lr 6.00e-06 (2222s)
+step 2150/3000 loss 0.5928 lr 5.67e-06 (2272s)
+step 2200/3000 loss 0.5801 lr 5.33e-06 (2322s)
+step 2250/3000 loss 0.5285 lr 5.00e-06 (2375s)
+step 2300/3000 loss 0.6033 lr 4.67e-06 (2429s)
+step 2350/3000 loss 0.6040 lr 4.33e-06 (2483s)
+step 2400/3000 loss 0.5372 lr 4.00e-06 (2538s)
+step 2450/3000 loss 0.5532 lr 3.67e-06 (2591s)
+step 2500/3000 loss 0.5667 lr 3.33e-06 (2642s)
+step 2550/3000 loss 0.5350 lr 3.00e-06 (2693s)
+step 2600/3000 loss 0.5691 lr 2.67e-06 (2747s)
+step 2650/3000 loss 0.5620 lr 2.33e-06 (2797s)
+step 2700/3000 loss 0.5360 lr 2.00e-06 (2850s)
+step 2750/3000 loss 0.6132 lr 1.67e-06 (2899s)
+step 2800/3000 loss 0.5334 lr 1.33e-06 (2953s)
+step 2850/3000 loss 0.6268 lr 1.00e-06 (3008s)
+step 2900/3000 loss 0.5607 lr 1.00e-06 (3062s)
+step 2950/3000 loss 0.5605 lr 1.00e-06 (3116s)
+step 3000/3000 loss 0.5226 lr 1.00e-06 (3167s)
+saved adapters/lad-c1/ModernBERT-large-brier-r16-s3000-train-pointer-full-w300  (2 GPUs, 3168s)
+++ ls -d adapters/lad-c1/ModernBERT-large-brier-r16-s3000-train-pointer-full-w300/
+++ head -1
++ A=adapters/lad-c1/ModernBERT-large-brier-r16-s3000-train-pointer-full-w300/
++ python3 -m brier calibrate --model answerdotai/ModernBERT-large --adapter adapters/lad-c1/ModernBERT-large-brier-r16-s3000-train-pointer-full-w300/ --task typed --split eval --n 400 --tag ladder-c-pool397935-seed1-typed --out results/v2/ladder
+/workspace/brier/brier/__main__.py:25: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  base.load_state_dict(torch.load(os.path.join(adapter, "backbone.pt"), map_location="cpu"))
+/workspace/brier/brier/__main__.py:38: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  sc.pointer.load_state_dict(torch.load(ptr_path, map_location=sc.device), strict=False)
+Generating train split:   0%|          | 0/300 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 300/300 [00:00<00:00, 44000.81 examples/s]
+Generating test split:   0%|          | 0/100 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 100/100 [00:00<00:00, 30979.42 examples/s]
+Generating train split:   0%|          | 0/300 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 300/300 [00:00<00:00, 75423.56 examples/s]
+Generating test split:   0%|          | 0/100 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 100/100 [00:00<00:00, 35821.20 examples/s]
+Generating train split:   0%|          | 0/300 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 300/300 [00:00<00:00, 86190.23 examples/s]
+Generating test split:   0%|          | 0/100 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 100/100 [00:00<00:00, 41404.78 examples/s]
+Generating train split:   0%|          | 0/300 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 300/300 [00:00<00:00, 75005.44 examples/s]
+Generating test split:   0%|          | 0/100 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 100/100 [00:00<00:00, 39038.57 examples/s]
+  collected 50/400 (1s)
+  collected 100/400 (1s)
+  collected 150/400 (2s)
+  collected 200/400 (2s)
+  collected 250/400 (3s)
+  collected 300/400 (3s)
+  collected 350/400 (4s)
+  collected 400/400 (5s)
+
+== typed ==
+calibration report  model=ladder-c-pool397935-seed1-typed@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+action             100  0.380    0.376    0.060     0.376     0.239    0.756    0.407   3.16
+needs_review       100  0.470    0.223    0.041     0.335     0.252    0.693    0.511  20.00
+outcome            100  0.080    0.309    0.177     0.175     0.105    0.389    0.257  20.00
+risk               100  0.200    0.188    0.057     0.194     0.163    0.388    0.257  20.00
+urgency            400  0.315    0.213    0.100     0.253     0.220    0.489    0.366   2.25
+action#2           100  0.320    0.319    0.159     0.371     0.246    0.637    0.411   2.42
+category           100  0.600    0.178    0.043     0.254     0.221    0.749    0.621   1.54
+churn_risk         100  0.650    0.210    0.172     0.261     0.246    0.440    0.481   0.75
+needs_human        100  0.400    0.219    0.123     0.268     0.253    0.619    0.523   6.71
+discrepancy_severity   100  0.360    0.158    0.097     0.255     0.240    0.503    0.263  20.00
+disposition        100  0.380    0.015    0.085     0.236     0.249    0.395    0.295   3.67
+duplicate          100  0.890    0.244    0.060     0.150     0.090    0.649    0.909   0.26
+matches_order      100  0.540    0.045    0.021     0.249     0.252    0.585    0.548   1.73
+credential_compromise   100  0.550    0.318    0.017     0.347     0.251    0.854    0.533  18.55
+disposition#2      100  0.720    0.356    0.249     0.326     0.248    0.364    0.501   0.34
+severity           100  0.490    0.031    0.039     0.251     0.255    0.463    0.451   1.06
+true_positive      100  0.780    0.153    0.195     0.201     0.197    0.627    0.689   0.60
+
+decision policy (calibrated confidence cutoffs, held-out):
+  action           auto    target 0.95: unreachable on this data
+  action           review  target 0.80: unreachable on this data
+  action           human   everything below
+  needs_review     auto    target 0.95: unreachable on this data
+  needs_review     review  target 0.80: unreachable on this data
+  needs_review     human   everything below
+  outcome          auto    target 0.95: unreachable on this data
+  outcome          review  target 0.80: unreachable on this data
+  outcome          human   everything below
+  risk             auto    target 0.95: unreachable on this data
+  risk             review  target 0.80: act when confidence >= 0.261  -> precision 0.800, covers 5% of decisions
+  risk             human   everything below
+  urgency          auto    target 0.95: unreachable on this data
+  urgency          review  target 0.80: act when confidence >= 0.451  -> precision 0.826, covers 6% of decisions
+  urgency          human   everything below
+  action#2         auto    target 0.95: unreachable on this data
+  action#2         review  target 0.80: unreachable on this data
+  action#2         human   everything below
+  category         auto    target 0.95: act when confidence >= 0.837  -> precision 1.000, covers 8% of decisions
+  category         review  target 0.80: act when confidence >= 0.748  -> precision 0.800, covers 25% of decisions
+  category         human   everything below
+  churn_risk       auto    target 0.95: act when confidence >= 0.618  -> precision 1.000, covers 6% of decisions
+  churn_risk       review  target 0.80: act when confidence >= 0.518  -> precision 0.800, covers 20% of decisions
+  churn_risk       human   everything below
+  needs_human      auto    target 0.95: unreachable on this data
+  needs_human      review  target 0.80: unreachable on this data
+  needs_human      human   everything below
+  discrepancy_severity auto    target 0.95: unreachable on this data
+  discrepancy_severity review  target 0.80: unreachable on this data
+  discrepancy_severity human   everything below
+  disposition      auto    target 0.95: unreachable on this data
+  disposition      review  target 0.80: unreachable on this data
+  disposition      human   everything below
+  duplicate        auto    target 0.95: act when confidence >= 0.890  -> precision 0.950, covers 80% of decisions
+  duplicate        review  target 0.80: act when confidence >= 0.768  -> precision 0.890, covers 100% of decisions
+  duplicate        human   everything below
+  matches_order    auto    target 0.95: unreachable on this data
+  matches_order    review  target 0.80: unreachable on this data
+  matches_order    human   everything below
+  credential_compromise auto    target 0.95: unreachable on this data
+  credential_compromise review  target 0.80: unreachable on this data
+  credential_compromise human   everything below
+  disposition#2    auto    target 0.95: act when confidence >= 0.605  -> precision 1.000, covers 6% of decisions
+  disposition#2    review  target 0.80: act when confidence >= 0.583  -> precision 0.800, covers 10% of decisions
+  disposition#2    human   everything below
+  severity         auto    target 0.95: unreachable on this data
+  severity         review  target 0.80: unreachable on this data
+  severity         human   everything below
+  true_positive    auto    target 0.95: unreachable on this data
+  true_positive    review  target 0.80: act when confidence >= 0.760  -> precision 0.815, covers 27% of decisions
+  true_positive    human   everything below
++ python3 -m brier calibrate --model answerdotai/ModernBERT-large --adapter adapters/lad-c1/ModernBERT-large-brier-r16-s3000-train-pointer-full-w300/ --task hub_trec,hub_anli,hub_commonsense_qa,hub_financial_news,hub_paws,hub_boolq,hub_sms_spam,hub_tweet_irony --split eval --n 300 --tag ladder-c-pool397935-seed1-held --out results/v2/ladder
+/workspace/brier/brier/__main__.py:25: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  base.load_state_dict(torch.load(os.path.join(adapter, "backbone.pt"), map_location="cpu"))
+/workspace/brier/brier/__main__.py:38: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  sc.pointer.load_state_dict(torch.load(ptr_path, map_location=sc.device), strict=False)
+Generating train split: 0 examples [00:00, ? examples/s]Generating train split: 5452 examples [00:00, 1598667.88 examples/s]
+Generating test split: 0 examples [00:00, ? examples/s]Generating test split: 500 examples [00:00, 608752.39 examples/s]
+  collected 50/300 (0s)
+  collected 100/300 (1s)
+  collected 150/300 (1s)
+  collected 200/300 (2s)
+  collected 250/300 (2s)
+  collected 300/300 (3s)
+  collected 50/300 (1s)
+  collected 100/300 (1s)
+  collected 150/300 (1s)
+  collected 200/300 (2s)
+  collected 250/300 (2s)
+  collected 300/300 (3s)
+
+== hub_trec ==
+calibration report  model=ladder-c-pool397935-seed1-held@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+asks_for           300  0.627    0.079    0.054     0.192     0.190    0.587    0.627   0.84
+
+decision policy (calibrated confidence cutoffs, held-out):
+  asks_for         auto    target 0.95: act when confidence >= 0.840  -> precision 0.952, covers 14% of decisions
+  asks_for         review  target 0.80: act when confidence >= 0.601  -> precision 0.804, covers 51% of decisions
+  asks_for         human   everything below
+  collected 50/300 (0s)
+  collected 100/300 (1s)
+  collected 150/300 (1s)
+  collected 200/300 (2s)
+  collected 250/300 (2s)
+  collected 300/300 (3s)
+
+== hub_anli ==
+calibration report  model=ladder-c-pool397935-seed1-held@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+relation           300  0.377    0.452    0.009     0.447     0.234    0.828    0.369  20.00
+
+decision policy (calibrated confidence cutoffs, held-out):
+  relation         auto    target 0.95: unreachable on this data
+  relation         review  target 0.80: unreachable on this data
+  relation         human   everything below
+
+== hub_commonsense_qa ==
+calibration report  model=ladder-c-pool397935-seed1-held@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+answer               1  0.000    0.396    0.847     0.157     0.717    0.396    0.847  20.00
+answer#2             1  0.000    0.860    1.000     0.740     1.000    0.860    1.000  20.00
+answer#3             1  1.000    0.082    0.000     0.007     0.000    0.918    1.000   0.05
+answer#4             1  1.000    0.337    0.000     0.114     0.000    0.663    1.000   0.05
+answer#5             1  0.000    0.764    1.000     0.584     1.000    0.764    1.000  20.00
+answer#6             1  0.000    0.394    0.528     0.155     0.279    0.394    0.528   0.18
+answer#7             1  0.000    0.601    1.000     0.361     1.000    0.601    1.000   8.73
+answer#8             1  1.000    0.397    0.000     0.157     0.000    0.603    1.000   0.05
+answer#9             1  1.000    0.408    0.000     0.166     0.000    0.592    1.000   0.05
+answer#10            1  1.000    0.557    0.000     0.310     0.000    0.443    1.000   0.05
+answer#11            1  0.000    0.412    1.000     0.170     1.000    0.412    1.000  20.00
+answer#12            1  1.000    0.341    0.000     0.116     0.000    0.659    1.000   0.05
+answer#13            1  0.000    0.596    1.000     0.356     1.000    0.596    1.000  20.00
+answer#14            1  1.000    0.532    0.071     0.283     0.005    0.468    0.929   0.05
+answer#15            1  1.000    0.008    0.000     0.000     0.000    0.992    1.000   0.05
+answer#16            1  1.000    0.449    0.001     0.202     0.000    0.551    0.999   0.05
+answer#17            1  1.000    0.341    0.000     0.116     0.000    0.659    1.000   0.05
+answer#18            1  1.000    0.200    0.000     0.040     0.000    0.800    1.000   0.05
+answer#19            1  1.000    0.274    0.000     0.075     0.000    0.726    1.000   0.05
+answer#20            1  1.000    0.531    0.000     0.282     0.000    0.469    1.000   0.05
+answer#21            1  0.000    0.373    0.970     0.139     0.942    0.373    0.970   0.78
+answer#22            1  1.000    0.205    0.000     0.042     0.000    0.795    1.000   0.05
+answer#23            1  1.000    0.055    0.000     0.003     0.000    0.945    1.000   0.05
+answer#24            1  1.000    0.190    0.000     0.036     0.000    0.810    1.000   0.05
+answer#25            1  0.000    0.598    1.000     0.358     1.000    0.598    1.000  20.00
+answer#26            1  1.000    0.234    0.000     0.055     0.000    0.766    1.000   0.05
+answer#27            1  0.000    0.485    1.000     0.235     1.000    0.485    1.000   1.60
+answer#28            1  1.000    0.207    0.000     0.043     0.000    0.793    1.000   0.05
+answer#29            1  1.000    0.256    0.000     0.065     0.000    0.744    1.000   0.05
+answer#30            1  0.000    0.748    1.000     0.560     1.000    0.748    1.000   2.25
+answer#31            1  1.000    0.458    0.000     0.209     0.000    0.542    1.000   0.05
+answer#32            1  0.000    0.554    1.000     0.307     1.000    0.554    1.000   1.86
+answer#33            1  1.000    0.108    0.000     0.012     0.000    0.892    1.000   0.05
+answer#34            1  1.000    0.655    0.047     0.429     0.002    0.345    0.953   0.05
+answer#35            1  1.000    0.658    0.140     0.434     0.020    0.342    0.860   0.05
+answer#36            1  1.000    0.603    0.031     0.363     0.001    0.397    0.969   0.05
+answer#37            1  1.000    0.375    0.000     0.141     0.000    0.625    1.000   0.05
+answer#38            1  1.000    0.652    0.024     0.425     0.001    0.348    0.976   0.05
+answer#39            1  0.000    0.300    0.756     0.090     0.572    0.300    0.756   0.19
+answer#40            1  1.000    0.198    0.000     0.039     0.000    0.802    1.000   0.05
+answer#41            1  0.000    0.333    0.850     0.111     0.722    0.333    0.850   0.75
+answer#42            1  0.000    0.878    1.000     0.771     1.000    0.878    1.000  20.00
+answer#43            1  1.000    0.014    0.000     0.000     0.000    0.986    1.000   0.05
+answer#44            1  1.000    0.215    0.000     0.046     0.000    0.785    1.000   0.05
+answer#45            1  0.000    0.568    1.000     0.322     1.000    0.568    1.000   2.33
+answer#46            1  0.000    0.462    1.000     0.214     1.000    0.462    1.000   0.95
+answer#47            1  1.000    0.103    0.000     0.011     0.000    0.897    1.000   0.05
+answer#48            1  1.000    0.049    0.000     0.002     0.000    0.951    1.000   0.05
+answer#49            1  1.000    0.123    0.000     0.015     0.000    0.877    1.000   0.05
+answer#50            1  0.000    0.427    1.000     0.182     1.000    0.427    1.000  20.00
+answer#51            1  0.000    0.323    0.623     0.104     0.388    0.323    0.623   0.15
+answer#52            1  1.000    0.692    0.009     0.479     0.000    0.308    0.991   0.05
+answer#53            1  1.000    0.235    0.000     0.055     0.000    0.765    1.000   0.05
+answer#54            1  1.000    0.035    0.000     0.001     0.000    0.965    1.000   0.05
+answer#55            1  1.000    0.296    0.000     0.088     0.000    0.704    1.000   0.05
+answer#56            1  0.000    0.735    1.000     0.541     1.000    0.735    1.000  20.00
+answer#57            1  1.000    0.145    0.000     0.021     0.000    0.855    1.000   0.05
+answer#58            1  1.000    0.455    0.000     0.207     0.000    0.545    1.000   0.05
+answer#59            1  1.000    0.489    0.000     0.239     0.000    0.511    1.000   0.05
+answer#60            1  1.000    0.569    0.020     0.324     0.000    0.431    0.980   0.05
+answer#61            1  1.000    0.446    0.000     0.199     0.000    0.554    1.000   0.05
+answer#62            1  1.000    0.234    0.000     0.055     0.000    0.766    1.000   0.05
+answer#63            1  1.000    0.190    0.000     0.036     0.000    0.810    1.000   0.05
+answer#64            1  0.000    0.411    0.815     0.169     0.665    0.411    0.815   0.40
+answer#65            1  0.000    0.421    0.978     0.177     0.956    0.421    0.978  20.00
+answer#66            1  1.000    0.589    0.000     0.347     0.000    0.411    1.000   0.05
+answer#67            1  1.000    0.179    0.000     0.032     0.000    0.821    1.000   0.05
+answer#68            1  0.000    0.711    1.000     0.505     1.000    0.711    1.000  20.00
+answer#69            1  1.000    0.533    0.001     0.284     0.000    0.467    0.999   0.05
+answer#70            1  1.000    0.221    0.000     0.049     0.000    0.779    1.000   0.05
+answer#71            1  1.000    0.065    0.000     0.004     0.000    0.935    1.000   0.05
+answer#72            1  1.000    0.026    0.000     0.001     0.000    0.974    1.000   0.05
+answer#73            1  1.000    0.116    0.000     0.013     0.000    0.884    1.000   0.05
+answer#74            1  1.000    0.265    0.000     0.070     0.000    0.735    1.000   0.05
+answer#75            1  0.000    0.782    1.000     0.611     1.000    0.782    1.000   2.61
+answer#76            1  0.000    0.404    0.999     0.163     0.998    0.404    0.999  20.00
+answer#77            1  0.000    0.410    1.000     0.168     1.000    0.410    1.000   2.61
+answer#78            1  0.000    0.535    1.000     0.286     1.000    0.535    1.000   1.79
+answer#79            1  1.000    0.132    0.000     0.017     0.000    0.868    1.000   0.05
+answer#80            1  1.000    0.493    0.000     0.243     0.000    0.507    1.000   0.05
+answer#81            1  0.000    0.654    1.000     0.428     1.000    0.654    1.000  14.79
+answer#82            1  0.000    0.767    1.000     0.589     1.000    0.767    1.000  20.00
+answer#83            1  0.000    0.524    1.000     0.274     1.000    0.524    1.000  20.00
+answer#84            1  1.000    0.693    0.252     0.481     0.064    0.307    0.748   0.05
+answer#85            1  1.000    0.467    0.000     0.218     0.000    0.533    1.000   0.05
+answer#86            1  1.000    0.466    0.000     0.217     0.000    0.534    1.000   0.05
+answer#87            1  0.000    0.314    0.559     0.099     0.312    0.314    0.559   0.08
+answer#88            1  0.000    0.885    1.000     0.783     1.000    0.885    1.000  20.00
+answer#89            1  0.000    0.573    0.999     0.328     0.998    0.573    0.999   1.23
+answer#90            1  0.000    0.389    1.000     0.151     1.000    0.389    1.000  20.00
+answer#91            1  1.000    0.158    0.000     0.025     0.000    0.842    1.000   0.05
+answer#92            1  1.000    0.104    0.000     0.011     0.000    0.896    1.000   0.05
+answer#93            1  0.000    0.486    1.000     0.236     1.000    0.486    1.000   0.95
+answer#94            1  1.000    0.051    0.000     0.003     0.000    0.949    1.000   0.05
+answer#95            1  0.000    0.439    1.000     0.193     1.000    0.439    1.000   4.96
+answer#96            1  1.000    0.298    0.000     0.089     0.000    0.702    1.000   0.05
+answer#97            1  0.000    0.382    0.995     0.146     0.989    0.382    0.995  20.00
+answer#98            1  1.000    0.539    0.008     0.290     0.000    0.461    0.992   0.05
+answer#99            1  0.000    0.657    1.000     0.432     1.000    0.657    1.000  20.00
+answer#100           1  0.000    0.391    0.759     0.153     0.576    0.391    0.759  20.00
+answer#101           1  0.000    0.353    0.990     0.125     0.980    0.353    0.990   0.91
+answer#102           1  1.000    0.075    0.000     0.006     0.000    0.925    1.000   0.05
+answer#103           1  1.000    0.396    0.000     0.157     0.000    0.604    1.000   0.05
+answer#104           1  0.000    0.823    1.000     0.677     1.000    0.823    1.000   2.82
+answer#105           1  1.000    0.577    0.020     0.333     0.000    0.423    0.980   0.05
+answer#106           1  0.000    0.587    1.000     0.344     1.000    0.587    1.000   2.09
+answer#107           1  1.000    0.243    0.000     0.059     0.000    0.757    1.000   0.05
+answer#108           1  0.000    0.487    1.000     0.237     1.000    0.487    1.000   1.60
+answer#109           1  1.000    0.428    0.000     0.184     0.000    0.572    1.000   0.05
+answer#110           1  1.000    0.573    0.061     0.329     0.004    0.427    0.939   0.05
+answer#111           1  1.000    0.229    0.000     0.053     0.000    0.771    1.000   0.05
+answer#112           1  0.000    0.667    1.000     0.445     1.000    0.667    1.000   2.09
+answer#113           1  1.000    0.106    0.000     0.011     0.000    0.894    1.000   0.05
+answer#114           1  0.000    0.640    1.000     0.410     1.000    0.640    1.000   1.73
+answer#115           1  1.000    0.074    0.000     0.006     0.000    0.926    1.000   0.05
+answer#116           1  0.000    0.642    1.000     0.412     1.000    0.642    1.000   1.60
+answer#117           1  1.000    0.468    0.000     0.219     0.000    0.532    1.000   0.05
+answer#118           1  1.000    0.694    0.173     0.482     0.030    0.306    0.827   0.05
+answer#119           1  1.000    0.110    0.000     0.012     0.000    0.890    1.000   0.05
+answer#120           1  1.000    0.486    0.000     0.237     0.000    0.514    1.000   0.05
+answer#121           1  1.000    0.229    0.000     0.052     0.000    0.771    1.000   0.05
+answer#122           1  1.000    0.334    0.000     0.111     0.000    0.666    1.000   0.05
+answer#123           1  0.000    0.951    1.000     0.905     1.000    0.951    1.000  20.00
+answer#124           1  0.000    0.293    0.994     0.086     0.988    0.293    0.994   1.14
+answer#125           1  1.000    0.624    0.010     0.389     0.000    0.376    0.990   0.05
+answer#126           1  1.000    0.075    0.000     0.006     0.000    0.925    1.000   0.05
+answer#127           1  0.000    0.828    1.000     0.685     1.000    0.828    1.000   2.93
+answer#128           1  0.000    0.325    0.890     0.105     0.793    0.325    0.890  20.00
+answer#129           1  1.000    0.035    0.000     0.001     0.000    0.965    1.000   0.05
+answer#130           1  1.000    0.051    0.000     0.003     0.000    0.949    1.000   0.05
+answer#131           1  1.000    0.334    0.000     0.112     0.000    0.666    1.000   0.05
+answer#132           1  1.000    0.040    0.000     0.002     0.000    0.960    1.000   0.05
+answer#133           1  1.000    0.130    0.000     0.017     0.000    0.870    1.000   0.05
+answer#134           1  0.000    0.456    0.702     0.208     0.493    0.456    0.702   0.46
+answer#135           1  0.000    0.463    0.987     0.214     0.974    0.463    0.987   0.67
+answer#136           1  1.000    0.333    0.000     0.111     0.000    0.667    1.000   0.05
+answer#137           1  0.000    0.442    1.000     0.196     1.000    0.442    1.000  20.00
+answer#138           1  1.000    0.109    0.000     0.012     0.000    0.891    1.000   0.05
+answer#139           1  1.000    0.531    0.000     0.282     0.000    0.469    1.000   0.05
+answer#140           1  1.000    0.617    0.004     0.380     0.000    0.383    0.996   0.05
+answer#141           1  1.000    0.246    0.000     0.061     0.000    0.754    1.000   0.05
+answer#142           1  1.000    0.016    0.000     0.000     0.000    0.984    1.000   0.05
+answer#143           1  1.000    0.074    0.000     0.005     0.000    0.926    1.000   0.05
+answer#144           1  1.000    0.625    0.159     0.391     0.025    0.375    0.841   0.05
+answer#145           1  1.000    0.654    0.000     0.427     0.000    0.346    1.000   0.05
+answer#146           1  1.000    0.293    0.000     0.086     0.000    0.707    1.000   0.05
+answer#147           1  0.000    0.389    0.997     0.152     0.995    0.389    0.997  20.00
+answer#148           1  0.000    0.417    1.000     0.174     0.999    0.417    1.000   0.88
+answer#149           1  0.000    0.526    1.000     0.277     1.000    0.526    1.000  20.00
+answer#150           1  1.000    0.268    0.000     0.072     0.000    0.732    1.000   0.05
+answer#151           1  0.000    0.345    0.791     0.119     0.625    0.345    0.791   3.67
+answer#152           1  1.000    0.302    0.000     0.091     0.000    0.698    1.000   0.05
+answer#153           1  0.000    0.842    1.000     0.708     1.000    0.842    1.000   3.04
+answer#154           1  0.000    0.392    0.988     0.154     0.975    0.392    0.988  20.00
+answer#155           1  0.000    0.356    1.000     0.127     1.000    0.356    1.000   1.18
+answer#156           1  0.000    0.655    1.000     0.429     1.000    0.655    1.000   1.86
+answer#157           1  1.000    0.149    0.000     0.022     0.000    0.851    1.000   0.05
+answer#158           1  1.000    0.554    0.000     0.307     0.000    0.446    1.000   0.05
+answer#159           1  1.000    0.055    0.000     0.003     0.000    0.945    1.000   0.05
+answer#160           1  1.000    0.247    0.000     0.061     0.000    0.753    1.000   0.05
+answer#161           1  0.000    0.431    1.000     0.186     1.000    0.431    1.000   2.71
+answer#162           1  1.000    0.129    0.000     0.017     0.000    0.871    1.000   0.05
+answer#163           1  0.000    0.499    1.000     0.249     1.000    0.499    1.000  20.00
+answer#164           1  1.000    0.069    0.000     0.005     0.000    0.931    1.000   0.05
+answer#165           1  1.000    0.095    0.000     0.009     0.000    0.905    1.000   0.05
+answer#166           1  1.000    0.526    0.000     0.276     0.000    0.474    1.000   0.05
+answer#167           1  1.000    0.049    0.000     0.002     0.000    0.951    1.000   0.05
+answer#168           1  0.000    0.393    1.000     0.155     1.000    0.393    1.000   1.49
+answer#169           1  0.000    0.372    0.755     0.138     0.570    0.372    0.755   2.71
+answer#170           1  1.000    0.632    0.473     0.399     0.224    0.368    0.527   0.05
+answer#171           1  1.000    0.291    0.000     0.084     0.000    0.709    1.000   0.05
+answer#172           1  0.000    0.464    1.000     0.216     1.000    0.464    1.000   1.06
+answer#173           1  1.000    0.518    0.000     0.268     0.000    0.482    1.000   0.05
+answer#174           1  1.000    0.459    0.000     0.211     0.000    0.541    1.000   0.05
+answer#175           1  1.000    0.111    0.000     0.012     0.000    0.889    1.000   0.05
+answer#176           1  1.000    0.086    0.000     0.007     0.000    0.914    1.000   0.05
+answer#177           1  1.000    0.610    0.000     0.372     0.000    0.390    1.000   0.05
+answer#178           1  0.000    0.496    1.000     0.246     1.000    0.496    1.000  20.00
+answer#179           1  0.000    0.485    1.000     0.235     1.000    0.485    1.000   3.53
+answer#180           1  0.000    0.340    0.981     0.116     0.962    0.340    0.981   0.40
+answer#181           1  0.000    0.483    0.999     0.234     0.999    0.483    0.999   0.98
+answer#182           1  1.000    0.221    0.000     0.049     0.000    0.779    1.000   0.05
+answer#183           1  1.000    0.139    0.000     0.019     0.000    0.861    1.000   0.05
+answer#184           1  1.000    0.469    0.000     0.220     0.000    0.531    1.000   0.05
+answer#185           1  0.000    0.713    1.000     0.508     1.000    0.713    1.000   2.82
+answer#186           1  0.000    0.684    1.000     0.468     1.000    0.684    1.000  20.00
+answer#187           1  0.000    0.325    0.914     0.106     0.835    0.325    0.914   0.46
+answer#188           1  0.000    0.369    1.000     0.136     1.000    0.369    1.000  20.00
+answer#189           1  1.000    0.028    0.000     0.001     0.000    0.972    1.000   0.05
+answer#190           1  1.000    0.509    0.000     0.259     0.000    0.491    1.000   0.05
+answer#191           1  0.000    0.453    0.963     0.205     0.928    0.453    0.963   0.60
+answer#192           1  1.000    0.224    0.000     0.050     0.000    0.776    1.000   0.05
+answer#193           1  1.000    0.271    0.000     0.073     0.000    0.729    1.000   0.05
+answer#194           1  0.000    0.642    1.000     0.413     1.000    0.642    1.000  20.00
+answer#195           1  1.000    0.478    0.000     0.229     0.000    0.522    1.000   0.05
+answer#196           1  0.000    0.376    0.727     0.142     0.529    0.376    0.727   0.20
+answer#197           1  1.000    0.276    0.000     0.076     0.000    0.724    1.000   0.05
+answer#198           1  1.000    0.391    0.000     0.153     0.000    0.609    1.000   0.05
+answer#199           1  0.000    0.764    1.000     0.583     1.000    0.764    1.000  20.00
+answer#200           1  1.000    0.327    0.000     0.107     0.000    0.673    1.000   0.05
+answer#201           1  1.000    0.159    0.000     0.025     0.000    0.841    1.000   0.05
+answer#202           1  1.000    0.569    0.004     0.324     0.000    0.431    0.996   0.05
+answer#203           1  0.000    0.418    1.000     0.175     1.000    0.418    1.000   0.91
+answer#204           1  1.000    0.257    0.000     0.066     0.000    0.743    1.000   0.05
+answer#205           1  1.000    0.015    0.000     0.000     0.000    0.985    1.000   0.05
+answer#206           1  0.000    0.450    1.000     0.203     1.000    0.450    1.000  20.00
+answer#207           1  0.000    0.577    1.000     0.333     1.000    0.577    1.000   2.52
+answer#208           1  0.000    0.334    0.958     0.112     0.918    0.334    0.958   0.38
+answer#209           1  0.000    0.385    0.999     0.148     0.998    0.385    0.999   0.95
+answer#210           1  0.000    0.341    1.000     0.116     1.000    0.341    1.000  20.00
+answer#211           1  1.000    0.253    0.000     0.064     0.000    0.747    1.000   0.05
+answer#212           1  0.000    0.554    1.000     0.307     1.000    0.554    1.000   2.01
+answer#213           1  1.000    0.098    0.000     0.010     0.000    0.902    1.000   0.05
+answer#214           1  1.000    0.162    0.000     0.026     0.000    0.838    1.000   0.05
+answer#215           1  1.000    0.707    0.495     0.499     0.245    0.293    0.505   0.05
+answer#216           1  1.000    0.025    0.000     0.001     0.000    0.975    1.000   0.05
+answer#217           1  1.000    0.179    0.000     0.032     0.000    0.821    1.000   0.05
+answer#218           1  0.000    0.341    0.952     0.116     0.906    0.341    0.952  10.94
+answer#219           1  0.000    0.334    0.525     0.112     0.276    0.334    0.525   2.71
+answer#220           1  1.000    0.430    0.000     0.185     0.000    0.570    1.000   0.05
+answer#221           1  1.000    0.248    0.000     0.062     0.000    0.752    1.000   0.05
+answer#222           1  1.000    0.362    0.000     0.131     0.000    0.638    1.000   0.05
+answer#223           1  1.000    0.418    0.000     0.174     0.000    0.582    1.000   0.05
+answer#224           1  1.000    0.357    0.000     0.128     0.000    0.643    1.000   0.05
+answer#225           1  1.000    0.066    0.000     0.004     0.000    0.934    1.000   0.05
+answer#226           1  1.000    0.095    0.000     0.009     0.000    0.905    1.000   0.05
+answer#227           1  1.000    0.066    0.000     0.004     0.000    0.934    1.000   0.05
+answer#228           1  1.000    0.005    0.000     0.000     0.000    0.995    1.000   0.05
+answer#229           1  0.000    0.410    0.994     0.168     0.989    0.410    0.994   2.52
+answer#230           1  0.000    0.923    1.000     0.851     1.000    0.923    1.000  20.00
+answer#231           1  1.000    0.154    0.000     0.024     0.000    0.846    1.000   0.05
+answer#232           1  1.000    0.083    0.000     0.007     0.000    0.917    1.000   0.05
+answer#233           1  0.000    0.589    1.000     0.346     1.000    0.589    1.000  10.94
+answer#234           1  0.000    0.905    1.000     0.818     1.000    0.905    1.000   6.71
+answer#235           1  0.000    0.508    1.000     0.258     1.000    0.508    1.000  20.00
+answer#236           1  1.000    0.047    0.000     0.002     0.000    0.953    1.000   0.05
+answer#237           1  0.000    0.437    1.000     0.191     1.000    0.437    1.000  20.00
+answer#238           1  1.000    0.255    0.000     0.065     0.000    0.745    1.000   0.05
+answer#239           1  1.000    0.309    0.000     0.096     0.000    0.691    1.000   0.05
+answer#240           1  1.000    0.542    0.010     0.294     0.000    0.458    0.990   0.05
+answer#241           1  1.000    0.237    0.000     0.056     0.000    0.763    1.000   0.05
+answer#242           1  1.000    0.192    0.000     0.037     0.000    0.808    1.000   0.05
+answer#243           1  1.000    0.184    0.000     0.034     0.000    0.816    1.000   0.05
+answer#244           1  1.000    0.349    0.000     0.122     0.000    0.651    1.000   0.05
+answer#245           1  1.000    0.632    0.340     0.399     0.115    0.368    0.660   0.05
+answer#246           1  1.000    0.291    0.000     0.085     0.000    0.709    1.000   0.05
+answer#247           1  1.000    0.281    0.000     0.079     0.000    0.719    1.000   0.05
+answer#248           1  0.000    0.847    1.000     0.717     1.000    0.847    1.000  20.00
+answer#249           1  0.000    0.551    1.000     0.303     0.999    0.551    1.000   1.06
+answer#250           1  1.000    0.596    0.402     0.355     0.161    0.404    0.598   0.05
+answer#251           1  1.000    0.262    0.000     0.069     0.000    0.738    1.000   0.05
+answer#252           1  0.000    0.795    1.000     0.631     1.000    0.795    1.000  20.00
+answer#253           1  1.000    0.080    0.000     0.006     0.000    0.920    1.000   0.05
+answer#254           1  0.000    0.423    0.522     0.179     0.272    0.423    0.522  20.00
+answer#255           1  1.000    0.376    0.000     0.142     0.000    0.624    1.000   0.05
+answer#256           1  0.000    0.508    0.996     0.258     0.992    0.508    0.996  20.00
+answer#257           1  1.000    0.294    0.000     0.087     0.000    0.706    1.000   0.05
+answer#258           1  1.000    0.108    0.000     0.012     0.000    0.892    1.000   0.05
+answer#259           1  1.000    0.366    0.000     0.134     0.000    0.634    1.000   0.05
+answer#260           1  0.000    0.684    1.000     0.468     1.000    0.684    1.000   2.17
+answer#261           1  0.000    0.288    0.551     0.083     0.304    0.288    0.551   0.95
+answer#262           1  0.000    0.993    1.000     0.985     1.000    0.993    1.000  20.00
+answer#263           1  1.000    0.170    0.000     0.029     0.000    0.830    1.000   0.05
+answer#264           1  0.000    0.304    0.988     0.092     0.976    0.304    0.988   0.50
+answer#265           1  1.000    0.586    0.001     0.343     0.000    0.414    0.999   0.05
+answer#266           1  1.000    0.527    0.402     0.278     0.162    0.473    0.598   0.05
+answer#267           1  1.000    0.088    0.000     0.008     0.000    0.912    1.000   0.05
+answer#268           1  0.000    0.610    1.000     0.372     1.000    0.610    1.000   2.93
+answer#269           1  1.000    0.402    0.000     0.162     0.000    0.598    1.000   0.05
+answer#270           1  1.000    0.331    0.000     0.110     0.000    0.669    1.000   0.05
+answer#271           1  1.000    0.303    0.000     0.092     0.000    0.697    1.000   0.05
+answer#272           1  1.000    0.291    0.000     0.085     0.000    0.709    1.000   0.05
+answer#273           1  1.000    0.450    0.000     0.203     0.000    0.550    1.000   0.05
+answer#274           1  1.000    0.430    0.000     0.185     0.000    0.570    1.000   0.05
+answer#275           1  0.000    0.684    1.000     0.468     1.000    0.684    1.000  20.00
+answer#276           1  1.000    0.074    0.000     0.006     0.000    0.926    1.000   0.05
+answer#277           1  1.000    0.512    0.000     0.262     0.000    0.488    1.000   0.05
+answer#278           1  0.000    0.305    0.998     0.093     0.997    0.305    0.998   0.60
+answer#279           1  1.000    0.302    0.000     0.091     0.000    0.698    1.000   0.05
+answer#280           1  1.000    0.183    0.000     0.034     0.000    0.817    1.000   0.05
+answer#281           1  1.000    0.310    0.000     0.096     0.000    0.690    1.000   0.05
+answer#282           1  1.000    0.500    0.000     0.250     0.000    0.500    1.000   0.05
+answer#283           1  0.000    0.580    1.000     0.336     1.000    0.580    1.000   1.43
+answer#284           1  1.000    0.615    0.001     0.378     0.000    0.385    0.999   0.05
+answer#285           1  1.000    0.040    0.000     0.002     0.000    0.960    1.000   0.05
+answer#286           1  1.000    0.536    0.000     0.287     0.000    0.464    1.000   0.05
+answer#287           1  0.000    0.573    1.000     0.328     1.000    0.573    1.000   1.60
+answer#288           1  1.000    0.162    0.000     0.026     0.000    0.838    1.000   0.05
+answer#289           1  1.000    0.049    0.000     0.002     0.000    0.951    1.000   0.05
+answer#290           1  1.000    0.682    0.006     0.466     0.000    0.318    0.994   0.05
+answer#291           1  0.000    0.654    1.000     0.428     1.000    0.654    1.000   3.28
+answer#292           1  1.000    0.120    0.000     0.014     0.000    0.880    1.000   0.05
+answer#293           1  0.000    0.795    1.000     0.632     1.000    0.795    1.000  20.00
+answer#294           1  1.000    0.537    0.000     0.288     0.000    0.463    1.000   0.05
+answer#295           1  0.000    0.299    0.993     0.089     0.987    0.299    0.993   0.48
+answer#296           1  0.000    0.665    1.000     0.442     1.000    0.665    1.000   3.28
+answer#297           1  1.000    0.296    0.000     0.088     0.000    0.704    1.000   0.05
+answer#298           1  0.000    0.725    1.000     0.526     1.000    0.725    1.000  20.00
+answer#299           1  1.000    0.022    0.000     0.000     0.000    0.978    1.000   0.05
+answer#300           1  1.000    0.218    0.000     0.047     0.000    0.782    1.000   0.05
+
+decision policy (calibrated confidence cutoffs, held-out):
+  answer           auto    target 0.95: unreachable on this data
+  answer           review  target 0.80: unreachable on this data
+  answer           human   everything below
+  answer#2         auto    target 0.95: unreachable on this data
+  answer#2         review  target 0.80: unreachable on this data
+  answer#2         human   everything below
+  answer#3         auto    target 0.95: unreachable on this data
+  answer#3         review  target 0.80: unreachable on this data
+  answer#3         human   everything below
+  answer#4         auto    target 0.95: unreachable on this data
+  answer#4         review  target 0.80: unreachable on this data
+  answer#4         human   everything below
+  answer#5         auto    target 0.95: unreachable on this data
+  answer#5         review  target 0.80: unreachable on this data
+  answer#5         human   everything below
+  answer#6         auto    target 0.95: unreachable on this data
+  answer#6         review  target 0.80: unreachable on this data
+  answer#6         human   everything below
+  answer#7         auto    target 0.95: unreachable on this data
+  answer#7         review  target 0.80: unreachable on this data
+  answer#7         human   everything below
+  answer#8         auto    target 0.95: unreachable on this data
+  answer#8         review  target 0.80: unreachable on this data
+  answer#8         human   everything below
+  answer#9         auto    target 0.95: unreachable on this data
+  answer#9         review  target 0.80: unreachable on this data
+  answer#9         human   everything below
+  answer#10        auto    target 0.95: unreachable on this data
+  answer#10        review  target 0.80: unreachable on this data
+  answer#10        human   everything below
+  answer#11        auto    target 0.95: unreachable on this data
+  answer#11        review  target 0.80: unreachable on this data
+  answer#11        human   everything below
+  answer#12        auto    target 0.95: unreachable on this data
+  answer#12        review  target 0.80: unreachable on this data
+  answer#12        human   everything below
+  answer#13        auto    target 0.95: unreachable on this data
+  answer#13        review  target 0.80: unreachable on this data
+  answer#13        human   everything below
+  answer#14        auto    target 0.95: unreachable on this data
+  answer#14        review  target 0.80: unreachable on this data
+  answer#14        human   everything below
+  answer#15        auto    target 0.95: unreachable on this data
+  answer#15        review  target 0.80: unreachable on this data
+  answer#15        human   everything below
+  answer#16        auto    target 0.95: unreachable on this data
+  answer#16        review  target 0.80: unreachable on this data
+  answer#16        human   everything below
+  answer#17        auto    target 0.95: unreachable on this data
+  answer#17        review  target 0.80: unreachable on this data
+  answer#17        human   everything below
+  answer#18        auto    target 0.95: unreachable on this data
+  answer#18        review  target 0.80: unreachable on this data
+  answer#18        human   everything below
+  answer#19        auto    target 0.95: unreachable on this data
+  answer#19        review  target 0.80: unreachable on this data
+  answer#19        human   everything below
+  answer#20        auto    target 0.95: unreachable on this data
+  answer#20        review  target 0.80: unreachable on this data
+  answer#20        human   everything below
+  answer#21        auto    target 0.95: unreachable on this data
+  answer#21        review  target 0.80: unreachable on this data
+  answer#21        human   everything below
+  answer#22        auto    target 0.95: unreachable on this data
+  answer#22        review  target 0.80: unreachable on this data
+  answer#22        human   everything below
+  answer#23        auto    target 0.95: unreachable on this data
+  answer#23        review  target 0.80: unreachable on this data
+  answer#23        human   everything below
+  answer#24        auto    target 0.95: unreachable on this data
+  answer#24        review  target 0.80: unreachable on this data
+  answer#24        human   everything below
+  answer#25        auto    target 0.95: unreachable on this data
+  answer#25        review  target 0.80: unreachable on this data
+  answer#25        human   everything below
+  answer#26        auto    target 0.95: unreachable on this data
+  answer#26        review  target 0.80: unreachable on this data
+  answer#26        human   everything below
+  answer#27        auto    target 0.95: unreachable on this data
+  answer#27        review  target 0.80: unreachable on this data
+  answer#27        human   everything below
+  answer#28        auto    target 0.95: unreachable on this data
+  answer#28        review  target 0.80: unreachable on this data
+  answer#28        human   everything below
+  answer#29        auto    target 0.95: unreachable on this data
+  answer#29        review  target 0.80: unreachable on this data
+  answer#29        human   everything below
+  answer#30        auto    target 0.95: unreachable on this data
+  answer#30        review  target 0.80: unreachable on this data
+  answer#30        human   everything below
+  answer#31        auto    target 0.95: unreachable on this data
+  answer#31        review  target 0.80: unreachable on this data
+  answer#31        human   everything below
+  answer#32        auto    target 0.95: unreachable on this data
+  answer#32        review  target 0.80: unreachable on this data
+  answer#32        human   everything below
+  answer#33        auto    target 0.95: unreachable on this data
+  answer#33        review  target 0.80: unreachable on this data
+  answer#33        human   everything below
+  answer#34        auto    target 0.95: unreachable on this data
+  answer#34        review  target 0.80: unreachable on this data
+  answer#34        human   everything below
+  answer#35        auto    target 0.95: unreachable on this data
+  answer#35        review  target 0.80: unreachable on this data
+  answer#35        human   everything below
+  answer#36        auto    target 0.95: unreachable on this data
+  answer#36        review  target 0.80: unreachable on this data
+  answer#36        human   everything below
+  answer#37        auto    target 0.95: unreachable on this data
+  answer#37        review  target 0.80: unreachable on this data
+  answer#37        human   everything below
+  answer#38        auto    target 0.95: unreachable on this data
+  answer#38        review  target 0.80: unreachable on this data
+  answer#38        human   everything below
+  answer#39        auto    target 0.95: unreachable on this data
+  answer#39        review  target 0.80: unreachable on this data
+  answer#39        human   everything below
+  answer#40        auto    target 0.95: unreachable on this data
+  answer#40        review  target 0.80: unreachable on this data
+  answer#40        human   everything below
+  answer#41        auto    target 0.95: unreachable on this data
+  answer#41        review  target 0.80: unreachable on this data
+  answer#41        human   everything below
+  answer#42        auto    target 0.95: unreachable on this data
+  answer#42        review  target 0.80: unreachable on this data
+  answer#42        human   everything below
+  answer#43        auto    target 0.95: unreachable on this data
+  answer#43        review  target 0.80: unreachable on this data
+  answer#43        human   everything below
+  answer#44        auto    target 0.95: unreachable on this data
+  answer#44        review  target 0.80: unreachable on this data
+  answer#44        human   everything below
+  answer#45        auto    target 0.95: unreachable on this data
+  answer#45        review  target 0.80: unreachable on this data
+  answer#45        human   everything below
+  answer#46        auto    target 0.95: unreachable on this data
+  answer#46        review  target 0.80: unreachable on this data
+  answer#46        human   everything below
+  answer#47        auto    target 0.95: unreachable on this data
+  answer#47        review  target 0.80: unreachable on this data
+  answer#47        human   everything below
+  answer#48        auto    target 0.95: unreachable on this data
+  answer#48        review  target 0.80: unreachable on this data
+  answer#48        human   everything below
+  answer#49        auto    target 0.95: unreachable on this data
+  answer#49        review  target 0.80: unreachable on this data
+  answer#49        human   everything below
+  answer#50        auto    target 0.95: unreachable on this data
+  answer#50        review  target 0.80: unreachable on this data
+  answer#50        human   everything below
+  answer#51        auto    target 0.95: unreachable on this data
+  answer#51        review  target 0.80: unreachable on this data
+  answer#51        human   everything below
+  answer#52        auto    target 0.95: unreachable on this data
+  answer#52        review  target 0.80: unreachable on this data
+  answer#52        human   everything below
+  answer#53        auto    target 0.95: unreachable on this data
+  answer#53        review  target 0.80: unreachable on this data
+  answer#53        human   everything below
+  answer#54        auto    target 0.95: unreachable on this data
+  answer#54        review  target 0.80: unreachable on this data
+  answer#54        human   everything below
+  answer#55        auto    target 0.95: unreachable on this data
+  answer#55        review  target 0.80: unreachable on this data
+  answer#55        human   everything below
+  answer#56        auto    target 0.95: unreachable on this data
+  answer#56        review  target 0.80: unreachable on this data
+  answer#56        human   everything below
+  answer#57        auto    target 0.95: unreachable on this data
+  answer#57        review  target 0.80: unreachable on this data
+  answer#57        human   everything below
+  answer#58        auto    target 0.95: unreachable on this data
+  answer#58        review  target 0.80: unreachable on this data
+  answer#58        human   everything below
+  answer#59        auto    target 0.95: unreachable on this data
+  answer#59        review  target 0.80: unreachable on this data
+  answer#59        human   everything below
+  answer#60        auto    target 0.95: unreachable on this data
+  answer#60        review  target 0.80: unreachable on this data
+  answer#60        human   everything below
+  answer#61        auto    target 0.95: unreachable on this data
+  answer#61        review  target 0.80: unreachable on this data
+  answer#61        human   everything below
+  answer#62        auto    target 0.95: unreachable on this data
+  answer#62        review  target 0.80: unreachable on this data
+  answer#62        human   everything below
+  answer#63        auto    target 0.95: unreachable on this data
+  answer#63        review  target 0.80: unreachable on this data
+  answer#63        human   everything below
+  answer#64        auto    target 0.95: unreachable on this data
+  answer#64        review  target 0.80: unreachable on this data
+  answer#64        human   everything below
+  answer#65        auto    target 0.95: unreachable on this data
+  answer#65        review  target 0.80: unreachable on this data
+  answer#65        human   everything below
+  answer#66        auto    target 0.95: unreachable on this data
+  answer#66        review  target 0.80: unreachable on this data
+  answer#66        human   everything below
+  answer#67        auto    target 0.95: unreachable on this data
+  answer#67        review  target 0.80: unreachable on this data
+  answer#67        human   everything below
+  answer#68        auto    target 0.95: unreachable on this data
+  answer#68        review  target 0.80: unreachable on this data
+  answer#68        human   everything below
+  answer#69        auto    target 0.95: unreachable on this data
+  answer#69        review  target 0.80: unreachable on this data
+  answer#69        human   everything below
+  answer#70        auto    target 0.95: unreachable on this data
+  answer#70        review  target 0.80: unreachable on this data
+  answer#70        human   everything below
+  answer#71        auto    target 0.95: unreachable on this data
+  answer#71        review  target 0.80: unreachable on this data
+  answer#71        human   everything below
+  answer#72        auto    target 0.95: unreachable on this data
+  answer#72        review  target 0.80: unreachable on this data
+  answer#72        human   everything below
+  answer#73        auto    target 0.95: unreachable on this data
+  answer#73        review  target 0.80: unreachable on this data
+  answer#73        human   everything below
+  answer#74        auto    target 0.95: unreachable on this data
+  answer#74        review  target 0.80: unreachable on this data
+  answer#74        human   everything below
+  answer#75        auto    target 0.95: unreachable on this data
+  answer#75        review  target 0.80: unreachable on this data
+  answer#75        human   everything below
+  answer#76        auto    target 0.95: unreachable on this data
+  answer#76        review  target 0.80: unreachable on this data
+  answer#76        human   everything below
+  answer#77        auto    target 0.95: unreachable on this data
+  answer#77        review  target 0.80: unreachable on this data
+  answer#77        human   everything below
+  answer#78        auto    target 0.95: unreachable on this data
+  answer#78        review  target 0.80: unreachable on this data
+  answer#78        human   everything below
+  answer#79        auto    target 0.95: unreachable on this data
+  answer#79        review  target 0.80: unreachable on this data
+  answer#79        human   everything below
+  answer#80        auto    target 0.95: unreachable on this data
+  answer#80        review  target 0.80: unreachable on this data
+  answer#80        human   everything below
+  answer#81        auto    target 0.95: unreachable on this data
+  answer#81        review  target 0.80: unreachable on this data
+  answer#81        human   everything below
+  answer#82        auto    target 0.95: unreachable on this data
+  answer#82        review  target 0.80: unreachable on this data
+  answer#82        human   everything below
+  answer#83        auto    target 0.95: unreachable on this data
+  answer#83        review  target 0.80: unreachable on this data
+  answer#83        human   everything below
+  answer#84        auto    target 0.95: unreachable on this data
+  answer#84        review  target 0.80: unreachable on this data
+  answer#84        human   everything below
+  answer#85        auto    target 0.95: unreachable on this data
+  answer#85        review  target 0.80: unreachable on this data
+  answer#85        human   everything below
+  answer#86        auto    target 0.95: unreachable on this data
+  answer#86        review  target 0.80: unreachable on this data
+  answer#86        human   everything below
+  answer#87        auto    target 0.95: unreachable on this data
+  answer#87        review  target 0.80: unreachable on this data
+  answer#87        human   everything below
+  answer#88        auto    target 0.95: unreachable on this data
+  answer#88        review  target 0.80: unreachable on this data
+  answer#88        human   everything below
+  answer#89        auto    target 0.95: unreachable on this data
+  answer#89        review  target 0.80: unreachable on this data
+  answer#89        human   everything below
+  answer#90        auto    target 0.95: unreachable on this data
+  answer#90        review  target 0.80: unreachable on this data
+  answer#90        human   everything below
+  answer#91        auto    target 0.95: unreachable on this data
+  answer#91        review  target 0.80: unreachable on this data
+  answer#91        human   everything below
+  answer#92        auto    target 0.95: unreachable on this data
+  answer#92        review  target 0.80: unreachable on this data
+  answer#92        human   everything below
+  answer#93        auto    target 0.95: unreachable on this data
+  answer#93        review  target 0.80: unreachable on this data
+  answer#93        human   everything below
+  answer#94        auto    target 0.95: unreachable on this data
+  answer#94        review  target 0.80: unreachable on this data
+  answer#94        human   everything below
+  answer#95        auto    target 0.95: unreachable on this data
+  answer#95        review  target 0.80: unreachable on this data
+  answer#95        human   everything below
+  answer#96        auto    target 0.95: unreachable on this data
+  answer#96        review  target 0.80: unreachable on this data
+  answer#96        human   everything below
+  answer#97        auto    target 0.95: unreachable on this data
+  answer#97        review  target 0.80: unreachable on this data
+  answer#97        human   everything below
+  answer#98        auto    target 0.95: unreachable on this data
+  answer#98        review  target 0.80: unreachable on this data
+  answer#98        human   everything below
+  answer#99        auto    target 0.95: unreachable on this data
+  answer#99        review  target 0.80: unreachable on this data
+  answer#99        human   everything below
+  answer#100       auto    target 0.95: unreachable on this data
+  answer#100       review  target 0.80: unreachable on this data
+  answer#100       human   everything below
+  answer#101       auto    target 0.95: unreachable on this data
+  answer#101       review  target 0.80: unreachable on this data
+  answer#101       human   everything below
+  answer#102       auto    target 0.95: unreachable on this data
+  answer#102       review  target 0.80: unreachable on this data
+  answer#102       human   everything below
+  answer#103       auto    target 0.95: unreachable on this data
+  answer#103       review  target 0.80: unreachable on this data
+  answer#103       human   everything below
+  answer#104       auto    target 0.95: unreachable on this data
+  answer#104       review  target 0.80: unreachable on this data
+  answer#104       human   everything below
+  answer#105       auto    target 0.95: unreachable on this data
+  answer#105       review  target 0.80: unreachable on this data
+  answer#105       human   everything below
+  answer#106       auto    target 0.95: unreachable on this data
+  answer#106       review  target 0.80: unreachable on this data
+  answer#106       human   everything below
+  answer#107       auto    target 0.95: unreachable on this data
+  answer#107       review  target 0.80: unreachable on this data
+  answer#107       human   everything below
+  answer#108       auto    target 0.95: unreachable on this data
+  answer#108       review  target 0.80: unreachable on this data
+  answer#108       human   everything below
+  answer#109       auto    target 0.95: unreachable on this data
+  answer#109       review  target 0.80: unreachable on this data
+  answer#109       human   everything below
+  answer#110       auto    target 0.95: unreachable on this data
+  answer#110       review  target 0.80: unreachable on this data
+  answer#110       human   everything below
+  answer#111       auto    target 0.95: unreachable on this data
+  answer#111       review  target 0.80: unreachable on this data
+  answer#111       human   everything below
+  answer#112       auto    target 0.95: unreachable on this data
+  answer#112       review  target 0.80: unreachable on this data
+  answer#112       human   everything below
+  answer#113       auto    target 0.95: unreachable on this data
+  answer#113       review  target 0.80: unreachable on this data
+  answer#113       human   everything below
+  answer#114       auto    target 0.95: unreachable on this data
+  answer#114       review  target 0.80: unreachable on this data
+  answer#114       human   everything below
+  answer#115       auto    target 0.95: unreachable on this data
+  answer#115       review  target 0.80: unreachable on this data
+  answer#115       human   everything below
+  answer#116       auto    target 0.95: unreachable on this data
+  answer#116       review  target 0.80: unreachable on this data
+  answer#116       human   everything below
+  answer#117       auto    target 0.95: unreachable on this data
+  answer#117       review  target 0.80: unreachable on this data
+  answer#117       human   everything below
+  answer#118       auto    target 0.95: unreachable on this data
+  answer#118       review  target 0.80: unreachable on this data
+  answer#118       human   everything below
+  answer#119       auto    target 0.95: unreachable on this data
+  answer#119       review  target 0.80: unreachable on this data
+  answer#119       human   everything below
+  answer#120       auto    target 0.95: unreachable on this data
+  answer#120       review  target 0.80: unreachable on this data
+  answer#120       human   everything below
+  answer#121       auto    target 0.95: unreachable on this data
+  answer#121       review  target 0.80: unreachable on this data
+  answer#121       human   everything below
+  answer#122       auto    target 0.95: unreachable on this data
+  answer#122       review  target 0.80: unreachable on this data
+  answer#122       human   everything below
+  answer#123       auto    target 0.95: unreachable on this data
+  answer#123       review  target 0.80: unreachable on this data
+  answer#123       human   everything below
+  answer#124       auto    target 0.95: unreachable on this data
+  answer#124       review  target 0.80: unreachable on this data
+  answer#124       human   everything below
+  answer#125       auto    target 0.95: unreachable on this data
+  answer#125       review  target 0.80: unreachable on this data
+  answer#125       human   everything below
+  answer#126       auto    target 0.95: unreachable on this data
+  answer#126       review  target 0.80: unreachable on this data
+  answer#126       human   everything below
+  answer#127       auto    target 0.95: unreachable on this data
+  answer#127       review  target 0.80: unreachable on this data
+  answer#127       human   everything below
+  answer#128       auto    target 0.95: unreachable on this data
+  answer#128       review  target 0.80: unreachable on this data
+  answer#128       human   everything below
+  answer#129       auto    target 0.95: unreachable on this data
+  answer#129       review  target 0.80: unreachable on this data
+  answer#129       human   everything below
+  answer#130       auto    target 0.95: unreachable on this data
+  answer#130       review  target 0.80: unreachable on this data
+  answer#130       human   everything below
+  answer#131       auto    target 0.95: unreachable on this data
+  answer#131       review  target 0.80: unreachable on this data
+  answer#131       human   everything below
+  answer#132       auto    target 0.95: unreachable on this data
+  answer#132       review  target 0.80: unreachable on this data
+  answer#132       human   everything below
+  answer#133       auto    target 0.95: unreachable on this data
+  answer#133       review  target 0.80: unreachable on this data
+  answer#133       human   everything below
+  answer#134       auto    target 0.95: unreachable on this data
+  answer#134       review  target 0.80: unreachable on this data
+  answer#134       human   everything below
+  answer#135       auto    target 0.95: unreachable on this data
+  answer#135       review  target 0.80: unreachable on this data
+  answer#135       human   everything below
+  answer#136       auto    target 0.95: unreachable on this data
+  answer#136       review  target 0.80: unreachable on this data
+  answer#136       human   everything below
+  answer#137       auto    target 0.95: unreachable on this data
+  answer#137       review  target 0.80: unreachable on this data
+  answer#137       human   everything below
+  answer#138       auto    target 0.95: unreachable on this data
+  answer#138       review  target 0.80: unreachable on this data
+  answer#138       human   everything below
+  answer#139       auto    target 0.95: unreachable on this data
+  answer#139       review  target 0.80: unreachable on this data
+  answer#139       human   everything below
+  answer#140       auto    target 0.95: unreachable on this data
+  answer#140       review  target 0.80: unreachable on this data
+  answer#140       human   everything below
+  answer#141       auto    target 0.95: unreachable on this data
+  answer#141       review  target 0.80: unreachable on this data
+  answer#141       human   everything below
+  answer#142       auto    target 0.95: unreachable on this data
+  answer#142       review  target 0.80: unreachable on this data
+  answer#142       human   everything below
+  answer#143       auto    target 0.95: unreachable on this data
+  answer#143       review  target 0.80: unreachable on this data
+  answer#143       human   everything below
+  answer#144       auto    target 0.95: unreachable on this data
+  answer#144       review  target 0.80: unreachable on this data
+  answer#144       human   everything below
+  answer#145       auto    target 0.95: unreachable on this data
+  answer#145       review  target 0.80: unreachable on this data
+  answer#145       human   everything below
+  answer#146       auto    target 0.95: unreachable on this data
+  answer#146       review  target 0.80: unreachable on this data
+  answer#146       human   everything below
+  answer#147       auto    target 0.95: unreachable on this data
+  answer#147       review  target 0.80: unreachable on this data
+  answer#147       human   everything below
+  answer#148       auto    target 0.95: unreachable on this data
+  answer#148       review  target 0.80: unreachable on this data
+  answer#148       human   everything below
+  answer#149       auto    target 0.95: unreachable on this data
+  answer#149       review  target 0.80: unreachable on this data
+  answer#149       human   everything below
+  answer#150       auto    target 0.95: unreachable on this data
+  answer#150       review  target 0.80: unreachable on this data
+  answer#150       human   everything below
+  answer#151       auto    target 0.95: unreachable on this data
+  answer#151       review  target 0.80: unreachable on this data
+  answer#151       human   everything below
+  answer#152       auto    target 0.95: unreachable on this data
+  answer#152       review  target 0.80: unreachable on this data
+  answer#152       human   everything below
+  answer#153       auto    target 0.95: unreachable on this data
+  answer#153       review  target 0.80: unreachable on this data
+  answer#153       human   everything below
+  answer#154       auto    target 0.95: unreachable on this data
+  answer#154       review  target 0.80: unreachable on this data
+  answer#154       human   everything below
+  answer#155       auto    target 0.95: unreachable on this data
+  answer#155       review  target 0.80: unreachable on this data
+  answer#155       human   everything below
+  answer#156       auto    target 0.95: unreachable on this data
+  answer#156       review  target 0.80: unreachable on this data
+  answer#156       human   everything below
+  answer#157       auto    target 0.95: unreachable on this data
+  answer#157       review  target 0.80: unreachable on this data
+  answer#157       human   everything below
+  answer#158       auto    target 0.95: unreachable on this data
+  answer#158       review  target 0.80: unreachable on this data
+  answer#158       human   everything below
+  answer#159       auto    target 0.95: unreachable on this data
+  answer#159       review  target 0.80: unreachable on this data
+  answer#159       human   everything below
+  answer#160       auto    target 0.95: unreachable on this data
+  answer#160       review  target 0.80: unreachable on this data
+  answer#160       human   everything below
+  answer#161       auto    target 0.95: unreachable on this data
+  answer#161       review  target 0.80: unreachable on this data
+  answer#161       human   everything below
+  answer#162       auto    target 0.95: unreachable on this data
+  answer#162       review  target 0.80: unreachable on this data
+  answer#162       human   everything below
+  answer#163       auto    target 0.95: unreachable on this data
+  answer#163       review  target 0.80: unreachable on this data
+  answer#163       human   everything below
+  answer#164       auto    target 0.95: unreachable on this data
+  answer#164       review  target 0.80: unreachable on this data
+  answer#164       human   everything below
+  answer#165       auto    target 0.95: unreachable on this data
+  answer#165       review  target 0.80: unreachable on this data
+  answer#165       human   everything below
+  answer#166       auto    target 0.95: unreachable on this data
+  answer#166       review  target 0.80: unreachable on this data
+  answer#166       human   everything below
+  answer#167       auto    target 0.95: unreachable on this data
+  answer#167       review  target 0.80: unreachable on this data
+  answer#167       human   everything below
+  answer#168       auto    target 0.95: unreachable on this data
+  answer#168       review  target 0.80: unreachable on this data
+  answer#168       human   everything below
+  answer#169       auto    target 0.95: unreachable on this data
+  answer#169       review  target 0.80: unreachable on this data
+  answer#169       human   everything below
+  answer#170       auto    target 0.95: unreachable on this data
+  answer#170       review  target 0.80: unreachable on this data
+  answer#170       human   everything below
+  answer#171       auto    target 0.95: unreachable on this data
+  answer#171       review  target 0.80: unreachable on this data
+  answer#171       human   everything below
+  answer#172       auto    target 0.95: unreachable on this data
+  answer#172       review  target 0.80: unreachable on this data
+  answer#172       human   everything below
+  answer#173       auto    target 0.95: unreachable on this data
+  answer#173       review  target 0.80: unreachable on this data
+  answer#173       human   everything below
+  answer#174       auto    target 0.95: unreachable on this data
+  answer#174       review  target 0.80: unreachable on this data
+  answer#174       human   everything below
+  answer#175       auto    target 0.95: unreachable on this data
+  answer#175       review  target 0.80: unreachable on this data
+  answer#175       human   everything below
+  answer#176       auto    target 0.95: unreachable on this data
+  answer#176       review  target 0.80: unreachable on this data
+  answer#176       human   everything below
+  answer#177       auto    target 0.95: unreachable on this data
+  answer#177       review  target 0.80: unreachable on this data
+  answer#177       human   everything below
+  answer#178       auto    target 0.95: unreachable on this data
+  answer#178       review  target 0.80: unreachable on this data
+  answer#178       human   everything below
+  answer#179       auto    target 0.95: unreachable on this data
+  answer#179       review  target 0.80: unreachable on this data
+  answer#179       human   everything below
+  answer#180       auto    target 0.95: unreachable on this data
+  answer#180       review  target 0.80: unreachable on this data
+  answer#180       human   everything below
+  answer#181       auto    target 0.95: unreachable on this data
+  answer#181       review  target 0.80: unreachable on this data
+  answer#181       human   everything below
+  answer#182       auto    target 0.95: unreachable on this data
+  answer#182       review  target 0.80: unreachable on this data
+  answer#182       human   everything below
+  answer#183       auto    target 0.95: unreachable on this data
+  answer#183       review  target 0.80: unreachable on this data
+  answer#183       human   everything below
+  answer#184       auto    target 0.95: unreachable on this data
+  answer#184       review  target 0.80: unreachable on this data
+  answer#184       human   everything below
+  answer#185       auto    target 0.95: unreachable on this data
+  answer#185       review  target 0.80: unreachable on this data
+  answer#185       human   everything below
+  answer#186       auto    target 0.95: unreachable on this data
+  answer#186       review  target 0.80: unreachable on this data
+  answer#186       human   everything below
+  answer#187       auto    target 0.95: unreachable on this data
+  answer#187       review  target 0.80: unreachable on this data
+  answer#187       human   everything below
+  answer#188       auto    target 0.95: unreachable on this data
+  answer#188       review  target 0.80: unreachable on this data
+  answer#188       human   everything below
+  answer#189       auto    target 0.95: unreachable on this data
+  answer#189       review  target 0.80: unreachable on this data
+  answer#189       human   everything below
+  answer#190       auto    target 0.95: unreachable on this data
+  answer#190       review  target 0.80: unreachable on this data
+  answer#190       human   everything below
+  answer#191       auto    target 0.95: unreachable on this data
+  answer#191       review  target 0.80: unreachable on this data
+  answer#191       human   everything below
+  answer#192       auto    target 0.95: unreachable on this data
+  answer#192       review  target 0.80: unreachable on this data
+  answer#192       human   everything below
+  answer#193       auto    target 0.95: unreachable on this data
+  answer#193       review  target 0.80: unreachable on this data
+  answer#193       human   everything below
+  answer#194       auto    target 0.95: unreachable on this data
+  answer#194       review  target 0.80: unreachable on this data
+  answer#194       human   everything below
+  answer#195       auto    target 0.95: unreachable on this data
+  answer#195       review  target 0.80: unreachable on this data
+  answer#195       human   everything below
+  answer#196       auto    target 0.95: unreachable on this data
+  answer#196       review  target 0.80: unreachable on this data
+  answer#196       human   everything below
+  answer#197       auto    target 0.95: unreachable on this data
+  answer#197       review  target 0.80: unreachable on this data
+  answer#197       human   everything below
+  answer#198       auto    target 0.95: unreachable on this data
+  answer#198       review  target 0.80: unreachable on this data
+  answer#198       human   everything below
+  answer#199       auto    target 0.95: unreachable on this data
+  answer#199       review  target 0.80: unreachable on this data
+  answer#199       human   everything below
+  answer#200       auto    target 0.95: unreachable on this data
+  answer#200       review  target 0.80: unreachable on this data
+  answer#200       human   everything below
+  answer#201       auto    target 0.95: unreachable on this data
+  answer#201       review  target 0.80: unreachable on this data
+  answer#201       human   everything below
+  answer#202       auto    target 0.95: unreachable on this data
+  answer#202       review  target 0.80: unreachable on this data
+  answer#202       human   everything below
+  answer#203       auto    target 0.95: unreachable on this data
+  answer#203       review  target 0.80: unreachable on this data
+  answer#203       human   everything below
+  answer#204       auto    target 0.95: unreachable on this data
+  answer#204       review  target 0.80: unreachable on this data
+  answer#204       human   everything below
+  answer#205       auto    target 0.95: unreachable on this data
+  answer#205       review  target 0.80: unreachable on this data
+  answer#205       human   everything below
+  answer#206       auto    target 0.95: unreachable on this data
+  answer#206       review  target 0.80: unreachable on this data
+  answer#206       human   everything below
+  answer#207       auto    target 0.95: unreachable on this data
+  answer#207       review  target 0.80: unreachable on this data
+  answer#207       human   everything below
+  answer#208       auto    target 0.95: unreachable on this data
+  answer#208       review  target 0.80: unreachable on this data
+  answer#208       human   everything below
+  answer#209       auto    target 0.95: unreachable on this data
+  answer#209       review  target 0.80: unreachable on this data
+  answer#209       human   everything below
+  answer#210       auto    target 0.95: unreachable on this data
+  answer#210       review  target 0.80: unreachable on this data
+  answer#210       human   everything below
+  answer#211       auto    target 0.95: unreachable on this data
+  answer#211       review  target 0.80: unreachable on this data
+  answer#211       human   everything below
+  answer#212       auto    target 0.95: unreachable on this data
+  answer#212       review  target 0.80: unreachable on this data
+  answer#212       human   everything below
+  answer#213       auto    target 0.95: unreachable on this data
+  answer#213       review  target 0.80: unreachable on this data
+  answer#213       human   everything below
+  answer#214       auto    target 0.95: unreachable on this data
+  answer#214       review  target 0.80: unreachable on this data
+  answer#214       human   everything below
+  answer#215       auto    target 0.95: unreachable on this data
+  answer#215       review  target 0.80: unreachable on this data
+  answer#215       human   everything below
+  answer#216       auto    target 0.95: unreachable on this data
+  answer#216       review  target 0.80: unreachable on this data
+  answer#216       human   everything below
+  answer#217       auto    target 0.95: unreachable on this data
+  answer#217       review  target 0.80: unreachable on this data
+  answer#217       human   everything below
+  answer#218       auto    target 0.95: unreachable on this data
+  answer#218       review  target 0.80: unreachable on this data
+  answer#218       human   everything below
+  answer#219       auto    target 0.95: unreachable on this data
+  answer#219       review  target 0.80: unreachable on this data
+  answer#219       human   everything below
+  answer#220       auto    target 0.95: unreachable on this data
+  answer#220       review  target 0.80: unreachable on this data
+  answer#220       human   everything below
+  answer#221       auto    target 0.95: unreachable on this data
+  answer#221       review  target 0.80: unreachable on this data
+  answer#221       human   everything below
+  answer#222       auto    target 0.95: unreachable on this data
+  answer#222       review  target 0.80: unreachable on this data
+  answer#222       human   everything below
+  answer#223       auto    target 0.95: unreachable on this data
+  answer#223       review  target 0.80: unreachable on this data
+  answer#223       human   everything below
+  answer#224       auto    target 0.95: unreachable on this data
+  answer#224       review  target 0.80: unreachable on this data
+  answer#224       human   everything below
+  answer#225       auto    target 0.95: unreachable on this data
+  answer#225       review  target 0.80: unreachable on this data
+  answer#225       human   everything below
+  answer#226       auto    target 0.95: unreachable on this data
+  answer#226       review  target 0.80: unreachable on this data
+  answer#226       human   everything below
+  answer#227       auto    target 0.95: unreachable on this data
+  answer#227       review  target 0.80: unreachable on this data
+  answer#227       human   everything below
+  answer#228       auto    target 0.95: unreachable on this data
+  answer#228       review  target 0.80: unreachable on this data
+  answer#228       human   everything below
+  answer#229       auto    target 0.95: unreachable on this data
+  answer#229       review  target 0.80: unreachable on this data
+  answer#229       human   everything below
+  answer#230       auto    target 0.95: unreachable on this data
+  answer#230       review  target 0.80: unreachable on this data
+  answer#230       human   everything below
+  answer#231       auto    target 0.95: unreachable on this data
+  answer#231       review  target 0.80: unreachable on this data
+  answer#231       human   everything below
+  answer#232       auto    target 0.95: unreachable on this data
+  answer#232       review  target 0.80: unreachable on this data
+  answer#232       human   everything below
+  answer#233       auto    target 0.95: unreachable on this data
+  answer#233       review  target 0.80: unreachable on this data
+  answer#233       human   everything below
+  answer#234       auto    target 0.95: unreachable on this data
+  answer#234       review  target 0.80: unreachable on this data
+  answer#234       human   everything below
+  answer#235       auto    target 0.95: unreachable on this data
+  answer#235       review  target 0.80: unreachable on this data
+  answer#235       human   everything below
+  answer#236       auto    target 0.95: unreachable on this data
+  answer#236       review  target 0.80: unreachable on this data
+  answer#236       human   everything below
+  answer#237       auto    target 0.95: unreachable on this data
+  answer#237       review  target 0.80: unreachable on this data
+  answer#237       human   everything below
+  answer#238       auto    target 0.95: unreachable on this data
+  answer#238       review  target 0.80: unreachable on this data
+  answer#238       human   everything below
+  answer#239       auto    target 0.95: unreachable on this data
+  answer#239       review  target 0.80: unreachable on this data
+  answer#239       human   everything below
+  answer#240       auto    target 0.95: unreachable on this data
+  answer#240       review  target 0.80: unreachable on this data
+  answer#240       human   everything below
+  answer#241       auto    target 0.95: unreachable on this data
+  answer#241       review  target 0.80: unreachable on this data
+  answer#241       human   everything below
+  answer#242       auto    target 0.95: unreachable on this data
+  answer#242       review  target 0.80: unreachable on this data
+  answer#242       human   everything below
+  answer#243       auto    target 0.95: unreachable on this data
+  answer#243       review  target 0.80: unreachable on this data
+  answer#243       human   everything below
+  answer#244       auto    target 0.95: unreachable on this data
+  answer#244       review  target 0.80: unreachable on this data
+  answer#244       human   everything below
+  answer#245       auto    target 0.95: unreachable on this data
+  answer#245       review  target 0.80: unreachable on this data
+  answer#245       human   everything below
+  answer#246       auto    target 0.95: unreachable on this data
+  answer#246       review  target 0.80: unreachable on this data
+  answer#246       human   everything below
+  answer#247       auto    target 0.95: unreachable on this data
+  answer#247       review  target 0.80: unreachable on this data
+  answer#247       human   everything below
+  answer#248       auto    target 0.95: unreachable on this data
+  answer#248       review  target 0.80: unreachable on this data
+  answer#248       human   everything below
+  answer#249       auto    target 0.95: unreachable on this data
+  answer#249       review  target 0.80: unreachable on this data
+  answer#249       human   everything below
+  answer#250       auto    target 0.95: unreachable on this data
+  answer#250       review  target 0.80: unreachable on this data
+  answer#250       human   everything below
+  answer#251       auto    target 0.95: unreachable on this data
+  answer#251       review  target 0.80: unreachable on this data
+  answer#251       human   everything below
+  answer#252       auto    target 0.95: unreachable on this data
+  answer#252       review  target 0.80: unreachable on this data
+  answer#252       human   everything below
+  answer#253       auto    target 0.95: unreachable on this data
+  answer#253       review  target 0.80: unreachable on this data
+  answer#253       human   everything below
+  answer#254       auto    target 0.95: unreachable on this data
+  answer#254       review  target 0.80: unreachable on this data
+  answer#254       human   everything below
+  answer#255       auto    target 0.95: unreachable on this data
+  answer#255       review  target 0.80: unreachable on this data
+  answer#255       human   everything below
+  answer#256       auto    target 0.95: unreachable on this data
+  answer#256       review  target 0.80: unreachable on this data
+  answer#256       human   everything below
+  answer#257       auto    target 0.95: unreachable on this data
+  answer#257       review  target 0.80: unreachable on this data
+  answer#257       human   everything below
+  answer#258       auto    target 0.95: unreachable on this data
+  answer#258       review  target 0.80: unreachable on this data
+  answer#258       human   everything below
+  answer#259       auto    target 0.95: unreachable on this data
+  answer#259       review  target 0.80: unreachable on this data
+  answer#259       human   everything below
+  answer#260       auto    target 0.95: unreachable on this data
+  answer#260       review  target 0.80: unreachable on this data
+  answer#260       human   everything below
+  answer#261       auto    target 0.95: unreachable on this data
+  answer#261       review  target 0.80: unreachable on this data
+  answer#261       human   everything below
+  answer#262       auto    target 0.95: unreachable on this data
+  answer#262       review  target 0.80: unreachable on this data
+  answer#262       human   everything below
+  answer#263       auto    target 0.95: unreachable on this data
+  answer#263       review  target 0.80: unreachable on this data
+  answer#263       human   everything below
+  answer#264       auto    target 0.95: unreachable on this data
+  answer#264       review  target 0.80: unreachable on this data
+  answer#264       human   everything below
+  answer#265       auto    target 0.95: unreachable on this data
+  answer#265       review  target 0.80: unreachable on this data
+  answer#265       human   everything below
+  answer#266       auto    target 0.95: unreachable on this data
+  answer#266       review  target 0.80: unreachable on this data
+  answer#266       human   everything below
+  answer#267       auto    target 0.95: unreachable on this data
+  answer#267       review  target 0.80: unreachable on this data
+  answer#267       human   everything below
+  answer#268       auto    target 0.95: unreachable on this data
+  answer#268       review  target 0.80: unreachable on this data
+  answer#268       human   everything below
+  answer#269       auto    target 0.95: unreachable on this data
+  answer#269       review  target 0.80: unreachable on this data
+  answer#269       human   everything below
+  answer#270       auto    target 0.95: unreachable on this data
+  answer#270       review  target 0.80: unreachable on this data
+  answer#270       human   everything below
+  answer#271       auto    target 0.95: unreachable on this data
+  answer#271       review  target 0.80: unreachable on this data
+  answer#271       human   everything below
+  answer#272       auto    target 0.95: unreachable on this data
+  answer#272       review  target 0.80: unreachable on this data
+  answer#272       human   everything below
+  answer#273       auto    target 0.95: unreachable on this data
+  answer#273       review  target 0.80: unreachable on this data
+  answer#273       human   everything below
+  answer#274       auto    target 0.95: unreachable on this data
+  answer#274       review  target 0.80: unreachable on this data
+  answer#274       human   everything below
+  answer#275       auto    target 0.95: unreachable on this data
+  answer#275       review  target 0.80: unreachable on this data
+  answer#275       human   everything below
+  answer#276       auto    target 0.95: unreachable on this data
+  answer#276       review  target 0.80: unreachable on this data
+  answer#276       human   everything below
+  answer#277       auto    target 0.95: unreachable on this data
+  answer#277       review  target 0.80: unreachable on this data
+  answer#277       human   everything below
+  answer#278       auto    target 0.95: unreachable on this data
+  answer#278       review  target 0.80: unreachable on this data
+  answer#278       human   everything below
+  answer#279       auto    target 0.95: unreachable on this data
+  answer#279       review  target 0.80: unreachable on this data
+  answer#279       human   everything below
+  answer#280       auto    target 0.95: unreachable on this data
+  answer#280       review  target 0.80: unreachable on this data
+  answer#280       human   everything below
+  answer#281       auto    target 0.95: unreachable on this data
+  answer#281       review  target 0.80: unreachable on this data
+  answer#281       human   everything below
+  answer#282       auto    target 0.95: unreachable on this data
+  answer#282       review  target 0.80: unreachable on this data
+  answer#282       human   everything below
+  answer#283       auto    target 0.95: unreachable on this data
+  answer#283       review  target 0.80: unreachable on this data
+  answer#283       human   everything below
+  answer#284       auto    target 0.95: unreachable on this data
+  answer#284       review  target 0.80: unreachable on this data
+  answer#284       human   everything below
+  answer#285       auto    target 0.95: unreachable on this data
+  answer#285       review  target 0.80: unreachable on this data
+  answer#285       human   everything below
+  answer#286       auto    target 0.95: unreachable on this data
+  answer#286       review  target 0.80: unreachable on this data
+  answer#286       human   everything below
+  answer#287       auto    target 0.95: unreachable on this data
+  answer#287       review  target 0.80: unreachable on this data
+  answer#287       human   everything below
+  answer#288       auto    target 0.95: unreachable on this data
+  answer#288       review  target 0.80: unreachable on this data
+  answer#288       human   everything below
+  answer#289       auto    target 0.95: unreachable on this data
+  answer#289       review  target 0.80: unreachable on this data
+  answer#289       human   everything below
+  answer#290       auto    target 0.95: unreachable on this data
+  answer#290       review  target 0.80: unreachable on this data
+  answer#290       human   everything below
+  answer#291       auto    target 0.95: unreachable on this data
+  answer#291       review  target 0.80: unreachable on this data
+  answer#291       human   everything below
+  answer#292       auto    target 0.95: unreachable on this data
+  answer#292       review  target 0.80: unreachable on this data
+  answer#292       human   everything below
+  answer#293       auto    target 0.95: unreachable on this data
+  answer#293       review  target 0.80: unreachable on this data
+  answer#293       human   everything below
+  answer#294       auto    target 0.95: unreachable on this data
+  answer#294       review  target 0.80: unreachable on this data
+  answer#294       human   everything below
+  answer#295       auto    target 0.95: unreachable on this data
+  answer#295       review  target 0.80: unreachable on this data
+  answer#295       human   everything below
+  answer#296       auto    target 0.95: unreachable on this data
+  answer#296       review  target 0.80: unreachable on this data
+  answer#296       human   everything below
+  answer#297       auto    target 0.95: unreachable on this data
+  answer#297       review  target 0.80: unreachable on this data
+  answer#297       human   everything below
+  answer#298       auto    target 0.95: unreachable on this data
+  answer#298       review  target 0.80: unreachable on this data
+  answer#298       human   everything below
+  answer#299       auto    target 0.95: unreachable on this data
+  answer#299       review  target 0.80: unreachable on this data
+  answer#299       human   everything below
+  answer#300       auto    target 0.95: unreachable on this data
+  answer#300       review  target 0.80: unreachable on this data
+  answer#300       human   everything below
+  collected 50/300 (0s)
+  collected 100/300 (1s)
+  collected 150/300 (1s)
+  collected 200/300 (2s)
+  collected 250/300 (2s)
+  collected 300/300 (3s)
+
+== hub_financial_news ==
+calibration report  model=ladder-c-pool397935-seed1-held@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+sentiment          300  0.703    0.062    0.064     0.183     0.185    0.723    0.755   0.88
+
+decision policy (calibrated confidence cutoffs, held-out):
+  sentiment        auto    target 0.95: act when confidence >= 0.848  -> precision 0.955, covers 22% of decisions
+  sentiment        review  target 0.80: act when confidence >= 0.696  -> precision 0.803, covers 73% of decisions
+  sentiment        human   everything below
+  collected 50/300 (0s)
+  collected 100/300 (1s)
+  collected 150/300 (1s)
+  collected 200/300 (2s)
+  collected 250/300 (2s)
+  collected 300/300 (3s)
+
+== hub_paws ==
+calibration report  model=ladder-c-pool397935-seed1-held@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+paraphrase         300  0.463    0.375    0.075     0.367     0.249    0.838    0.538  12.25
+
+decision policy (calibrated confidence cutoffs, held-out):
+  paraphrase       auto    target 0.95: unreachable on this data
+  paraphrase       review  target 0.80: act when confidence >= 0.559  -> precision 0.804, covers 15% of decisions
+  paraphrase       human   everything below
+  collected 50/300 (0s)
+  collected 100/300 (1s)
+  collected 150/300 (1s)
+  collected 200/300 (2s)
+  collected 250/300 (2s)
+  collected 300/300 (3s)
+
+== hub_boolq ==
+calibration report  model=ladder-c-pool397935-seed1-held@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+answer             300  0.620    0.199    0.071     0.284     0.239    0.819    0.593   5.15
+
+decision policy (calibrated confidence cutoffs, held-out):
+  answer           auto    target 0.95: unreachable on this data
+  answer           review  target 0.80: unreachable on this data
+  answer           human   everything below
+  collected 50/300 (0s)
+  collected 100/300 (1s)
+  collected 150/300 (1s)
+  collected 200/300 (2s)
+  collected 250/300 (2s)
+  collected 300/300 (3s)
+
+== hub_sms_spam ==
+calibration report  model=ladder-c-pool397935-seed1-held@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+spam               300  0.773    0.070    0.060     0.167     0.164    0.844    0.757   1.73
+
+decision policy (calibrated confidence cutoffs, held-out):
+  spam             auto    target 0.95: unreachable on this data
+  spam             review  target 0.80: act when confidence >= 0.561  -> precision 0.801, covers 91% of decisions
+  spam             human   everything below
+  collected 50/300 (0s)
+  collected 100/300 (1s)
+  collected 150/300 (1s)
+  collected 200/300 (2s)
+  collected 250/300 (2s)
+  collected 300/300 (3s)
+
+== hub_tweet_irony ==
+calibration report  model=ladder-c-pool397935-seed1-held@eval
+
+question             n    acc  ECE raw  ECE cal Brier raw Brier cal conf raw conf cal      T
+ironic             300  0.687    0.094    0.038     0.211     0.205    0.780    0.696   1.66
+
+decision policy (calibrated confidence cutoffs, held-out):
+  ironic           auto    target 0.95: act when confidence >= 0.868  -> precision 1.000, covers 3% of decisions
+  ironic           review  target 0.80: act when confidence >= 0.758  -> precision 0.804, covers 31% of decisions
+  ironic           human   everything below
++ mkdir -p results/logs
++ cp job.log results/logs/lad-c1.log
