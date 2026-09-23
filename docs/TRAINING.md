@@ -1922,6 +1922,100 @@ world knowledge it never read, adversarial NLI and BoolQ.
   pulling only its results; the sweeper now always takes both, and a truncated transfer
   fails loudly instead of silently.
 
+## Round eleven: inventing the questions
+
+Round ten established that public data saturates. With 300 rows per dataset the corpus
+encoder scores 0.337 on question kinds it has never seen; at 2,000 rows it scores 0.485;
+at 10,000 rows, nearly 300,000 rows in total, it scores 0.459. Two seeds at every rung.
+The ten million further rows on the Hub are worth nothing for this, because more rows
+buy more *data* of the fifty-five question types the corpus already has, and the problem
+is the question types.
+
+So the next thing to try is inventing them. `tasks/schema.py` generates the question
+type rather than more examples of one: a domain drawn from a bank of 71, attributes with
+their own names and values, a rule, and options whose text states the rule each one
+stands for. Every example is a pure function of its index, so the supply is unlimited
+and shards across any number of workers. Fifty-six domains train and fifteen are
+reserved, so evaluation is on unfamiliar subject matter and not only unfamiliar
+questions. Answer sets run from two to fifty. Difficulty spans five levels. A case
+carries one to five questions about one situation, and states arrive as records, nested
+documents, tables, threads or prose with irrelevant notes mixed in.
+
+It was audited before use, the way round six made mandatory for datasets, and the audit
+earned its place: claims had been 64% "no", which pays a model for guessing; grade bands
+were placed at random so some levels almost never occurred; JSON states named fields by
+their internal key while the questions named them in words, so a third of questions
+asked about fields the state never showed; and a true "field is value" test always names
+the value the record holds, so a string matcher that reads nothing won 83% of the wide
+questions. All fixed, and 3,300 training and 1,333 evaluation labels now re-derive from
+their own rules with no disagreement.
+
+### What happened
+
+Two encoders, same recipe and compute as every ladder run, trained on 96,000 generated
+questions and nothing else.
+
+| measured on | generated corpus | best real-data corpus |
+|---|---|---|
+| **generated questions, 15 domains never trained on** | **0.989** · ECE 0.080 | — |
+| the public typed-decision benchmark | 0.295 | **0.485** |
+| TREC question type | 0.102 | 0.657 |
+| financial-news scale | 0.200 | 0.705 |
+| CommonsenseQA | 0.228 | 0.613 |
+| adversarial NLI | 0.332 | 0.393 |
+| SMS spam | 0.500 | 0.715 |
+| BoolQ | 0.407 | 0.672 |
+| PAWS paraphrase | 0.588 | 0.443 |
+| tweet irony | 0.612 | 0.757 |
+
+**The model learned the generated task almost perfectly and learned nothing else.** On
+generated questions from fifteen subject areas it had never seen, it scores 0.989. That
+is not memorisation: those domains, their fields and their values were absent from
+training. It genuinely learned to read a question, find the named field in the record,
+and evaluate the stated condition, in subject matter it had never met.
+
+And that skill does not reach real questions. On the public benchmark it scores 0.295
+against a random baseline of about 0.32, which is to say nothing at all, where the same
+encoder trained on real data scores 0.485. On six of the eight held-out datasets it is
+at or below chance. Only PAWS, where the answer is whether two sentences say the same
+thing, comes out ahead of the real-data model, and that is one row out of nine.
+
+### Why
+
+The generator produces a formal language. Its rules are drawn from a small grammar,
+"the field is this value", "is above that number", "between", "either, or", "at least
+two of these hold", and a model that sees 96,000 of them learns the grammar. Once the
+grammar is learned every question in that language is solvable, which is exactly what
+0.989 means.
+
+Real questions are not in that language. *Is this customer at risk of leaving. What
+should the assistant do next. How urgent is this.* Their criteria are described
+loosely, they need knowledge the record does not contain, and no rule decides them. The
+generator cannot produce such a question, because it has to know the answer in order to
+generate it, and it only knows the answer when the rule is mechanical.
+
+So the skill the generator teaches is real, transferable across subject matter, and the
+wrong skill. Reading a stated rule and applying it is not the same as judging a loosely
+described criterion, and training only on the first does not buy the second.
+
+## What was learned in round eleven
+
+- **Public data saturates at around a hundred thousand rows**, two seeds a rung, and
+  further rows of the same question types buy nothing.
+- **Invented question types are learnable and transfer across subject matter**: 0.989 on
+  fifteen domains never trained on, which is a real result about the method.
+- **They do not transfer to real questions at all.** 0.295 against a 0.32 random
+  baseline. A synthetic rule language teaches a model that language.
+- **The remaining route is other people's question types, not invented ones.** The
+  instruction-tuning collections hold well over a thousand distinct human-written tasks,
+  a large share of them classification or multiple choice. That is variety of question
+  type in real language, which is the one thing neither the corpus nor the generator
+  supplies.
+- **An audit is not a substitute for an experiment.** The generator passed every check
+  we knew how to write, including a shortcut test built specifically to catch models
+  answering without reading, and it still taught the wrong thing. The only test that
+  found this was training on it and measuring transfer.
+
 ## Next
 
 - **Outcome rewards.** Gridworld is an environment, not just a dataset. The same

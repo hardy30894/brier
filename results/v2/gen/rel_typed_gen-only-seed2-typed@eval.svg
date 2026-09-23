@@ -1,0 +1,211 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="4800" height="340" viewBox="0 0 4800 340" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
+<rect width="4800" height="340" rx="14" fill="#FFFFFF" stroke="#D8DEE6"/>
+<text x="2400.0" y="28" text-anchor="middle" font-size="14" font-weight="700" fill="#1B1F24">typed · gen-only-seed2-typed@eval</text>
+<text x="4780" y="28" text-anchor="end" font-size="11" fill="#8A94A0"><tspan fill="#8A2BE2">●</tspan> raw   <tspan fill="#3557C4">●</tspan> calibrated</text>
+<line x1="60" y1="230" x2="230" y2="230" stroke="#5B6B7C"/><line x1="60" y1="230" x2="60" y2="60" stroke="#5B6B7C"/>
+<line x1="60" y1="230" x2="230" y2="60" stroke="#8A94A0" stroke-dasharray="4 4"/>
+<text x="60" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.0</text>
+<text x="54" y="233" font-size="9" fill="#8A94A0" text-anchor="end">0.0</text>
+<text x="145.0" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.5</text>
+<text x="54" y="148.0" font-size="9" fill="#8A94A0" text-anchor="end">0.5</text>
+<text x="230" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">1.0</text>
+<text x="54" y="63" font-size="9" fill="#8A94A0" text-anchor="end">1.0</text>
+<path d="M207.5 230.0 L216.8 221.9" fill="none" stroke="#8A2BE2" stroke-width="2"/><circle cx="207.5" cy="230.0" r="3.5" fill="#8A2BE2"/><circle cx="216.8" cy="221.9" r="3.5" fill="#8A2BE2"/>
+<path d="M109.2 226.6" fill="none" stroke="#3557C4" stroke-width="2"/><circle cx="109.2" cy="226.6" r="3.5" fill="#3557C4"/>
+<text x="145.0" y="260" text-anchor="middle" font-size="12" font-weight="700" fill="#1B1F24">action</text>
+<text x="145.0" y="276" text-anchor="middle" font-size="10" fill="#5B6B7C">acc 0.02 · ECE 0.87 → 0.27 · T 20.0</text>
+<line x1="340" y1="230" x2="510" y2="230" stroke="#5B6B7C"/><line x1="340" y1="230" x2="340" y2="60" stroke="#5B6B7C"/>
+<line x1="340" y1="230" x2="510" y2="60" stroke="#8A94A0" stroke-dasharray="4 4"/>
+<text x="340" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.0</text>
+<text x="334" y="233" font-size="9" fill="#8A94A0" text-anchor="end">0.0</text>
+<text x="425.0" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.5</text>
+<text x="334" y="148.0" font-size="9" fill="#8A94A0" text-anchor="end">0.5</text>
+<text x="510" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">1.0</text>
+<text x="334" y="63" font-size="9" fill="#8A94A0" text-anchor="end">1.0</text>
+<path d="M489.1 145.0 L493.9 91.9" fill="none" stroke="#8A2BE2" stroke-width="2"/><circle cx="489.1" cy="145.0" r="3.5" fill="#8A2BE2"/><circle cx="493.9" cy="91.9" r="3.5" fill="#8A2BE2"/>
+<path d="M434.1 130.5 L443.7 163.9" fill="none" stroke="#3557C4" stroke-width="2"/><circle cx="434.1" cy="130.5" r="3.5" fill="#3557C4"/><circle cx="443.7" cy="163.9" r="3.5" fill="#3557C4"/>
+<text x="425.0" y="260" text-anchor="middle" font-size="12" font-weight="700" fill="#1B1F24">needs_review</text>
+<text x="425.0" y="276" text-anchor="middle" font-size="10" fill="#5B6B7C">acc 0.55 · ECE 0.33 → 0.07 · T 7.8</text>
+<line x1="620" y1="230" x2="790" y2="230" stroke="#5B6B7C"/><line x1="620" y1="230" x2="620" y2="60" stroke="#5B6B7C"/>
+<line x1="620" y1="230" x2="790" y2="60" stroke="#8A94A0" stroke-dasharray="4 4"/>
+<text x="620" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.0</text>
+<text x="614" y="233" font-size="9" fill="#8A94A0" text-anchor="end">0.0</text>
+<text x="705.0" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.5</text>
+<text x="614" y="148.0" font-size="9" fill="#8A94A0" text-anchor="end">0.5</text>
+<text x="790" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">1.0</text>
+<text x="614" y="63" font-size="9" fill="#8A94A0" text-anchor="end">1.0</text>
+<path d="M701.5 230.0 L713.5 230.0 L728.5 230.0 L741.8 230.0 L767.3 212.1 L777.5 98.6" fill="none" stroke="#8A2BE2" stroke-width="2"/><circle cx="701.5" cy="230.0" r="3.5" fill="#8A2BE2"/><circle cx="713.5" cy="230.0" r="3.5" fill="#8A2BE2"/><circle cx="728.5" cy="230.0" r="3.5" fill="#8A2BE2"/><circle cx="741.8" cy="230.0" r="3.5" fill="#8A2BE2"/><circle cx="767.3" cy="212.1" r="3.5" fill="#8A2BE2"/><circle cx="777.5" cy="98.6" r="3.5" fill="#8A2BE2"/>
+<path d="M667.8 199.1 L671.0 60.0" fill="none" stroke="#3557C4" stroke-width="2"/><circle cx="667.8" cy="199.1" r="3.5" fill="#3557C4"/><circle cx="671.0" cy="60.0" r="3.5" fill="#3557C4"/>
+<text x="705.0" y="260" text-anchor="middle" font-size="12" font-weight="700" fill="#1B1F24">outcome</text>
+<text x="705.0" y="276" text-anchor="middle" font-size="10" fill="#5B6B7C">acc 0.19 · ECE 0.53 → 0.11 · T 20.0</text>
+<text x="705.0" y="290" text-anchor="middle" font-size="10" fill="#3557C4">auto ≥ 0.29 covers 14% at 1.00</text>
+<line x1="900" y1="230" x2="1070" y2="230" stroke="#5B6B7C"/><line x1="900" y1="230" x2="900" y2="60" stroke="#5B6B7C"/>
+<line x1="900" y1="230" x2="1070" y2="60" stroke="#8A94A0" stroke-dasharray="4 4"/>
+<text x="900" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.0</text>
+<text x="894" y="233" font-size="9" fill="#8A94A0" text-anchor="end">0.0</text>
+<text x="985.0" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.5</text>
+<text x="894" y="148.0" font-size="9" fill="#8A94A0" text-anchor="end">0.5</text>
+<text x="1070" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">1.0</text>
+<text x="894" y="63" font-size="9" fill="#8A94A0" text-anchor="end">1.0</text>
+<path d="M963.3 155.4 L977.3 210.2" fill="none" stroke="#8A2BE2" stroke-width="2"/><circle cx="963.3" cy="155.4" r="3.5" fill="#8A2BE2"/><circle cx="977.3" cy="210.2" r="3.5" fill="#8A2BE2"/>
+<path d="M949.3 167.4 L955.7 181.7" fill="none" stroke="#3557C4" stroke-width="2"/><circle cx="949.3" cy="167.4" r="3.5" fill="#3557C4"/><circle cx="955.7" cy="181.7" r="3.5" fill="#3557C4"/>
+<text x="985.0" y="260" text-anchor="middle" font-size="12" font-weight="700" fill="#1B1F24">risk</text>
+<text x="985.0" y="276" text-anchor="middle" font-size="10" fill="#5B6B7C">acc 0.30 · ECE 0.18 → 0.05 · T 2.4</text>
+<line x1="1180" y1="230" x2="1350" y2="230" stroke="#5B6B7C"/><line x1="1180" y1="230" x2="1180" y2="60" stroke="#5B6B7C"/>
+<line x1="1180" y1="230" x2="1350" y2="60" stroke="#8A94A0" stroke-dasharray="4 4"/>
+<text x="1180" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.0</text>
+<text x="1174" y="233" font-size="9" fill="#8A94A0" text-anchor="end">0.0</text>
+<text x="1265.0" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.5</text>
+<text x="1174" y="148.0" font-size="9" fill="#8A94A0" text-anchor="end">0.5</text>
+<text x="1350" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">1.0</text>
+<text x="1174" y="63" font-size="9" fill="#8A94A0" text-anchor="end">1.0</text>
+<path d="M1247.0 178.4 L1249.7 194.8" fill="none" stroke="#8A2BE2" stroke-width="2"/><circle cx="1247.0" cy="178.4" r="3.5" fill="#8A2BE2"/><circle cx="1249.7" cy="194.8" r="3.5" fill="#8A2BE2"/>
+<path d="M1223.9 187.9" fill="none" stroke="#3557C4" stroke-width="2"/><circle cx="1223.9" cy="187.9" r="3.5" fill="#3557C4"/>
+<text x="1265.0" y="260" text-anchor="middle" font-size="12" font-weight="700" fill="#1B1F24">urgency</text>
+<text x="1265.0" y="276" text-anchor="middle" font-size="10" fill="#5B6B7C">acc 0.25 · ECE 0.16 → 0.01 · T 20.0</text>
+<line x1="1460" y1="230" x2="1630" y2="230" stroke="#5B6B7C"/><line x1="1460" y1="230" x2="1460" y2="60" stroke="#5B6B7C"/>
+<line x1="1460" y1="230" x2="1630" y2="60" stroke="#8A94A0" stroke-dasharray="4 4"/>
+<text x="1460" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.0</text>
+<text x="1454" y="233" font-size="9" fill="#8A94A0" text-anchor="end">0.0</text>
+<text x="1545.0" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.5</text>
+<text x="1454" y="148.0" font-size="9" fill="#8A94A0" text-anchor="end">0.5</text>
+<text x="1630" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">1.0</text>
+<text x="1454" y="63" font-size="9" fill="#8A94A0" text-anchor="end">1.0</text>
+<path d="M1525.3 173.3 L1538.9 173.3 L1553.8 149.0 L1569.2 145.0 L1586.1 140.5 L1606.0 187.5 L1615.9 201.7" fill="none" stroke="#8A2BE2" stroke-width="2"/><circle cx="1525.3" cy="173.3" r="3.5" fill="#8A2BE2"/><circle cx="1538.9" cy="173.3" r="3.5" fill="#8A2BE2"/><circle cx="1553.8" cy="149.0" r="3.5" fill="#8A2BE2"/><circle cx="1569.2" cy="145.0" r="3.5" fill="#8A2BE2"/><circle cx="1586.1" cy="140.5" r="3.5" fill="#8A2BE2"/><circle cx="1606.0" cy="187.5" r="3.5" fill="#8A2BE2"/><circle cx="1615.9" cy="201.7" r="3.5" fill="#8A2BE2"/>
+<path d="M1507.1 230.0 L1519.2 148.0 L1534.9 167.7 L1549.6 203.8" fill="none" stroke="#3557C4" stroke-width="2"/><circle cx="1507.1" cy="230.0" r="3.5" fill="#3557C4"/><circle cx="1519.2" cy="148.0" r="3.5" fill="#3557C4"/><circle cx="1534.9" cy="167.7" r="3.5" fill="#3557C4"/><circle cx="1549.6" cy="203.8" r="3.5" fill="#3557C4"/>
+<text x="1545.0" y="260" text-anchor="middle" font-size="12" font-weight="700" fill="#1B1F24">action#2</text>
+<text x="1545.0" y="276" text-anchor="middle" font-size="10" fill="#5B6B7C">acc 0.40 · ECE 0.27 → 0.15 · T 2.9</text>
+<line x1="1740" y1="230" x2="1910" y2="230" stroke="#5B6B7C"/><line x1="1740" y1="230" x2="1740" y2="60" stroke="#5B6B7C"/>
+<line x1="1740" y1="230" x2="1910" y2="60" stroke="#8A94A0" stroke-dasharray="4 4"/>
+<text x="1740" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.0</text>
+<text x="1734" y="233" font-size="9" fill="#8A94A0" text-anchor="end">0.0</text>
+<text x="1825.0" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.5</text>
+<text x="1734" y="148.0" font-size="9" fill="#8A94A0" text-anchor="end">0.5</text>
+<text x="1910" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">1.0</text>
+<text x="1734" y="63" font-size="9" fill="#8A94A0" text-anchor="end">1.0</text>
+<path d="M1817.7 230.0 L1832.5 217.9 L1851.2 188.8 L1864.6 175.9 L1881.5 230.0 L1906.8 162.0" fill="none" stroke="#8A2BE2" stroke-width="2"/><circle cx="1817.7" cy="230.0" r="3.5" fill="#8A2BE2"/><circle cx="1832.5" cy="217.9" r="3.5" fill="#8A2BE2"/><circle cx="1851.2" cy="188.8" r="3.5" fill="#8A2BE2"/><circle cx="1864.6" cy="175.9" r="3.5" fill="#8A2BE2"/><circle cx="1881.5" cy="230.0" r="3.5" fill="#8A2BE2"/><circle cx="1906.8" cy="162.0" r="3.5" fill="#8A2BE2"/>
+<path d="M1780.9 199.1 L1792.4 60.0" fill="none" stroke="#3557C4" stroke-width="2"/><circle cx="1780.9" cy="199.1" r="3.5" fill="#3557C4"/><circle cx="1792.4" cy="60.0" r="3.5" fill="#3557C4"/>
+<text x="1825.0" y="260" text-anchor="middle" font-size="12" font-weight="700" fill="#1B1F24">category</text>
+<text x="1825.0" y="276" text-anchor="middle" font-size="10" fill="#5B6B7C">acc 0.19 · ECE 0.48 → 0.07 · T 20.0</text>
+<line x1="2020" y1="230" x2="2190" y2="230" stroke="#5B6B7C"/><line x1="2020" y1="230" x2="2020" y2="60" stroke="#5B6B7C"/>
+<line x1="2020" y1="230" x2="2190" y2="60" stroke="#8A94A0" stroke-dasharray="4 4"/>
+<text x="2020" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.0</text>
+<text x="2014" y="233" font-size="9" fill="#8A94A0" text-anchor="end">0.0</text>
+<text x="2105.0" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.5</text>
+<text x="2014" y="148.0" font-size="9" fill="#8A94A0" text-anchor="end">0.5</text>
+<text x="2190" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">1.0</text>
+<text x="2014" y="63" font-size="9" fill="#8A94A0" text-anchor="end">1.0</text>
+<path d="M2085.6 209.6 L2090.9 180.1" fill="none" stroke="#8A2BE2" stroke-width="2"/><circle cx="2085.6" cy="209.6" r="3.5" fill="#8A2BE2"/><circle cx="2090.9" cy="180.1" r="3.5" fill="#8A2BE2"/>
+<path d="M2065.5 187.5" fill="none" stroke="#3557C4" stroke-width="2"/><circle cx="2065.5" cy="187.5" r="3.5" fill="#3557C4"/>
+<text x="2105.0" y="260" text-anchor="middle" font-size="12" font-weight="700" fill="#1B1F24">churn_risk</text>
+<text x="2105.0" y="276" text-anchor="middle" font-size="10" fill="#5B6B7C">acc 0.25 · ECE 0.16 → 0.02 · T 12.7</text>
+<line x1="2300" y1="230" x2="2470" y2="230" stroke="#5B6B7C"/><line x1="2300" y1="230" x2="2300" y2="60" stroke="#5B6B7C"/>
+<line x1="2300" y1="230" x2="2470" y2="60" stroke="#8A94A0" stroke-dasharray="4 4"/>
+<text x="2300" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.0</text>
+<text x="2294" y="233" font-size="9" fill="#8A94A0" text-anchor="end">0.0</text>
+<text x="2385.0" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.5</text>
+<text x="2294" y="148.0" font-size="9" fill="#8A94A0" text-anchor="end">0.5</text>
+<text x="2470" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">1.0</text>
+<text x="2294" y="63" font-size="9" fill="#8A94A0" text-anchor="end">1.0</text>
+<path d="M2467.5 114.4" fill="none" stroke="#8A2BE2" stroke-width="2"/><circle cx="2467.5" cy="114.4" r="3.5" fill="#8A2BE2"/>
+<path d="M2412.7 112.2 L2421.0 130.8" fill="none" stroke="#3557C4" stroke-width="2"/><circle cx="2412.7" cy="112.2" r="3.5" fill="#3557C4"/><circle cx="2421.0" cy="130.8" r="3.5" fill="#3557C4"/>
+<text x="2385.0" y="260" text-anchor="middle" font-size="12" font-weight="700" fill="#1B1F24">needs_human</text>
+<text x="2385.0" y="276" text-anchor="middle" font-size="10" fill="#5B6B7C">acc 0.68 · ECE 0.31 → 0.04 · T 6.2</text>
+<line x1="2580" y1="230" x2="2750" y2="230" stroke="#5B6B7C"/><line x1="2580" y1="230" x2="2580" y2="60" stroke="#5B6B7C"/>
+<line x1="2580" y1="230" x2="2750" y2="60" stroke="#8A94A0" stroke-dasharray="4 4"/>
+<text x="2580" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.0</text>
+<text x="2574" y="233" font-size="9" fill="#8A94A0" text-anchor="end">0.0</text>
+<text x="2665.0" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.5</text>
+<text x="2574" y="148.0" font-size="9" fill="#8A94A0" text-anchor="end">0.5</text>
+<text x="2750" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">1.0</text>
+<text x="2574" y="63" font-size="9" fill="#8A94A0" text-anchor="end">1.0</text>
+<path d="M2642.7 220.4 L2649.1 230.0" fill="none" stroke="#8A2BE2" stroke-width="2"/><circle cx="2642.7" cy="220.4" r="3.5" fill="#8A2BE2"/><circle cx="2649.1" cy="230.0" r="3.5" fill="#8A2BE2"/>
+<path d="M2623.6 221.5" fill="none" stroke="#3557C4" stroke-width="2"/><circle cx="2623.6" cy="221.5" r="3.5" fill="#3557C4"/>
+<text x="2665.0" y="260" text-anchor="middle" font-size="12" font-weight="700" fill="#1B1F24">discrepancy_severity</text>
+<text x="2665.0" y="276" text-anchor="middle" font-size="10" fill="#5B6B7C">acc 0.05 · ECE 0.32 → 0.21 · T 20.0</text>
+<line x1="2860" y1="230" x2="3030" y2="230" stroke="#5B6B7C"/><line x1="2860" y1="230" x2="2860" y2="60" stroke="#5B6B7C"/>
+<line x1="2860" y1="230" x2="3030" y2="60" stroke="#8A94A0" stroke-dasharray="4 4"/>
+<text x="2860" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.0</text>
+<text x="2854" y="233" font-size="9" fill="#8A94A0" text-anchor="end">0.0</text>
+<text x="2945.0" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.5</text>
+<text x="2854" y="148.0" font-size="9" fill="#8A94A0" text-anchor="end">0.5</text>
+<text x="3030" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">1.0</text>
+<text x="2854" y="63" font-size="9" fill="#8A94A0" text-anchor="end">1.0</text>
+<path d="M2992.5 116.7 L3006.0 158.4 L3016.8 151.9" fill="none" stroke="#8A2BE2" stroke-width="2"/><circle cx="2992.5" cy="116.7" r="3.5" fill="#8A2BE2"/><circle cx="3006.0" cy="158.4" r="3.5" fill="#8A2BE2"/><circle cx="3016.8" cy="151.9" r="3.5" fill="#8A2BE2"/>
+<path d="M2916.6 153.5" fill="none" stroke="#3557C4" stroke-width="2"/><circle cx="2916.6" cy="153.5" r="3.5" fill="#3557C4"/>
+<text x="2945.0" y="260" text-anchor="middle" font-size="12" font-weight="700" fill="#1B1F24">disposition</text>
+<text x="2945.0" y="276" text-anchor="middle" font-size="10" fill="#5B6B7C">acc 0.45 · ECE 0.43 → 0.12 · T 13.2</text>
+<line x1="3140" y1="230" x2="3310" y2="230" stroke="#5B6B7C"/><line x1="3140" y1="230" x2="3140" y2="60" stroke="#5B6B7C"/>
+<line x1="3140" y1="230" x2="3310" y2="60" stroke="#8A94A0" stroke-dasharray="4 4"/>
+<text x="3140" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.0</text>
+<text x="3134" y="233" font-size="9" fill="#8A94A0" text-anchor="end">0.0</text>
+<text x="3225.0" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.5</text>
+<text x="3134" y="148.0" font-size="9" fill="#8A94A0" text-anchor="end">0.5</text>
+<text x="3310" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">1.0</text>
+<text x="3134" y="63" font-size="9" fill="#8A94A0" text-anchor="end">1.0</text>
+<path d="M3304.6 78.7" fill="none" stroke="#8A2BE2" stroke-width="2"/><circle cx="3304.6" cy="78.7" r="3.5" fill="#8A2BE2"/>
+<path d="M3290.2 74.4 L3294.5 89.3" fill="none" stroke="#3557C4" stroke-width="2"/><circle cx="3290.2" cy="74.4" r="3.5" fill="#3557C4"/><circle cx="3294.5" cy="89.3" r="3.5" fill="#3557C4"/>
+<text x="3225.0" y="260" text-anchor="middle" font-size="12" font-weight="700" fill="#1B1F24">duplicate</text>
+<text x="3225.0" y="276" text-anchor="middle" font-size="10" fill="#5B6B7C">acc 0.89 · ECE 0.08 → 0.05 · T 1.6</text>
+<text x="3225.0" y="290" text-anchor="middle" font-size="10" fill="#3557C4">auto ≥ 0.91 covers 7% at 1.00</text>
+<line x1="3420" y1="230" x2="3590" y2="230" stroke="#5B6B7C"/><line x1="3420" y1="230" x2="3420" y2="60" stroke="#5B6B7C"/>
+<line x1="3420" y1="230" x2="3590" y2="60" stroke="#8A94A0" stroke-dasharray="4 4"/>
+<text x="3420" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.0</text>
+<text x="3414" y="233" font-size="9" fill="#8A94A0" text-anchor="end">0.0</text>
+<text x="3505.0" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.5</text>
+<text x="3414" y="148.0" font-size="9" fill="#8A94A0" text-anchor="end">0.5</text>
+<text x="3590" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">1.0</text>
+<text x="3414" y="63" font-size="9" fill="#8A94A0" text-anchor="end">1.0</text>
+<path d="M3516.3 187.5 L3530.6 145.0 L3542.6 159.2" fill="none" stroke="#8A2BE2" stroke-width="2"/><circle cx="3516.3" cy="187.5" r="3.5" fill="#8A2BE2"/><circle cx="3530.6" cy="145.0" r="3.5" fill="#8A2BE2"/><circle cx="3542.6" cy="159.2" r="3.5" fill="#8A2BE2"/>
+<path d="M3506.3 153.5" fill="none" stroke="#3557C4" stroke-width="2"/><circle cx="3506.3" cy="153.5" r="3.5" fill="#3557C4"/>
+<text x="3505.0" y="260" text-anchor="middle" font-size="12" font-weight="700" fill="#1B1F24">matches_order</text>
+<text x="3505.0" y="276" text-anchor="middle" font-size="10" fill="#5B6B7C">acc 0.45 · ECE 0.20 → 0.06 · T 20.0</text>
+<line x1="3700" y1="230" x2="3870" y2="230" stroke="#5B6B7C"/><line x1="3700" y1="230" x2="3700" y2="60" stroke="#5B6B7C"/>
+<line x1="3700" y1="230" x2="3870" y2="60" stroke="#8A94A0" stroke-dasharray="4 4"/>
+<text x="3700" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.0</text>
+<text x="3694" y="233" font-size="9" fill="#8A94A0" text-anchor="end">0.0</text>
+<text x="3785.0" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.5</text>
+<text x="3694" y="148.0" font-size="9" fill="#8A94A0" text-anchor="end">0.5</text>
+<text x="3870" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">1.0</text>
+<text x="3694" y="63" font-size="9" fill="#8A94A0" text-anchor="end">1.0</text>
+<path d="M3788.9 60.0 L3811.9 145.0 L3823.9 60.0 L3844.1 173.3 L3864.4 149.0" fill="none" stroke="#8A2BE2" stroke-width="2"/><circle cx="3788.9" cy="60.0" r="3.5" fill="#8A2BE2"/><circle cx="3811.9" cy="145.0" r="3.5" fill="#8A2BE2"/><circle cx="3823.9" cy="60.0" r="3.5" fill="#8A2BE2"/><circle cx="3844.1" cy="173.3" r="3.5" fill="#8A2BE2"/><circle cx="3864.4" cy="149.0" r="3.5" fill="#8A2BE2"/>
+<path d="M3791.8 146.7" fill="none" stroke="#3557C4" stroke-width="2"/><circle cx="3791.8" cy="146.7" r="3.5" fill="#3557C4"/>
+<text x="3785.0" y="260" text-anchor="middle" font-size="12" font-weight="700" fill="#1B1F24">credential_compromise</text>
+<text x="3785.0" y="276" text-anchor="middle" font-size="10" fill="#5B6B7C">acc 0.49 · ECE 0.47 → 0.05 · T 20.0</text>
+<line x1="3980" y1="230" x2="4150" y2="230" stroke="#5B6B7C"/><line x1="3980" y1="230" x2="3980" y2="60" stroke="#5B6B7C"/>
+<line x1="3980" y1="230" x2="4150" y2="60" stroke="#8A94A0" stroke-dasharray="4 4"/>
+<text x="3980" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.0</text>
+<text x="3974" y="233" font-size="9" fill="#8A94A0" text-anchor="end">0.0</text>
+<text x="4065.0" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.5</text>
+<text x="3974" y="148.0" font-size="9" fill="#8A94A0" text-anchor="end">0.5</text>
+<text x="4150" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">1.0</text>
+<text x="3974" y="63" font-size="9" fill="#8A94A0" text-anchor="end">1.0</text>
+<path d="M4149.9 216.4" fill="none" stroke="#8A2BE2" stroke-width="2"/><circle cx="4149.9" cy="216.4" r="3.5" fill="#8A2BE2"/>
+<path d="M4037.6 216.4" fill="none" stroke="#3557C4" stroke-width="2"/><circle cx="4037.6" cy="216.4" r="3.5" fill="#3557C4"/>
+<text x="4065.0" y="260" text-anchor="middle" font-size="12" font-weight="700" fill="#1B1F24">disposition#2</text>
+<text x="4065.0" y="276" text-anchor="middle" font-size="10" fill="#5B6B7C">acc 0.08 · ECE 0.92 → 0.26 · T 20.0</text>
+<line x1="4260" y1="230" x2="4430" y2="230" stroke="#5B6B7C"/><line x1="4260" y1="230" x2="4260" y2="60" stroke="#5B6B7C"/>
+<line x1="4260" y1="230" x2="4430" y2="60" stroke="#8A94A0" stroke-dasharray="4 4"/>
+<text x="4260" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.0</text>
+<text x="4254" y="233" font-size="9" fill="#8A94A0" text-anchor="end">0.0</text>
+<text x="4345.0" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.5</text>
+<text x="4254" y="148.0" font-size="9" fill="#8A94A0" text-anchor="end">0.5</text>
+<text x="4430" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">1.0</text>
+<text x="4254" y="63" font-size="9" fill="#8A94A0" text-anchor="end">1.0</text>
+<path d="M4308.3 205.7 L4315.9 209.9" fill="none" stroke="#8A2BE2" stroke-width="2"/><circle cx="4308.3" cy="205.7" r="3.5" fill="#8A2BE2"/><circle cx="4315.9" cy="209.9" r="3.5" fill="#8A2BE2"/>
+<path d="M4295.3 209.6" fill="none" stroke="#3557C4" stroke-width="2"/><circle cx="4295.3" cy="209.6" r="3.5" fill="#3557C4"/>
+<text x="4345.0" y="260" text-anchor="middle" font-size="12" font-weight="700" fill="#1B1F24">severity</text>
+<text x="4345.0" y="276" text-anchor="middle" font-size="10" fill="#5B6B7C">acc 0.12 · ECE 0.21 → 0.09 · T 20.0</text>
+<line x1="4540" y1="230" x2="4710" y2="230" stroke="#5B6B7C"/><line x1="4540" y1="230" x2="4540" y2="60" stroke="#5B6B7C"/>
+<line x1="4540" y1="230" x2="4710" y2="60" stroke="#8A94A0" stroke-dasharray="4 4"/>
+<text x="4540" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.0</text>
+<text x="4534" y="233" font-size="9" fill="#8A94A0" text-anchor="end">0.0</text>
+<text x="4625.0" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">0.5</text>
+<text x="4534" y="148.0" font-size="9" fill="#8A94A0" text-anchor="end">0.5</text>
+<text x="4710" y="244" font-size="9" fill="#8A94A0" text-anchor="middle">1.0</text>
+<text x="4534" y="63" font-size="9" fill="#8A94A0" text-anchor="end">1.0</text>
+<path d="M4632.1 145.0 L4649.4 60.0 L4670.1 230.0 L4686.8 157.1 L4702.8 182.2" fill="none" stroke="#8A2BE2" stroke-width="2"/><circle cx="4632.1" cy="145.0" r="3.5" fill="#8A2BE2"/><circle cx="4649.4" cy="60.0" r="3.5" fill="#8A2BE2"/><circle cx="4670.1" cy="230.0" r="3.5" fill="#8A2BE2"/><circle cx="4686.8" cy="157.1" r="3.5" fill="#8A2BE2"/><circle cx="4702.8" cy="182.2" r="3.5" fill="#8A2BE2"/>
+<path d="M4631.4 179.0" fill="none" stroke="#3557C4" stroke-width="2"/><circle cx="4631.4" cy="179.0" r="3.5" fill="#3557C4"/>
+<text x="4625.0" y="260" text-anchor="middle" font-size="12" font-weight="700" fill="#1B1F24">true_positive</text>
+<text x="4625.0" y="276" text-anchor="middle" font-size="10" fill="#5B6B7C">acc 0.30 · ECE 0.64 → 0.24 · T 20.0</text>
+</svg>
