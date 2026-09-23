@@ -22,6 +22,21 @@ from brier.questions import Pick, Grade, Claim
 
 MAX_STATE_CHARS = 1200
 
+# A generated statement is a clause ("the breed is 'brown swiss'"), so it needs frames that take
+# a clause. The general-purpose frames expect a noun and produce "The the breed is ...".
+CLAIM_CLAUSE_FRAMES = (
+    "Is it true of this record that {what}?",
+    "Decide whether {what}.",
+    "Does this record show that {what}?",
+    "State whether it holds that {what}.",
+    "Answer yes if {what}, and no otherwise.",
+    "Judge the claim: {what}.",
+    "Confirm or deny: {what}.",
+    "Is the following correct about the record: {what}?",
+    "Say whether the record supports this: {what}.",
+    "Verify against the record that {what}.",
+)
+
 
 def _fmt(v):
     """Numbers as a person would write them: no scientific notation, thousands separated, and
@@ -47,6 +62,16 @@ def _an(word):
     return "an" if word[:1].lower() in "aeiou" else "a"
 
 
+def _field(a):
+    """The field as it reads inside 'the ... is ...'. Labels that already begin with an article
+    would otherwise produce 'the a cancellation has been requested'."""
+    lab = a["label"].lower()
+    for art in ("a ", "an ", "the "):
+        if lab.startswith(art):
+            return lab[len(art):]
+    return lab
+
+
 def draw_record(rng, domain, n_attrs):
     """A situation: a subset of the domain's attributes with values drawn for this record."""
     attrs = rng.sample(domain["attributes"], min(n_attrs, len(domain["attributes"])))
@@ -56,7 +81,8 @@ def draw_record(rng, domain, n_attrs):
             rec[a["key"]] = rng.choice(a["values"])
         elif a["kind"] == "number":
             lo, hi = a["range"]
-            rec[a["key"]] = round(rng.uniform(lo, hi), 2 if hi - lo < 10 else 0)
+            whole = float(lo).is_integer() and float(hi).is_integer() and (hi - lo) >= 3
+            rec[a["key"]] = float(rng.randint(int(lo), int(hi))) if whole else round(rng.uniform(lo, hi), 2)
         elif a["kind"] == "bool":
             rec[a["key"]] = rng.random() < 0.4
         else:
@@ -68,31 +94,41 @@ def render_record(domain, attrs, rec, style):
     """The same facts as a table, as JSON, or as prose, so the model cannot rely on one layout."""
     items = [(a["label"], rec[a["key"]]) for a in attrs]
     if style == "json":
-        return {a["key"]: rec[a["key"]] for a in attrs}
+        return {a["label"]: rec[a["key"]] for a in attrs}
     if style == "lines":
         return "\n".join(f"{k}: {_fmt(v)}" for k, v in items)
     body = "; ".join(f"the {k.lower()} is {_fmt(v)}" for k, v in items)
-    return f"This {domain['entity']} record states that {body}."
+    ent = domain["entity"]
+    lead = f"This {ent}" if ent.split()[-1] in ("record", "case", "report", "visit", "session", "order", "ticket") else f"This {ent} record"
+    return f"{lead} states that {body}."
 
 
-def _cond_categorical(rng, a):
-    vals = rng.sample(a["values"], min(len(a["values"]), rng.randint(1, max(1, len(a["values"]) // 2))))
-    text = f"the {a['label'].lower()} is " + (" or ".join(f"'{v}'" for v in vals))
-    return text, (lambda rec, k=a["key"], vs=set(vals): rec.get(k) in vs)
+def _cond_categorical(rng, a, vals=None, negate=None):
+    """Either 'the field is x or y' or 'the field is not x or y'.
+
+    The negation matters more than it looks. A true 'is' rule always names the value the record
+    holds, so an option that merely mentions something the record contains is usually the answer,
+    and the question can be won by looking for the overlap. A 'is not' rule that names the
+    record's own value is false, which inverts that signal, so the overlap stops being an answer
+    and the field and the sense of the test have to be read."""
+    vals = vals or rng.sample(a["values"], min(len(a["values"]), rng.randint(1, max(1, len(a["values"]) // 2))))
+    neg = rng.random() < 0.35 if negate is None else negate
+    text = f"the {_field(a)} is {'not ' if neg else ''}" + (" or ".join(f"'{v}'" for v in vals))
+    return text, (lambda rec, k=a["key"], vs=set(vals), n=neg: (rec.get(k) not in vs) if n else (rec.get(k) in vs)), a["key"]
 
 
 def _cond_number(rng, a):
     lo, hi = a["range"]
     t = round(rng.uniform(lo + (hi - lo) * 0.2, lo + (hi - lo) * 0.8), 2 if hi - lo < 10 else 0)
     over = rng.random() < 0.5
-    text = f"the {a['label'].lower()} is {'above' if over else 'below'} {_fmt(t)}{_unit(a)}"
-    return text, (lambda rec, k=a["key"], t=t, over=over: (rec.get(k, 0) > t) if over else (rec.get(k, 0) < t))
+    text = f"the {_field(a)} is {'above' if over else 'below'} {_fmt(t)}{_unit(a)}"
+    return text, (lambda rec, k=a["key"], t=t, over=over: (rec.get(k, 0) > t) if over else (rec.get(k, 0) < t)), a["key"]
 
 
 def _cond_bool(rng, a):
     want = rng.random() < 0.5
-    text = f"the {a['label'].lower()} is {'yes' if want else 'no'}"
-    return text, (lambda rec, k=a["key"], w=want: bool(rec.get(k)) is w)
+    text = f"the {_field(a)} is {'yes' if want else 'no'}"
+    return text, (lambda rec, k=a["key"], w=want: bool(rec.get(k)) is w), a["key"]
 
 
 # What a condition tests. Matching a named value is reading; comparing two numbers is
@@ -119,11 +155,21 @@ def draw_condition(rng, attrs):
 
 
 def draw_conjunction(rng, attrs, k):
-    """k conditions joined by 'and', stated as one sentence."""
-    parts = [draw_condition(rng, attrs) for _ in range(k)]
+    """k conditions joined by 'and', over distinct attributes: repeating one attribute produces
+    'the cancellation is yes and the cancellation is yes', which is noise."""
+    pool, parts, used = list(attrs), [], set()
+    for _ in range(k):
+        left = [a for a in pool if a["key"] not in used]
+        if not left:
+            break
+        c = draw_condition(rng, left)
+        used.add(c[2])
+        parts.append(c[:2])
+    if len(parts) == 1:
+        return parts[0][0], parts[0][1], None
     text = " and ".join(p[0] for p in parts)
     fns = [p[1] for p in parts]
-    return text, (lambda rec, fns=fns: all(f(rec) for f in fns))
+    return text, (lambda rec, fns=fns: all(f(rec) for f in fns)), None
 
 
 def option_names(rng, domain, attrs, n, vocab):
@@ -138,7 +184,7 @@ def option_names(rng, domain, attrs, n, vocab):
         if a["kind"] == "categorical":
             pool += [str(v) for v in a["values"]]
     pool = [w for w in dict.fromkeys(pool) if len(w) < 40]
-    if len(pool) >= n:
+    if len(pool) >= n * 2:                       # keep a margin so names and tested values differ
         return rng.sample(pool, n)
     return vocab.label_words(rng, n)
 
@@ -149,8 +195,26 @@ def make_pick(rng, domain, attrs, rec, vocab):
     n = rng.randint(3, 6)
     names = option_names(rng, domain, attrs, n, vocab)
     options, tests = {}, []
+    # Most of the time every option tests the SAME field, with a different set of values. If each
+    # option named a different field, only the correct one would mention anything the state
+    # actually contains, and the question could be answered by looking for the overlap without
+    # evaluating anything. Sharing the field removes that shortcut: every option looks equally
+    # relevant and the model has to check which value the record holds.
+    shared = None
+    cats = [a for a in attrs if a["kind"] == "categorical" and len(a["values"]) >= n]
+    if cats and rng.random() < 0.35:
+        shared = rng.choice(cats)
+        pool = list(shared["values"])
+        rng.shuffle(pool)
     for i in range(n - 1):
-        text, fn = (draw_conjunction(rng, attrs, 2) if rng.random() < 0.3 else draw_condition(rng, attrs))
+        if shared is not None:
+            take = pool[i * max(1, len(pool) // n): (i + 1) * max(1, len(pool) // n)] or [pool[i % len(pool)]]
+            # Partition the field's values between the options, and never negate here: a negated
+            # test on a shared field is true whenever the record holds anything else, so several
+            # options would hold at once and the question would collapse into a tie.
+            text, fn, _ = _cond_categorical(rng, shared, vals=take, negate=False)
+        else:
+            text, fn, _ = (draw_conjunction(rng, attrs, 2) if rng.random() < 0.3 else draw_condition(rng, attrs))
         options[names[i]] = text
         tests.append((names[i], fn))
     options[names[-1]] = "none of the above applies"
@@ -182,7 +246,7 @@ def make_grade(rng, domain, attrs, rec, vocab):
     cuts = sorted(cuts)
     levels, bounds = [], [lo] + cuts + [hi]
     for i, name in enumerate(scale):
-        levels.append(f"{name}: {a['label'].lower()} from {_fmt(bounds[i])} to {_fmt(bounds[i + 1])}{_unit(a)}")
+        levels.append(f"{name}: {_field(a)} from {_fmt(bounds[i])} to {_fmt(bounds[i + 1])}{_unit(a)}")
     v = rec.get(a["key"], lo)
     idx = sum(1 for c in cuts if v > c)
     q = Grade(f"q_{rng.randrange(10**6)}", rng.choice(vocab.INSTRUCTION_FRAMES).format(what=rng.choice(vocab.NOUNS)), tuple(levels))
@@ -195,7 +259,7 @@ def make_claim(rng, domain, attrs, rec, vocab):
     A condition drawn at random is false far more often than true, which would hand the model a
     free 64% by always answering no. The record is redrawn until it matches the target answer,
     which is chosen by a coin, so yes and no are equally likely and the prior is worth nothing."""
-    text, fn = (draw_conjunction(rng, attrs, 2) if rng.random() < 0.4 else draw_condition(rng, attrs))
+    text, fn, _ = (draw_conjunction(rng, attrs, 2) if rng.random() < 0.4 else draw_condition(rng, attrs))
     want = rng.random() < 0.5
     if fn(rec) is not want:
         for _ in range(40):
@@ -205,7 +269,8 @@ def make_claim(rng, domain, attrs, rec, vocab):
                 rec.clear()
                 rec.update(cand)
                 break
-    q = Claim(f"q_{rng.randrange(10**6)}", rng.choice(vocab.CLAIM_FRAMES).format(what=text))
+    frame = rng.choice(CLAIM_CLAUSE_FRAMES)
+    q = Claim(f"q_{rng.randrange(10**6)}", frame.format(what=text))
     return q, ("yes" if fn(rec) else "no"), fn
 
 
