@@ -1,55 +1,75 @@
 """Audit the generated question types before any of them reach training.
 
 The generator writes both the question and its answer, so a mistake here is invisible later: the
-model would simply learn a wrong rule from a confident label. This checks the properties that
-have to hold. Every option's condition is re-evaluated against the record, so the stated answer
-is verified rather than trusted."""
+model would learn a wrong rule from a confident label. Every check below re-derives the answer
+from the rule the question states, rather than trusting what the generator recorded."""
 import argparse
 import collections
-import re
 
-from tasks.schema import example_at
 from brier.questions import Pick, Grade, Claim
+from tasks.schema import example_at, LEVELS, domains_for
+from tasks import vocab
 
 
-def audit(n, seed, split):
-    kinds = collections.Counter()
-    domains = collections.Counter()
-    answers = collections.Counter()
-    fallback = multi = soft = 0
-    opt_counts, state_len, label_len = [], [], []
-    dup_names = 0
+def audit(n, seed, split, verbose=False):
+    kinds = collections.Counter(); domains = collections.Counter(); widths = collections.Counter()
+    styles = collections.Counter(); per_case = collections.Counter(); claims = collections.Counter()
+    bad = nq = soft = fallback = 0
+    overlap_hit = overlap_tot = 0
+    state_len = []
     for i in range(n):
         e = example_at(i, seed=seed, split=split)
-        q = e["questions"][0]
-        lab = e["labels"][q.id]
-        kinds[e["kind"]] += 1
+        checks, rec = e["_verify"]
         domains[e["domain"]] += 1
+        per_case[len(e["questions"])] += 1
         st = e["state"]
-        state_len.append(len(st if isinstance(st, str) else str(st)))
-        opts = list(q.labels)
-        opt_counts.append(len(opts))
-        label_len.append(max(len(str(o)) for o in opts))
-        if isinstance(lab, dict):
-            soft += 1
-        else:
-            answers[str(lab)[:40]] += 1
-            if isinstance(q, Pick) and str(lab) == opts[-1]:
-                fallback += 1
-        if isinstance(q, Pick) and len(set(opts)) != len(opts):
-            dup_names += 1
-    print(f"{n} examples, seed {seed}, split {split}")
-    print("  kinds:", dict(kinds))
-    print(f"  distinct domains: {len(domains)} of 71   most common: {domains.most_common(1)[0][1]} times")
-    print(f"  options per question: mean {sum(opt_counts)/len(opt_counts):.1f}  max {max(opt_counts)}")
-    print(f"  state length: median {sorted(state_len)[len(state_len)//2]} chars  max {max(state_len)}")
-    print(f"  longest option text: max {max(label_len)} chars")
-    print(f"  ambiguous (two rules fire, soft label): {soft} ({100*soft/n:.1f}%)")
-    print(f"  answered by the fallback option: {fallback} ({100*fallback/n:.1f}%)")
-    print(f"  duplicate option names in one question: {dup_names}")
-    top = answers.most_common(3)
-    print(f"  most repeated single answer: {top[0][1] if top else 0} of {n}")
-    print(f"  distinct answers seen: {len(answers)}")
+        styles["structured" if isinstance(st, dict) else "text"] += 1
+        state_len.append(len(str(st)))
+        for q in e["questions"]:
+            nq += 1
+            lab = e["labels"][q.id]
+            kinds[type(q).__name__] += 1
+            if isinstance(lab, dict):
+                soft += 1
+            if isinstance(q, Pick):
+                widths["2-6" if len(q.labels) < 7 else ("7-24" if len(q.labels) < 25 else "25+")] += 1
+                if not isinstance(lab, dict):
+                    if lab == list(q.labels)[-1]:
+                        fallback += 1
+                    text = str(st).lower()
+                    overlap_tot += 1
+                    sc = {k: sum(1 for x in str(v).lower().split("'") if len(x) > 4 and x in text)
+                          for k, v in q.options.items()}
+                    best = max(sc, key=sc.get)
+                    if best == lab and list(sc.values()).count(sc[best]) == 1:
+                        overlap_hit += 1
+            if isinstance(q, Claim) and not isinstance(lab, dict):
+                claims[lab] += 1
+            chk = checks[q.id]
+            if isinstance(q, Claim):
+                truth = "yes" if chk(rec) else "no"
+            elif isinstance(q, Grade):
+                truth = chk(rec)
+            else:
+                h = chk(rec)
+                truth = h[0] if len(h) == 1 else {x: 1.0 / len(h) for x in h}
+            if truth != lab:
+                bad += 1
+                if verbose and bad < 4:
+                    print("  MISMATCH", q.id, "recorded", lab, "rule says", truth)
+
+    held = len(domains_for(vocab, "eval"))
+    print(f"{n} cases, {nq} questions, seed {seed}, split {split}")
+    print(f"  questions per case: {dict(sorted(per_case.items()))}")
+    print(f"  kinds: {dict(kinds)}")
+    print(f"  Pick widths: {dict(widths)}")
+    print(f"  domains used: {len(domains)}   (corpus reserves {held} for evaluation only)")
+    print(f"  state form: {dict(styles)}   median length {sorted(state_len)[len(state_len)//2]} chars")
+    print(f"  claims: {dict(claims)}" + (f"   balance {min(claims.values())/sum(claims.values()):.2f}" if claims else ""))
+    print(f"  genuine ties, soft-labelled: {100*soft/nq:.0f}%   fallback answer: {100*fallback/max(nq,1):.0f}%")
+    print(f"  string-overlap shortcut wins: {100*overlap_hit/max(overlap_tot,1):.0f}%")
+    print(f"  LABELS RE-DERIVED FROM THEIR RULES: {nq} checked, {bad} disagreements")
+    return bad
 
 
 if __name__ == "__main__":
@@ -57,5 +77,6 @@ if __name__ == "__main__":
     ap.add_argument("--n", type=int, default=2000)
     ap.add_argument("--seed", type=int, default=1)
     ap.add_argument("--split", default="train")
+    ap.add_argument("-v", "--verbose", action="store_true")
     a = ap.parse_args()
-    audit(a.n, a.seed, a.split)
+    raise SystemExit(1 if audit(a.n, a.seed, a.split, a.verbose) else 0)
