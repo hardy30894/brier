@@ -93,8 +93,15 @@ def render(state, questions, grade_numbers=False) -> Layout:
             line = lead
             ends = []
             labels = q.labels
+            opts = q.options if isinstance(getattr(q, "options", None), dict) else {}
             for i, lab in enumerate(labels):
-                line += (f"{i + 1} " if grade_numbers and isinstance(q, Grade) else "") + lab
+                # An option is its name AND the condition it stands for. Writing only the name
+                # hides the rule from the head, which then has to choose between bare words; the
+                # row scorer has always seen both, and this is why the two paths disagreed on
+                # tasks whose options carry descriptions.
+                desc = str(opts.get(lab) or "").strip()
+                text = f"{lab}: {desc}" if desc else lab
+                line += (f"{i + 1} " if grade_numbers and isinstance(q, Grade) else "") + text
                 ends.append(pos + len(line))
                 if i < len(labels) - 1:
                     line += ", "
