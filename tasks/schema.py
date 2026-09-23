@@ -95,9 +95,20 @@ def _cond_bool(rng, a):
     return text, (lambda rec, k=a["key"], w=want: bool(rec.get(k)) is w)
 
 
+# What a condition tests. Matching a named value is reading; comparing two numbers is
+# arithmetic, and a small encoder with no pretraining for it will spend all its capacity there
+# and learn nothing about reading a question. Numbers stay in the mixture, as a minority.
+KIND_WEIGHTS = {"categorical": 0.55, "bool": 0.30, "number": 0.15, "text": 0.0}
+
+
 def draw_condition(rng, attrs):
     """One readable condition over the record, and the function that decides it."""
-    a = rng.choice(attrs)
+    usable = [a for a in attrs if KIND_WEIGHTS.get(a["kind"], 0) > 0]
+    if usable:
+        w = [KIND_WEIGHTS[a["kind"]] for a in usable]
+        a = rng.choices(usable, weights=w, k=1)[0]
+    else:
+        a = rng.choice(attrs)
     if a["kind"] == "categorical" and len(a["values"]) > 1:
         return _cond_categorical(rng, a)
     if a["kind"] == "number":
